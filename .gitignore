@@ -1,0 +1,5 @@
+django_project_venv/
+.DS_Store
+.env
+__pycache__/
+test_output_files/
