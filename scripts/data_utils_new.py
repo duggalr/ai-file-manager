@@ -4,7 +4,6 @@ from pdf2image import convert_from_path
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
 
 
-
 def is_hidden(filepath):
     # Check for Unix-based systems (Linux/MacOS)
     if platform.system() != 'Windows':
@@ -94,11 +93,10 @@ def _text_to_image(input_file_path, output_file_path):
         if offset > height - margin:
             break
 
-    image.save(output_file_path)
+    image.save(output_file_path, format='PNG')
     return output_file_path
 
-
-def main(input_file_path, output_file_path):
+def _main_file_to_image(input_file_path, output_file_path):
     """
     """
     file_extension = input_file_path.split('.')[-1]
@@ -117,81 +115,34 @@ def main(input_file_path, output_file_path):
             )
 
 
-
-if __name__ == "__main__":
-
-    output_dir_fp = '/Users/rahulduggal/Documents/new_projects/ai_file_manager/scripts/test_output_files'
-    file_list = [
-        # # '/Users/rahulduggal/Downloads/91a2de6f-c04f-4f69-a841-0fe328376f5c.png',
-        # # '/Users/rahulduggal/Desktop/crypto_readings/The emerging tech guide for independent artists.pdf',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/text_files/todo.txt',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/reader_backend/manage.py',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/reader_extension/background.js',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/reader_extension/manifest.json',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/reader_extension/jquery-3.7.1.js',
-        # '/Users/rahulduggal/Documents/ml-team-work/personal-reader/reader_extension/hello.html',
-        # '/Users/rahulduggal/Documents/ml-team-work/alzheimer_detection/kaggle_ad/data_exploration.ipynb',
-        
-        # '/Users/rahulduggal/Documents/ml-team-work/alzheimer_detection/ad-venv/pyvenv.cfg',
-        # '/Users/rahulduggal/Documents/notebooks/mrp_2023-05-01.csv',
-        # '/Users/rahulduggal/Documents/ml-team-work/final_rv.csv',
-        # '/Users/rahulduggal/Desktop/tmp_branch_two/parse_pdf.py',
-        # '/Users/rahulduggal/Desktop/main_screenshots_one/Screenshot 2024-07-10 at 10.15.52 AM.png',
-        # '/Users/rahulduggal/Library/CloudStorage/GoogleDrive-rahul@lambdal.com/My Drive/maxio_bad_debt_customers_output (3).csv'
-
-        # '/Users/rahulduggal/Desktop/ll-master/www/frontend_log.json',
-        # '/Users/rahulduggal/Desktop/ll-master/www/svr/fraud.py',
-        # '/Users/rahulduggal/Desktop/ll-master/www/svr/tools/__init__.py',
-        # '/Users/rahulduggal/Desktop/ll-master/www/setup.cfg',
-        # '/Users/rahulduggal/Desktop/ll-master/README.md',
-        # '/Users/rahulduggal/Desktop/Nicolas Vandeput - Inventory Optimization_ Models and Simulations-De Gruyter (2020).pdf',
-        # '/Users/rahulduggal/Desktop/ll-master/frontend/src/cloud/strings.tsx',
-        # '/Users/rahulduggal/Desktop/ll-master/frontend/src/cloud/types.ts',
-
-        '/Users/rahulduggal/Desktop/ll-master/frontend/src/cloud/components/BillingAddressEditForm.module.scss',
-        '/Users/rahulduggal/Desktop/ll-master/frontend/src/cloud/api.ts',
-        '/Users/rahulduggal/Desktop/ll-master/.flake8'
-    ]
-
-    # fp = '/Users/rahulduggal/Desktop/ll-master/www/.coveragerc'
-    # hidden_file = is_hidden(fp)
-    # print(f"hidden-file: {hidden_file}")
-
+def main(directory_fp):
     could_not_process_file_list = []
-    for full_fp in file_list:
-        print(f"On File: {full_fp}")
+    for root, dirs, files in os.walk(directory_fp):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_is_valid = _is_valid_file(file_path)
+            if file_is_valid:
+                fn_full = os.path.basename(file_path)
+                f_just_file_name = fn_full.split('.')[0]
+                output_file_path = os.path.join(output_dir_fp, f_just_file_name)
+                output_file_path = f"{output_file_path}.png"
+                # print(f"Input File: {file_path} | Output File: {output_file_path}")
+                _main_file_to_image(
+                    input_file_path = file_path,
+                    output_file_path = output_file_path
+                )
+            else:
+                could_not_process_file_list.append(file_path)
 
-        file_is_valid = _is_valid_file(full_fp)
-        if file_is_valid:
-            fn_full = os.path.basename(full_fp)
-            f_just_file_name = fn_full.split('.')[0]
-            output_file_path = os.path.join(output_dir_fp, f_just_file_name)
-            main(
-                input_file_path = full_fp,
-                output_file_path = output_file_path
-            )
-        else:
-            could_not_process_file_list.append(full_fp)
+    print(f"Could Not Process: {could_not_process_file_list}")
 
-    print(f"Could not process files: {could_not_process_file_list}")
 
-    # TODO: fix above issue (see cmd) and go from there
-        # target --> aim to get V1 robust file to screenshot + UI complete
-        # after will be --> efficiency/speed of processing, etc.
-    
-    #     hidden_file = is_hidden(full_fp)
-        
-    #     if hidden_file:
-    #         could_not_process_file_list.append(hidden_file)
-    #     else:
-    #         fn_full = os.path.basename(full_fp)
-    #         f_just_file_name = fn_full.split('.')[0]
-    #         output_file_path = os.path.join(output_dir_fp, f_just_file_name)
-    #         output_file_path = f"{output_file_path}.png"
 
-    #         print(f"Output File Path: {output_file_path}")
-    #         main(
-    #             input_file_path = full_fp,
-    #             output_file_path = output_file_path
-    #         )
+current_script_fp = os.path.abspath(__file__)
+current_script_directory = os.path.dirname(current_script_fp)
+output_dir_fp = os.path.join(current_script_directory, 'test_output_files')
 
+# user_directory_fp = '/Users/rahulduggal/Desktop/companion_old_files/new_old_one'
+# main(
+#     directory_fp = user_directory_fp
+# )
