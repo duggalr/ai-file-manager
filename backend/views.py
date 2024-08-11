@@ -3,12 +3,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 load_dotenv()
-import os
-from openai import OpenAI
 
 
 def home(request):
     return render(request, 'home.html')
+
 
 
 # def read_file_content(file):
