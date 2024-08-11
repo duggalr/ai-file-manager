@@ -4,9 +4,43 @@ from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 load_dotenv()
 
+from .models import File
+# from .scripts import user_file_path_utils
+
+
+# AJAX
+def handle_user_file_path_submit(request):
+    if request.method == 'POST':
+        user_file_path = request.POST['user_file_path']
+        print('user-fp:', user_file_path)
+
+        rv_list = user_file_path_utils.main(
+            user_file_path = user_file_path
+        )
+
+        for di in rv_list:
+            fobj = File.objects.create(
+                user_directory_file_path = user_file_path,
+                entity_type = di['entity_type'],
+                primary_category = di['primary_category'],
+                sub_categories = di['sub_categories']
+            )
+            fobj.save()
+
+        return JsonResponse({
+            'success': True
+        })
+
 
 def home(request):
     return render(request, 'home.html')
+
+
+def file_view(request):
+    file_objects = File.objects.all()
+    return render(request, 'file_view.html', {
+        'file_objects': file_objects
+    })
 
 
 

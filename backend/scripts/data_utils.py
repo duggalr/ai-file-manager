@@ -103,20 +103,21 @@ def _main_file_to_image(input_file_path, output_file_path):
     is_image = _is_image_file(input_file_path)
 
     if is_image:
-        _image_to_image(input_file_path, output_file_path)
+        return _image_to_image(input_file_path, output_file_path)
     else:
         if file_extension == 'pdf':
-            _pdf_to_image(
+            return _pdf_to_image(
                 input_file_path, output_file_path
             )
         else:
-            _text_to_image(
+            return _text_to_image(
                 input_file_path, output_file_path
             )
 
 
 def main(directory_fp):
     could_not_process_file_list = []
+    output_file_path_list = []    
     for root, dirs, files in os.walk(directory_fp):
         for file in files:
             file_path = os.path.join(root, file)
@@ -127,15 +128,22 @@ def main(directory_fp):
                 output_file_path = os.path.join(output_dir_fp, f_just_file_name)
                 output_file_path = f"{output_file_path}.png"
                 # print(f"Input File: {file_path} | Output File: {output_file_path}")
-                _main_file_to_image(
+                
+                
+                return_output_image_fp = _main_file_to_image(
                     input_file_path = file_path,
                     output_file_path = output_file_path
                 )
+
+                output_file_path_list.append(return_output_image_fp)
             else:
                 could_not_process_file_list.append(file_path)
-
-    print(f"Could Not Process: {could_not_process_file_list}")
-
+    
+    di = {
+        'output_file_path_list': output_file_path_list,
+        'could_not_process_file_list': could_not_process_file_list
+    }
+    return di
 
 
 current_script_fp = os.path.abspath(__file__)

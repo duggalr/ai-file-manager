@@ -1,90 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <title>Directory Upload</title>
-</head>
-<body class="bg-gray-900 text-gray-300 flex items-center justify-center h-screen">
+{% extends 'base.html' %}
 
-    <div class="w-full max-w-md mx-auto p-6 bg-gray-800 rounded-lg shadow-md">
-        <h2 class="text-2xl font-semibold text-gray-100 text-center">Upload Your Directory</h2>
+{% block content %}
 
-        <form id="uploadForm" class="mt-6">
-            <div class="mb-4">
-                <label class="block text-gray-400 text-sm font-bold mb-2" for="directoryInput">
-                    Select Directory
-                </label>
+<div class="w-full max-w-md mx-auto p-6 bg-gray-800 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-100 text-center">
+        Enter File Path
+    </h2>
+
+    <form id="uploadForm" class="mt-6">
+        <div class="mb-4">
+            <label class="block text-gray-400 text-sm font-bold mb-2" for="directoryInput">
+                Directory Filepath:
+            </label>
+            <div class="flex">
                 <input 
-                    type="file" 
-                    id="directoryInput" 
-                    name="directory" 
-                    webkitdirectory 
-                    multiple
+                    type="text" 
+                    id="directory_path_input" 
+                    name="directory_path" 
+                    placeholder="Enter a directory path" 
                     class="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:border-blue-500" 
                     required
                 >
             </div>
+        </div>
 
-            <button 
-                type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring focus:border-blue-500">
-                Upload
-            </button>
-        </form>
+        <button 
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+        >
+            Organize
+        </button>
+    </form>
 
-        <div id="responseMessage" class="mt-4 hidden p-3 text-center"></div>
-    </div>
+    <div id="responseMessage" class="mt-4 hidden p-3 text-center"></div>
+</div>
 
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+<script>
 
-            const formData = new FormData();
-            const directoryInput = document.getElementById('directoryInput').files;
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-            if (directoryInput.length === 0) {
-                showResponse('Please select a directory.', 'text-red-500');
-                return;
+        const filePath = document.getElementById('directory_path_input').value;
+        // console.log('fp:', filePath);
+
+        $.ajax({
+            url: "{% url 'handle_user_file_path_submit' %}",
+            type: "POST",
+            dataType: "json",
+            data: {
+                user_file_path: filePath,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: (data) => {
+                console.log(data);
+            },
+            error: (error) => {
+                console.log(error);
             }
-
-            for (let i = 0; i < directoryInput.length; i++) {
-                formData.append('files[]', directoryInput[i]);
-            }
-
-            // Perform AJAX request (dummy implementation for now)
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/upload-endpoint/', true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    showResponse('Directory uploaded successfully!', 'text-green-500');
-                } else {
-                    showResponse('Failed to upload the directory.', 'text-red-500');
-                }
-            };
-            xhr.onerror = function() {
-                showResponse('An error occurred during the upload.', 'text-red-500');
-            };
-            xhr.send(formData);
-
-            function showResponse(message, className) {
-                const responseDiv = document.getElementById('responseMessage');
-                responseDiv.textContent = message;
-                responseDiv.className = `mt-4 p-3 text-center ${className}`;
-                responseDiv.classList.remove('hidden');
-            }
-
         });
-    </script>
 
-</body>
-</html>
+    });
 
-<!-- 
-TODO:
-    - start here by building entire frontend for the upload directory and the modern dashboard layout to see all the files
-        - upload file layout can just be this for initial testing
-        - go from there...
--->
+</script>
 
+{% endblock %}
