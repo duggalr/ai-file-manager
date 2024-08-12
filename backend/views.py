@@ -56,6 +56,8 @@ def file_view(request):
     category_dict = {}
     for fn_obj in file_objects:
         ctg = fn_obj.primary_category
+        fn_entity_type = fn_obj.entity_type
+
         fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
         fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
         fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
@@ -63,7 +65,8 @@ def file_view(request):
         file_size_string = size(fn_obj.file_size_in_bytes)
         current_file_name_clean = (fn_obj.current_file_name).capitalize()
 
-        if ctg in category_dict:
+        # if ctg in category_dict:
+        if fn_entity_type in category_dict:
             tmp_dict = {
                 'entity_type': fn_obj.entity_type,
                 'file_name': current_file_name_clean,
@@ -75,9 +78,13 @@ def file_view(request):
                 'file_created_at_date_time': fn_created_at_time,
                 'file_modified_at_date_time': fn_modified_at_time,
             }
-            l = category_dict[ctg]
+            # l = category_dict[ctg]
+            # l.append(tmp_dict)
+            # category_dict[ctg] = l
+
+            l = category_dict[fn_entity_type]
             l.append(tmp_dict)
-            category_dict[ctg] = l
+            category_dict[fn_entity_type] = l
         else:
             # category_dict[ctg] = [fn_obj]
             tmp_dict = {
@@ -91,7 +98,8 @@ def file_view(request):
                 'file_created_at_date_time': fn_created_at_time,
                 'file_modified_at_date_time': fn_modified_at_time,
             }
-            category_dict[ctg] = [tmp_dict]
+            # category_dict[ctg] = [tmp_dict]
+            category_dict[fn_entity_type] = [tmp_dict]
 
     rv = []
     for ctg in category_dict:

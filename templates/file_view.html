@@ -79,6 +79,25 @@
     }
 
 
+    .resizable {
+    position: relative;
+    cursor: col-resize;
+}
+
+.resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    cursor: col-resize;
+    background-color: transparent;
+}
+
+.resizable:hover .resize-handle {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 </style>
 
 <!-- Top Navbar -->
@@ -136,10 +155,10 @@
         <hr class="border-gray-700 mt-4">
     </aside>
 
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-6 px-8">
 
         <!-- Search Bar -->
-        <div class="mb-6 flex justify-center">
+        <!-- <div class="mb-6 flex justify-center">
             <input 
                 type="text" 
                 placeholder="Search..." 
@@ -150,9 +169,60 @@
                 type="button" 
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg px-5 ml-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             >Search</button>
+        </div> -->
+
+        <div class="mb-6 flex justify-center">
+            <input 
+                type="text"
+                placeholder="Coming soon..."
+                class="w-1/3 p-2 px-3 rounded-lg bg-gray-700 border border-gray-600 text-gray-400 cursor-not-allowed"
+                style="background-color: rgb(55 65 81);"
+                disabled
+            >
+            <button 
+                type="button"
+                class="text-gray-400 bg-blue-600 cursor-not-allowed font-medium rounded-lg px-5 ml-2"
+                disabled
+            >
+                Search
+            </button>
         </div>
 
-        <h3 class="text-2xl font-bold mb-4">
+
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-2xl font-bold">
+                Categories
+            </h3>
+        
+            <!-- Dropdown Menu -->
+            <div class="relative">
+                <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
+                    <span>View by: Entity</span>
+                    <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M0 0h20v20H0z" fill="none"/>
+                        <path d="M10 12l-4-4h8l-4 4z"/>
+                    </svg>
+                </button>
+                <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entity</li>
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Sub-categories</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
+            {% for l in categorized_files %}
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.0 }}">
+                    <h2 class="text-xl font-bold mb-2">
+                        {{ l.0 }}
+                    </h2>
+                    <p class="text-gray-400">{{ l.1|length }} Files</p>
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <!-- <h3 class="text-2xl font-bold mb-4">
             Categories
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
@@ -168,29 +238,13 @@
 
             {% endfor %}
 
-        </div>
+        </div> -->
 
-        <div class="mt-8">
+
+        <!-- <div class="mt-8">
             <h3 id="recent-files-header" class="text-2xl font-bold mb-4">
                 Recent Files
             </h3>
-
-            <!-- <ul id="recent-files-list" class="space-y-2">
-                <li class="bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center">
-                    <span>File 1.pdf</span>
-                    <span class="text-gray-400">PDF Document</span>
-                </li>
-
-                <li class="bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center">
-                    <span>File 2.png</span>
-                    <span class="text-gray-400">Image File</span>
-                </li>
-
-                <li class="bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center">
-                    <span>File 2.png</span>
-                    <span class="text-gray-400">Image File</span>
-                </li>
-            </ul> -->
 
             <div class="mb-8">
                 <div class="flex justify-between items-center">
@@ -199,122 +253,77 @@
                 </div>
                 <div class="bg-gray-800 rounded-lg mt-4">
 
-                    <table class="min-w-full table-auto" id="file-table">
- 
-                        <thead>
-                            <tr>
-                                <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                Name
-                                <span class="sort-arrows">
-                                    <span class="sort-arrow" data-order="asc">▲</span>
-                                    <span class="sort-arrow" data-order="desc">▼</span>
-                                </span>
-                                </th>
-
-                                <!-- <th class="px-4 py-2 text-left text-base text-gray-400">
-                                    <div class="flex items-center">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto" id="file-table">
+                            <thead>
+                                <tr>
+                                    <th class="resizable px-4 py-2 text-left text-base font-semibold text-gray-400">
                                         Name
-                                        <span class="sort-arrows ml-2">
-                                            ▲▼
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
                                         </span>
-                                    </div>
-                                </th> -->
-                                
-                                <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                    Type 
-                                <span class="sort-arrows">
-                                    <span class="sort-arrow" data-order="asc">▲</span>
-                                    <span class="sort-arrow" data-order="desc">▼</span>
-                                </span>
-
-                                <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                    Size 
-                                <span class="sort-arrows">
-                                    <span class="sort-arrow" data-order="asc">▲</span>
-                                    <span class="sort-arrow" data-order="desc">▼</span>
-                                </span>
-
-                                <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                    Last Modified
-                                <span class="sort-arrows">
-                                    <span class="sort-arrow" data-order="asc">▲</span>
-                                    <span class="sort-arrow" data-order="desc">▼</span>
-                                </span>
-
-                                <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                    Sub Categories
-                                <span class="sort-arrows">
-                                    <span class="sort-arrow" data-order="asc">▲</span>
-                                    <span class="sort-arrow" data-order="desc">▼</span>
-                                </span>
-                            </tr>                            
-                        </thead>
-
-                        <tbody class="bg-gray-800">
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Document</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Image</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- <table class="min-w-full table-auto">
-                        <thead class="bg-gray-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-400">Name</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-400">Type</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-400">Size</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-400">Last Modified</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-400">Sub Categories</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody class="bg-gray-800">
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Document</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Image</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
-                            </tr>
-                            <tr>
-                                <td class="px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
-                                <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
-                            </tr>
-                        </tbody>
-                    </table> -->
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Type 
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Size 
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Last Modified
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Sub Categories
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-800">
+                                <tr>
+                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Document</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
+                                </tr>
+                                <tr>
+                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Image</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
+                                </tr>
+                                <tr>
+                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
+                                    <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>
 
-        </div>
+        </div> -->
 
     </main>
 
@@ -337,6 +346,9 @@
 
     // Function to render files in the table based on the selected category
     function renderFiles(category) {
+        
+        document.getElementById('recent-files-header').textContent = category + " Files";
+        
         const category_files = file_category_dict[category];
         const tbody = document.querySelector('#file-table tbody');
         tbody.innerHTML = ''; // Clear any existing rows
@@ -407,6 +419,70 @@
             rows.forEach(function(row) {
                 tbody.appendChild(row);
             });
+        });
+    });
+
+
+    document.querySelectorAll('.resizable').forEach(function (cell) {
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        cell.appendChild(resizeHandle);
+
+        let startX, startWidth;
+
+        resizeHandle.addEventListener('mousedown', function (e) {
+            startX = e.pageX;
+            startWidth = parseInt(document.defaultView.getComputedStyle(cell).width, 10);
+            document.documentElement.addEventListener('mousemove', doDrag, false);
+            document.documentElement.addEventListener('mouseup', stopDrag, false);
+        });
+
+        function doDrag(e) {
+            const th = cell.closest('table').querySelector('th.resizable');
+            th.style.width = (startWidth + e.pageX - startX) + 'px';
+            document.querySelectorAll('td.resizable').forEach(function (td) {
+                td.style.width = (startWidth + e.pageX - startX) + 'px';
+            });
+        }
+
+        function stopDrag() {
+            document.documentElement.removeEventListener('mousemove', doDrag, false);
+            document.documentElement.removeEventListener('mouseup', stopDrag, false);
+        }
+    });
+
+
+    document.getElementById('viewDropdown').addEventListener('click', function () {
+        const menu = document.getElementById('viewDropdownMenu');
+        menu.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('#viewDropdownMenu li').forEach(item => {
+        item.addEventListener('click', function () {
+            // const dropdownText = document.querySelector('#viewDropdown span');
+            // dropdownText.textContent = 'View by: ' + this.textContent;
+            
+            // // Add your logic to filter or change the view here.
+            // // For example, you could add a class or attribute to category-list 
+            // // and apply the filter via CSS or JS.
+            
+            // // Hide the menu after selection
+            // document.getElementById('viewDropdownMenu').classList.add('hidden');
+
+            // TODO: go from here to implementing the dropdown selection with the cards changing;
+            const dropdownText = document.querySelector('#viewDropdown span');
+            const selectedView = this.textContent;
+            dropdownText.textContent = 'View by: ' + selectedView;
+
+            // Change the h3 title based on the dropdown selection
+            const categoriesTitle = document.getElementById('categories-title');
+            categoriesTitle.textContent = selectedView + ' Categories';
+
+            // Hide the menu after selection
+            document.getElementById('viewDropdownMenu').classList.add('hidden');
+
+            // Additional logic can be added here to update the category view
+
         });
     });
 
