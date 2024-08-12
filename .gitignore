@@ -3,3 +3,4 @@ django_project_venv/
 .env
 __pycache__/
 test_output_files/
+todo.txt

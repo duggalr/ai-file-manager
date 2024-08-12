@@ -21,6 +21,7 @@ def handle_user_file_path_submit(request):
         for di in rv_list:
             fobj = File.objects.create(
                 user_directory_file_path = user_file_path,
+                current_file_path = di['current_image_file_path'],
                 entity_type = di['entity_type'],
                 primary_category = di['primary_category'],
                 sub_categories = di['sub_categories']
@@ -38,8 +39,24 @@ def home(request):
 
 def file_view(request):
     file_objects = File.objects.all()
+
+    category_dict = {}
+    for fn_obj in file_objects:
+        ctg = fn_obj.primary_category
+        if ctg in category_dict:
+            l = category_dict[ctg]
+            l.append(fn_obj)
+            category_dict[ctg] = l
+        else:
+            category_dict[ctg] = [fn_obj]
+
+    rv = []
+    for ctg in category_dict:
+        rv.append([ctg, category_dict[ctg]])
+
     return render(request, 'file_view.html', {
-        'file_objects': file_objects
+        # 'file_objects': file_objects
+        'categorized_files': rv
     })
 
 

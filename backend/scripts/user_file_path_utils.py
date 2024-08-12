@@ -31,6 +31,7 @@ def main(user_file_path):
             prompt = category_prompt,
         )
         json_response_data = json.loads(response)
+        json_response_data['current_image_file_path'] = img_fp
         rv.append(json_response_data)
 
     return rv
