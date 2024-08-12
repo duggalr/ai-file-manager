@@ -14,6 +14,7 @@ Please categorize the file as follows:
 Return your response in the following JSON format:
 
 {
+    "entity_type": "...",
     "primary_category": "Primary Category Name",
     "sub_categories": [
         "Sub-category 1",

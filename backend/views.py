@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from .models import File
-# from .scripts import user_file_path_utils
+from .scripts import user_file_path_utils
 
 
 # AJAX
@@ -19,12 +19,21 @@ def handle_user_file_path_submit(request):
         )
 
         for di in rv_list:
+
+            print('json-di:', di)
+
             fobj = File.objects.create(
                 user_directory_file_path = user_file_path,
                 current_file_path = di['current_image_file_path'],
+
                 entity_type = di['entity_type'],
                 primary_category = di['primary_category'],
-                sub_categories = di['sub_categories']
+                sub_categories = di['sub_categories'],
+    
+                file_size_in_bytes = di['file_size'],
+                file_last_access_time = di['last_access_time'],
+                file_created_at_date_time = di['creation_time'],
+                file_modified_at_date_time = di['last_modified_time'],
             )
             fobj.save()
 
@@ -54,9 +63,11 @@ def file_view(request):
     for ctg in category_dict:
         rv.append([ctg, category_dict[ctg]])
 
+    sorted_list = sorted(rv, key=lambda x: len(x[1]), reverse=True)
+
     return render(request, 'file_view.html', {
         # 'file_objects': file_objects
-        'categorized_files': rv
+        'categorized_files': sorted_list
     })
 
 

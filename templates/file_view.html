@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI File Organizer Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+{% block content %}
 
 <body class="bg-gray-900 text-white font-sans">    
 
@@ -142,5 +136,12 @@
 
     </div>
 
-</body>
-</html>
+
+    <script>
+
+        let file_list = '{{ categorized_files|json }}';
+        console.log('file-list:', file_list);
+
+    </script>
+
+{% endblock %}

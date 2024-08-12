@@ -24,6 +24,9 @@
             </div>
         </div>
 
+        <div id="loader" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 hidden">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-100"></div>
+        </div>
         <button 
             type="submit"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring focus:border-blue-500"
@@ -43,6 +46,8 @@
         const filePath = document.getElementById('directory_path_input').value;
         // console.log('fp:', filePath);
 
+        $('#loader').show();
+
         $.ajax({
             url: "{% url 'handle_user_file_path_submit' %}",
             type: "POST",
@@ -52,7 +57,11 @@
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             },
             success: (data) => {
-                console.log(data);
+                // console.log(data);
+                $('#loader').hide();
+                if (data['success'] === true){
+                    window.location.href = '/file-view';
+                }
             },
             error: (error) => {
                 console.log(error);
