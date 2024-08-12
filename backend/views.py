@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
 load_dotenv()
 
+import json
+import datetime
 from .models import File
 from .scripts import user_file_path_utils
 
@@ -52,22 +54,51 @@ def file_view(request):
     category_dict = {}
     for fn_obj in file_objects:
         ctg = fn_obj.primary_category
+        fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d %H:%M")
+        fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d %H:%M")
+        fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d %H:%M")
+
         if ctg in category_dict:
+            tmp_dict = {
+                'entity_type': fn_obj.entity_type,
+                'primary_category': fn_obj.primary_category,
+                'sub_categories': fn_obj.sub_categories,
+                
+                'file_size_in_bytes': fn_obj.file_size_in_bytes,
+                'file_last_access_time': fn_last_access_time,
+                'file_created_at_date_time': fn_created_at_time,
+                'file_modified_at_date_time': fn_modified_at_time,
+            }
             l = category_dict[ctg]
-            l.append(fn_obj)
+            l.append(tmp_dict)
             category_dict[ctg] = l
         else:
-            category_dict[ctg] = [fn_obj]
+            # category_dict[ctg] = [fn_obj]
+            tmp_dict = {
+                'entity_type': fn_obj.entity_type,
+                'primary_category': fn_obj.primary_category,
+                'sub_categories': fn_obj.sub_categories,
+                
+                'file_size_in_bytes': fn_obj.file_size_in_bytes,
+                'file_last_access_time': fn_last_access_time,
+                'file_created_at_date_time': fn_created_at_time,
+                'file_modified_at_date_time': fn_modified_at_time,
+            }
+            category_dict[ctg] = [tmp_dict]
 
     rv = []
     for ctg in category_dict:
         rv.append([ctg, category_dict[ctg]])
 
     sorted_list = sorted(rv, key=lambda x: len(x[1]), reverse=True)
+    sorted_list_json = json.dumps(sorted_list)
+
+    print(sorted_list_json)
 
     return render(request, 'file_view.html', {
         # 'file_objects': file_objects
-        'categorized_files': sorted_list
+        'categorized_files': sorted_list,
+        'sorted_list_json': sorted_list_json
     })
 
 
