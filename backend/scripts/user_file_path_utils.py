@@ -43,7 +43,10 @@ def main(user_file_path):
         last_modified_time = datetime.datetime.fromtimestamp(last_modified_time).strftime('%Y-%m-%d %H:%M:%S')
         creation_time = datetime.datetime.fromtimestamp(creation_time).strftime('%Y-%m-%d %H:%M:%S')
 
+        current_image_file_name = os.path.basename(img_fp)
+
         json_response_data['current_image_file_path'] = img_fp
+        json_response_data['current_image_file_name'] = current_image_file_name
         json_response_data['file_size'] = file_size
         json_response_data['last_access_time'] = last_access_time
         json_response_data['last_modified_time'] = last_modified_time
@@ -53,7 +56,7 @@ def main(user_file_path):
 
     return rv
 
-## TODO: delete testing code below
+# ## TODO: delete testing code below
 # directory_file_path = '/Users/rahulduggal/Desktop/search_fund_material'
 # main(
 #     user_file_path = directory_file_path

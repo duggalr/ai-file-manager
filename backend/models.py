@@ -19,6 +19,7 @@ class File(models.Model):
     
     user_directory_file_path = models.TextField()
     current_file_path = models.TextField()
+    current_file_name = models.TextField(blank=True, null=True)
     
     entity_type = models.TextField()
     primary_category = models.TextField()

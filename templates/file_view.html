@@ -3,26 +3,24 @@
 {% block content %}
 
 <style>
-    /* General styles */
+    
+    
     table {
         border-collapse: separate;
-        border-spacing: 0 10px; /* Add vertical spacing between rows */
+        border-spacing: 0 10px;
         width: 100%;
     }
 
-    th {
+    /* th {
         cursor: pointer;
         user-select: none;
-    }
+    } */
 
     .sort-arrows {
-        /* display: inline-flex;
-        flex-direction: column;
-        margin-left: 5px; */
         display: inline-flex;
         flex-direction: row;
-        gap: 2px; /* Adjust spacing between arrows */
-        font-size: 0.8em; /* Adjust size of the arrows */
+        gap: 2px;
+        font-size: 0.8em;
         vertical-align: middle;
     }
 
@@ -38,7 +36,7 @@
     }
 
     tbody tr:hover {
-        background-color: #2d3748; /* Slightly lighter gray for hover */
+        background-color: #2d3748;
         cursor: pointer;
     }
 
@@ -48,6 +46,39 @@
         padding-left: 10px;
         padding-right: 10px;
     }
+
+
+    /* Ensure headers have the arrows inline */
+    th .flex {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    /* Ensure arrows are aligned properly */
+    th .sort-arrows {
+        font-size: 0.75rem;
+        margin-left: 0.25rem;
+        cursor: pointer;
+    }
+
+    /* Truncate long text with ellipses */
+    td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 250px; /* Adjust the max-width as needed */
+    }
+
+    /* Optional: You can customize the appearance further */
+    td .truncate {
+        max-width: 250px; /* Adjust the max-width as needed */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
 </style>
 
 <!-- Top Navbar -->
@@ -168,7 +199,7 @@
                 </div>
                 <div class="bg-gray-800 rounded-lg mt-4">
 
-                    <table class="min-w-full table-auto">
+                    <table class="min-w-full table-auto" id="file-table">
  
                         <thead>
                             <tr>
@@ -180,6 +211,15 @@
                                 </span>
                                 </th>
 
+                                <!-- <th class="px-4 py-2 text-left text-base text-gray-400">
+                                    <div class="flex items-center">
+                                        Name
+                                        <span class="sort-arrows ml-2">
+                                            ▲▼
+                                        </span>
+                                    </div>
+                                </th> -->
+                                
                                 <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
                                     Type 
                                 <span class="sort-arrows">
@@ -289,58 +329,47 @@
     console.log('slist:', sorted_file_list);
 
     let file_category_dict = {};
-    for (i=0; i<=sorted_file_list.length-1; i++){
+    for (let i = 0; i < sorted_file_list.length; i++) {
         let sub_list = sorted_file_list[i];
         file_category_dict[sub_list[0]] = sub_list[1];
     }
     console.log('ctg-dict:', file_category_dict);
 
-    // Function to render files in the "Recent Files" section
+    // Function to render files in the table based on the selected category
     function renderFiles(category) {
-
         const category_files = file_category_dict[category];
-
-        document.getElementById('recent-files-header').textContent = category + " Files";
-        const fileList = document.getElementById('recent-files-list');
-        fileList.innerHTML = ''; // Clear any existing files
+        const tbody = document.querySelector('#file-table tbody');
+        tbody.innerHTML = ''; // Clear any existing rows
 
         if (category_files) {
-            // const files = categoryData[1]; // Array of file objects
             category_files.forEach(file => {
-                console.log('file-info:', file)
-                const fileElement = document.createElement('li');
-                fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
-                fileElement.innerHTML = `
-                    <span>${file['entity_type']}</span>
-                    <span class="text-gray-400">temp</span>
+                console.log('file-info:', file);
+                const row = document.createElement('tr');
+
+                // Create badges for sub-categories
+                const subCategories = file['sub_categories'].map(subCategory => `
+                    <span class="inline-block bg-gray-700 text-gray-300 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">${subCategory}</span>
+                `).join('');
+                // <td class="px-4 py-2 text-left text-base text-gray-400">${file['sub_categories']}</td>
+
+                // row.innerHTML = `
+                //     <td class="px-4 py-2 text-left text-base text-gray-400">${file['file_name']}</td>
+                //     <td class="px-4 py-2 text-left text-base text-gray-400">${file['entity_type']}</td>
+                //     <td class="px-4 py-2 text-left text-base text-gray-400">${file['file_size_string']}</td>
+                //     <td class="px-4 py-2 text-left text-base text-gray-400">${file['file_modified_at_date_time']}</td>
+                //     <td class="px-4 py-2 text-left text-base text-gray-400">${subCategories}</td>
+                // `;
+
+                row.innerHTML = `
+                    <td class="px-4 py-2 text-left text-base text-gray-400 truncate">${file['file_name']}</td>
+                    <td class="px-4 py-2 text-left text-base text-gray-400">${file['entity_type']}</td>
+                    <td class="px-4 py-2 text-left text-base text-gray-400">${file['file_size_string']}</td>
+                    <td class="px-4 py-2 text-left text-base text-gray-400">${file['file_modified_at_date_time']}</td>
+                    <td class="px-4 py-2 text-left text-base text-gray-400">${subCategories}</td>
                 `;
-                fileList.appendChild(fileElement);
+                tbody.appendChild(row);
             });
         }
-
-        // // Find the category in the sorted_file_list
-        // const categoryData = sorted_file_list.find(item => item[0] === category);
-
-        // // Update the header to the selected category
-        // document.getElementById('recent-files-header').textContent = category;
-
-        // // Get the file list element
-        // const fileList = document.getElementById('recent-files-list');
-        // fileList.innerHTML = ''; // Clear any existing files
-
-        // // If the category was found, populate the files
-        // if (categoryData) {
-        //     const files = categoryData[1]; // Array of file objects
-        //     files.forEach(file => {
-        //         const fileElement = document.createElement('li');
-        //         fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
-        //         fileElement.innerHTML = `
-        //             <span>${file.entity_type}</span>
-        //             <span class="text-gray-400">${file.primary_key}</span>
-        //         `;
-        //         fileList.appendChild(fileElement);
-        //     });
-        // }
     }
 
     // Add click event listeners to each category card
@@ -350,7 +379,6 @@
             renderFiles(category);
         });
     });
-
 
     // Sorting functionality
     document.querySelectorAll('.sort-arrow').forEach(function(arrow) {
@@ -381,6 +409,104 @@
             });
         });
     });
+
+
+
+
+
+    // let file_category_dict = {};
+    // for (i=0; i<=sorted_file_list.length-1; i++){
+    //     let sub_list = sorted_file_list[i];
+    //     file_category_dict[sub_list[0]] = sub_list[1];
+    // }
+    // console.log('ctg-dict:', file_category_dict);
+
+    // // Function to render files in the "Recent Files" section
+    // function renderFiles(category) {
+
+    //     const category_files = file_category_dict[category];
+
+    //     document.getElementById('recent-files-header').textContent = category + " Files";
+    //     const fileList = document.getElementById('recent-files-list');
+    //     fileList.innerHTML = ''; // Clear any existing files
+
+    //     if (category_files) {
+    //         // const files = categoryData[1]; // Array of file objects
+    //         category_files.forEach(file => {
+    //             console.log('file-info:', file)
+    //             const fileElement = document.createElement('li');
+    //             fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
+    //             fileElement.innerHTML = `
+    //                 <span>${file['entity_type']}</span>
+    //                 <span class="text-gray-400">temp</span>
+    //             `;
+    //             fileList.appendChild(fileElement);
+    //         });
+    //     }
+
+    //     // // Find the category in the sorted_file_list
+    //     // const categoryData = sorted_file_list.find(item => item[0] === category);
+
+    //     // // Update the header to the selected category
+    //     // document.getElementById('recent-files-header').textContent = category;
+
+    //     // // Get the file list element
+    //     // const fileList = document.getElementById('recent-files-list');
+    //     // fileList.innerHTML = ''; // Clear any existing files
+
+    //     // // If the category was found, populate the files
+    //     // if (categoryData) {
+    //     //     const files = categoryData[1]; // Array of file objects
+    //     //     files.forEach(file => {
+    //     //         const fileElement = document.createElement('li');
+    //     //         fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
+    //     //         fileElement.innerHTML = `
+    //     //             <span>${file.entity_type}</span>
+    //     //             <span class="text-gray-400">${file.primary_key}</span>
+    //     //         `;
+    //     //         fileList.appendChild(fileElement);
+    //     //     });
+    //     // }
+    // }
+
+    // // Add click event listeners to each category card
+    // document.querySelectorAll('.category-card').forEach(card => {
+    //     card.addEventListener('click', function() {
+    //         const category = this.dataset.category;
+    //         renderFiles(category);
+    //     });
+    // });
+
+
+    // // Sorting functionality
+    // document.querySelectorAll('.sort-arrow').forEach(function(arrow) {
+    //     arrow.addEventListener('click', function() {
+    //         var order = this.getAttribute('data-order');
+    //         var column = this.closest('th').textContent.trim();
+    //         var tbody = this.closest('table').querySelector('tbody');
+    //         var rows = Array.from(tbody.querySelectorAll('tr'));
+
+    //         // Determine the column index
+    //         var columnIndex = Array.from(this.closest('tr').children).indexOf(this.closest('th'));
+
+    //         // Sort rows based on the column and order
+    //         rows.sort(function(a, b) {
+    //             var cellA = a.children[columnIndex].textContent.trim();
+    //             var cellB = b.children[columnIndex].textContent.trim();
+
+    //             if (order === 'asc') {
+    //                 return cellA.localeCompare(cellB, undefined, {numeric: true, sensitivity: 'base'});
+    //             } else {
+    //                 return cellB.localeCompare(cellA, undefined, {numeric: true, sensitivity: 'base'});
+    //             }
+    //         });
+
+    //         // Reorder rows
+    //         rows.forEach(function(row) {
+    //             tbody.appendChild(row);
+    //         });
+    //     });
+    // });
 
 </script>
 

@@ -6,6 +6,7 @@ load_dotenv()
 
 import json
 import datetime
+from hurry.filesize import size
 from .models import File
 from .scripts import user_file_path_utils
 
@@ -27,6 +28,7 @@ def handle_user_file_path_submit(request):
             fobj = File.objects.create(
                 user_directory_file_path = user_file_path,
                 current_file_path = di['current_image_file_path'],
+                current_file_name = di['current_image_file_name'],
 
                 entity_type = di['entity_type'],
                 primary_category = di['primary_category'],
@@ -54,17 +56,21 @@ def file_view(request):
     category_dict = {}
     for fn_obj in file_objects:
         ctg = fn_obj.primary_category
-        fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d %H:%M")
-        fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d %H:%M")
-        fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d %H:%M")
+        fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
+        fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
+        fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
+
+        file_size_string = size(fn_obj.file_size_in_bytes)
+        current_file_name_clean = (fn_obj.current_file_name).capitalize()
 
         if ctg in category_dict:
             tmp_dict = {
                 'entity_type': fn_obj.entity_type,
+                'file_name': current_file_name_clean,
                 'primary_category': fn_obj.primary_category,
                 'sub_categories': fn_obj.sub_categories,
                 
-                'file_size_in_bytes': fn_obj.file_size_in_bytes,
+                'file_size_string': file_size_string,
                 'file_last_access_time': fn_last_access_time,
                 'file_created_at_date_time': fn_created_at_time,
                 'file_modified_at_date_time': fn_modified_at_time,
@@ -76,10 +82,11 @@ def file_view(request):
             # category_dict[ctg] = [fn_obj]
             tmp_dict = {
                 'entity_type': fn_obj.entity_type,
+                'file_name': current_file_name_clean,
                 'primary_category': fn_obj.primary_category,
                 'sub_categories': fn_obj.sub_categories,
                 
-                'file_size_in_bytes': fn_obj.file_size_in_bytes,
+                'file_size_string': file_size_string,
                 'file_last_access_time': fn_last_access_time,
                 'file_created_at_date_time': fn_created_at_time,
                 'file_modified_at_date_time': fn_modified_at_time,
@@ -191,4 +198,3 @@ def file_view(request):
 
 #     model_output = chat_completion.choices[0].message.content
 #     return model_output
-
