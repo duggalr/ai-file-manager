@@ -53,156 +53,93 @@ def home(request):
 def file_view(request):
     file_objects = File.objects.all()
 
-    category_dict = {}
+    # category_dict = {}
+    # entity_type_dict = {}
+    # for fn_obj in file_objects:
+
+    #     file_size_string = size(fn_obj.file_size_in_bytes)
+    #     current_file_name_clean = (fn_obj.current_file_name).capitalize()
+    #     fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
+    #     fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
+    #     fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
+
+    #     file_dict = {
+    #         'user_directory_file_path': fn_obj.user_directory_file_path,
+    #         'current_file_path': fn_obj.current_file_path,
+    #         'current_file_name': current_file_name_clean,
+
+    #         'entity_type': fn_obj.entity_type,
+    #         'primary_category': fn_obj.primary_category,
+    #         'sub_categories': fn_obj.sub_categories,
+    #         'file_size_in_bytes': file_size_string,
+
+    #         'file_size_string': file_size_string,
+    #         'file_last_access_time': fn_last_access_time,
+    #         'file_created_at_date_time': fn_created_at_time,
+    #         'file_modified_at_date_time': fn_modified_at_time,
+    #     }
+
+    #     if fn_obj.entity_type in entity_type_dict:
+    #         entity_type_dict[fn_obj.entity_type].append(file_dict)
+    #     else:
+    #         entity_type_dict[fn_obj.entity_type] = [file_dict]
+
+    #     if fn_obj.primary_category in category_dict:
+    #         category_dict[fn_obj.primary_category].append(file_dict)
+    #     else:
+    #         category_dict[fn_obj.primary_category] = [file_dict]
+  
+    # category_rv = []
+    # for ctg in category_dict:
+    #     category_rv.append([ctg, category_dict[ctg]])
+
+    # sorted_category_list = sorted(category_rv, key=lambda x: len(x[1]), reverse=True)
+    # sorted_category_list_json = json.dumps(sorted_category_list)
+
+    # entity_type_rv = []
+    # for et in entity_type_dict:
+    #     entity_type_rv.append([et, entity_type_dict[et]])
+    
+    # sorted_entity_type_list = sorted(entity_type_rv, key=lambda x: len(x[1]), reverse=True)
+    # sorted_entity_type_list_json = json.dumps(sorted_entity_type_list)
+
+    # print(sorted_category_list_json)
+
+
+    entity_type_dict = {}
     for fn_obj in file_objects:
-        ctg = fn_obj.primary_category
-        fn_entity_type = fn_obj.entity_type
-
-        fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
-        fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
-        fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
-
-        file_size_string = size(fn_obj.file_size_in_bytes)
-        current_file_name_clean = (fn_obj.current_file_name).capitalize()
-
-        # if ctg in category_dict:
-        if fn_entity_type in category_dict:
-            tmp_dict = {
-                'entity_type': fn_obj.entity_type,
-                'file_name': current_file_name_clean,
-                'primary_category': fn_obj.primary_category,
-                'sub_categories': fn_obj.sub_categories,
-                
-                'file_size_string': file_size_string,
-                'file_last_access_time': fn_last_access_time,
-                'file_created_at_date_time': fn_created_at_time,
-                'file_modified_at_date_time': fn_modified_at_time,
-            }
-            # l = category_dict[ctg]
-            # l.append(tmp_dict)
-            # category_dict[ctg] = l
-
-            l = category_dict[fn_entity_type]
-            l.append(tmp_dict)
-            category_dict[fn_entity_type] = l
+        if fn_obj.entity_type in entity_type_dict:
+            entity_type_dict[fn_obj.entity_type].append(file_dict)
         else:
-            # category_dict[ctg] = [fn_obj]
-            tmp_dict = {
-                'entity_type': fn_obj.entity_type,
-                'file_name': current_file_name_clean,
-                'primary_category': fn_obj.primary_category,
-                'sub_categories': fn_obj.sub_categories,
-                
-                'file_size_string': file_size_string,
-                'file_last_access_time': fn_last_access_time,
-                'file_created_at_date_time': fn_created_at_time,
-                'file_modified_at_date_time': fn_modified_at_time,
-            }
-            # category_dict[ctg] = [tmp_dict]
-            category_dict[fn_entity_type] = [tmp_dict]
+            entity_type_dict[fn_obj.entity_type] = [{}]
 
-    rv = []
-    for ctg in category_dict:
-        rv.append([ctg, category_dict[ctg]])
+    # TODO: make efficent data structure to manage all breadcrumb navigation
 
-    sorted_list = sorted(rv, key=lambda x: len(x[1]), reverse=True)
-    sorted_list_json = json.dumps(sorted_list)
-
-    print(sorted_list_json)
-
-    return render(request, 'file_view.html', {
+    return render(request, 'new_file_view.html', {
         # 'file_objects': file_objects
-        'categorized_files': sorted_list,
-        'sorted_list_json': sorted_list_json
+        # 'categorized_files': sorted_list,
+        # 'sorted_list_json': sorted_list_json
+        
+        'entity_type_list': sorted_entity_type_list,
+        'category_list': sorted_category_list,
+        'sorted_entity_type_list_json': sorted_entity_type_list_json,
+        'sorted_category_list_json': sorted_category_list_json
     })
 
 
 
-# def read_file_content(file):
-#     try:
-#         if file.content_type.startswith('text'):
-#             return file.read().decode('utf-8')
-#         elif file.content_type == 'application/pdf':
-#             return extract_pdf_text(file)
-#         else:
-#             return "File type not supported for content extraction."
-#     except Exception as e:
-#         return str(e)
 
-# def extract_pdf_text(file):
-#     try:
-#         import PyPDF2
-#         reader = PyPDF2.PdfFileReader(file)
-#         text = ""
-#         for page_num in range(reader.getNumPages()):
-#             text += reader.getPage(page_num).extract_text()
-#         return text
-#     except Exception as e:
-#         return str(e)
-
-
-# @csrf_exempt
-# def upload_directory(request):
-#     if request.method == 'POST':
-#         uploaded_files = request.FILES.getlist('files[]')
-
-#         # Read contents of the files
-#         file_data = []
-#         for file in uploaded_files:
-#             file_content = read_file_content(file)
-#             file_data.append({
-#                 'name': file.name,
-#                 'type': file.content_type,
-#                 'content': file_content[:2000]  # Limit content to 2000 characters
-#             })
-
-#         # # Gather file information for GPT
-#         # file_info = [{'name': file.name, 'type': file.content_type} for file in uploaded_files]
-
-#         # # Use GPT to categorize files
-#         # categories = categorize_files_with_gpt(file_info)
-#         # print(categories)
-
-#         # # Print the files and their categories
-#         # for file, category in zip(uploaded_files, categories):
-#         #     print(f"File: {file.name}, Category: {category}")
-
-#         # Use GPT to categorize files based on content
-#         categories = categorize_files_with_gpt(file_data)
-#         print(categories)
-
-#         # # Print the files and their categories
-#         # for file, category in zip(uploaded_files, categories):
-#         #     print(f"File: {file.name}, Category: {category}")
-
-#         return JsonResponse({'status': 'success', 'categories': categories})
-
-#     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
-
-
-# def categorize_files_with_gpt(file_info):
-#     # Prepare the prompt for GPT
-#     prompt = "You are an AI that organizes files semantically. Here is a list of files with their names and types:\n\n"
+def filtered_type_view(request):
+    # Get the 'category' parameter from the GET request
+    category = request.GET.get('category', None)
     
-#     for file in file_info:
-#         prompt += f"- File Name: {file['name']}, File Type: {file['type']}\n"
+    # Print the category to the console (or handle it as needed)
+    print(f"Selected category: {category}")
     
-#     prompt += "\nPlease categorize these files into meaningful groups (e.g., Documents, Images, Books, etc.). Provide a list of categories corresponding to each file. Please return your response in JSON format."
+    # # For demonstration, just return the selected category in the response
+    # return HttpResponse(f"Category selected: {category}")
 
-#     client = OpenAI(
-#         # This is the default and can be omitted
-#         api_key = os.environ.get("OPENAI_API_KEY"),
-#     )
+    return render(request, 'filtered_type_view.html', {
+        'selected_category': category
+    })
 
-#     chat_completion = client.chat.completions.create(
-#         messages=[
-#             {
-#                 "role": "user",
-#                 "content": prompt,
-#             }
-#         ],
-#         model = "gpt-4o-2024-05-13",
-#     )
-
-#     model_output = chat_completion.choices[0].message.content
-#     return model_output

@@ -80,23 +80,23 @@
 
 
     .resizable {
-    position: relative;
-    cursor: col-resize;
-}
+        position: relative;
+        cursor: col-resize;
+    }
 
-.resize-handle {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    cursor: col-resize;
-    background-color: transparent;
-}
+    .resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        cursor: col-resize;
+        background-color: transparent;
+    }
 
-.resizable:hover .resize-handle {
-    background-color: rgba(255, 255, 255, 0.2);
-}
+    .resizable:hover .resize-handle {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
 
 </style>
 
@@ -190,8 +190,8 @@
 
 
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-2xl font-bold">
-                Categories
+            <h3 id="categories-title" class="text-2xl font-bold">
+                Types
             </h3>
         
             <!-- Dropdown Menu -->
@@ -204,14 +204,14 @@
                     </svg>
                 </button>
                 <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entity</li>
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Sub-categories</li>
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
                 </ul>
             </div>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
-            {% for l in categorized_files %}
+            {% for l in entity_type_list %}
                 <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.0 }}">
                     <h2 class="text-xl font-bold mb-2">
                         {{ l.0 }}
@@ -221,128 +221,36 @@
             {% endfor %}
         </div>
 
-
-        <!-- <h3 class="text-2xl font-bold mb-4">
-            Categories
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
-
-            {% for l in categorized_files %}
-
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.0 }}">                    
-                    <h2 class="text-xl font-bold mb-2">
-                        {{ l.0 }}
-                    </h2>
-                    <p class="text-gray-400">{{ l.1|length }} Files</p>
-                </div>
-
-            {% endfor %}
-
-        </div> -->
-
-
-        <!-- <div class="mt-8">
-            <h3 id="recent-files-header" class="text-2xl font-bold mb-4">
-                Recent Files
-            </h3>
-
-            <div class="mb-8">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">Files</h2>
-                    <a href="#" class="text-blue-400">View All</a>
-                </div>
-                <div class="bg-gray-800 rounded-lg mt-4">
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full table-auto" id="file-table">
-                            <thead>
-                                <tr>
-                                    <th class="resizable px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Name
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Type 
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Size 
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Last Modified
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Sub Categories
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-gray-800">
-                                <tr>
-                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Document</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
-                                </tr>
-                                <tr>
-                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Image</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
-                                </tr>
-                                <tr>
-                                    <td class="resizable px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
-                                    <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-
-        </div> -->
-
     </main>
 
 </div>
 
-<input type="hidden" value="{{ sorted_list_json }}" id="categorized_file_input"/>
-
+<input type="hidden" value="{{ sorted_entity_type_list_json }}" id="entity_file_input"/>
+<input type="hidden" value="{{ sorted_category_list_json }}" id="categorized_file_input"/>
 
 <script>
+
     // Get the categorized files from the hidden input
-    let sorted_file_list = JSON.parse(document.getElementById('categorized_file_input').value);
-    console.log('slist:', sorted_file_list);
+    let sorted_category_file_list = JSON.parse(document.getElementById('categorized_file_input').value);
+    let sorted_entity_type_list = JSON.parse(document.getElementById('entity_file_input').value);
+    
+    // TODO: add the 2 lists and on click of the category card, filter the files based on the selected category
+        // go from there to implementing the dropdown selection with the cards changing and on card click, the new webpage with the files
 
     let file_category_dict = {};
-    for (let i = 0; i < sorted_file_list.length; i++) {
-        let sub_list = sorted_file_list[i];
+    for (let i = 0; i < sorted_category_file_list.length; i++) {
+        let sub_list = sorted_category_file_list[i];
         file_category_dict[sub_list[0]] = sub_list[1];
     }
     console.log('ctg-dict:', file_category_dict);
+
+    let file_entity_type_dict = {};
+    for (let i=0; i < sorted_entity_type_list.length; i++) {
+        let sub_list = sorted_entity_type_list[i];
+        file_entity_type_dict[sub_list[0]] = sub_list[1];
+    }
+    console.log('entity-dict:', file_entity_type_dict);
+
 
     // Function to render files in the table based on the selected category
     function renderFiles(category) {
@@ -457,132 +365,81 @@
         menu.classList.toggle('hidden');
     });
 
+
     document.querySelectorAll('#viewDropdownMenu li').forEach(item => {
         item.addEventListener('click', function () {
-            // const dropdownText = document.querySelector('#viewDropdown span');
-            // dropdownText.textContent = 'View by: ' + this.textContent;
-            
-            // // Add your logic to filter or change the view here.
-            // // For example, you could add a class or attribute to category-list 
-            // // and apply the filter via CSS or JS.
-            
-            // // Hide the menu after selection
-            // document.getElementById('viewDropdownMenu').classList.add('hidden');
 
             // TODO: go from here to implementing the dropdown selection with the cards changing;
             const dropdownText = document.querySelector('#viewDropdown span');
             const selectedView = this.textContent;
             dropdownText.textContent = 'View by: ' + selectedView;
 
+            console.log('selected:', selectedView);
+
+            $('#category-list').empty();
+
+            if (selectedView == 'Entities'){
+
+                // <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.0 }}">
+                //     <h2 class="text-xl font-bold mb-2">
+                //         {{ l.0 }}
+                //     </h2>
+                //     <p class="text-gray-400">{{ l.1|length }} Files</p>
+                // </div>
+
+                for (var key in file_entity_type_dict) {
+
+                    console.log('key:', key);
+
+                    let card_div_elem = document.createElement('div')
+                    card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                    let h2_elem = document.createElement('h2')
+                    h2_elem.className = 'text-xl font-bold mb-2';
+                    h2_elem.textContent = key;
+                    let p_elem = document.createElement('p')
+                    p_elem.className = 'text-gray-400';
+                    p_elem.textContent = file_entity_type_dict[key].length + ' Files';
+
+                    $(card_div_elem).append(h2_elem);
+                    $(card_div_elem).append(p_elem);
+                    $('#category-list').append(card_div_elem);
+
+                }
+
+                
+
+            } else {
+
+                for (var key in file_category_dict) {
+                    console.log('key:', key);
+
+                    let card_div_elem = document.createElement('div')
+                    card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                    let h2_elem = document.createElement('h2')
+                    h2_elem.className = 'text-xl font-bold mb-2';
+                    h2_elem.textContent = key;
+                    let p_elem = document.createElement('p')
+                    p_elem.className = 'text-gray-400';
+                    p_elem.textContent = file_category_dict[key].length + ' Files';
+
+                    $(card_div_elem).append(h2_elem);
+                    $(card_div_elem).append(p_elem);
+                    $('#category-list').append(card_div_elem);
+
+                }
+
+            }
+
             // Change the h3 title based on the dropdown selection
             const categoriesTitle = document.getElementById('categories-title');
-            categoriesTitle.textContent = selectedView + ' Categories';
+            // categoriesTitle.textContent = selectedView + ' Categories';
+            categoriesTitle.textContent = selectedView;
 
             // Hide the menu after selection
             document.getElementById('viewDropdownMenu').classList.add('hidden');
 
-            // Additional logic can be added here to update the category view
-
         });
     });
-
-
-
-
-
-    // let file_category_dict = {};
-    // for (i=0; i<=sorted_file_list.length-1; i++){
-    //     let sub_list = sorted_file_list[i];
-    //     file_category_dict[sub_list[0]] = sub_list[1];
-    // }
-    // console.log('ctg-dict:', file_category_dict);
-
-    // // Function to render files in the "Recent Files" section
-    // function renderFiles(category) {
-
-    //     const category_files = file_category_dict[category];
-
-    //     document.getElementById('recent-files-header').textContent = category + " Files";
-    //     const fileList = document.getElementById('recent-files-list');
-    //     fileList.innerHTML = ''; // Clear any existing files
-
-    //     if (category_files) {
-    //         // const files = categoryData[1]; // Array of file objects
-    //         category_files.forEach(file => {
-    //             console.log('file-info:', file)
-    //             const fileElement = document.createElement('li');
-    //             fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
-    //             fileElement.innerHTML = `
-    //                 <span>${file['entity_type']}</span>
-    //                 <span class="text-gray-400">temp</span>
-    //             `;
-    //             fileList.appendChild(fileElement);
-    //         });
-    //     }
-
-    //     // // Find the category in the sorted_file_list
-    //     // const categoryData = sorted_file_list.find(item => item[0] === category);
-
-    //     // // Update the header to the selected category
-    //     // document.getElementById('recent-files-header').textContent = category;
-
-    //     // // Get the file list element
-    //     // const fileList = document.getElementById('recent-files-list');
-    //     // fileList.innerHTML = ''; // Clear any existing files
-
-    //     // // If the category was found, populate the files
-    //     // if (categoryData) {
-    //     //     const files = categoryData[1]; // Array of file objects
-    //     //     files.forEach(file => {
-    //     //         const fileElement = document.createElement('li');
-    //     //         fileElement.className = 'bg-gray-800 p-3 rounded-lg shadow-md flex justify-between items-center';
-    //     //         fileElement.innerHTML = `
-    //     //             <span>${file.entity_type}</span>
-    //     //             <span class="text-gray-400">${file.primary_key}</span>
-    //     //         `;
-    //     //         fileList.appendChild(fileElement);
-    //     //     });
-    //     // }
-    // }
-
-    // // Add click event listeners to each category card
-    // document.querySelectorAll('.category-card').forEach(card => {
-    //     card.addEventListener('click', function() {
-    //         const category = this.dataset.category;
-    //         renderFiles(category);
-    //     });
-    // });
-
-
-    // // Sorting functionality
-    // document.querySelectorAll('.sort-arrow').forEach(function(arrow) {
-    //     arrow.addEventListener('click', function() {
-    //         var order = this.getAttribute('data-order');
-    //         var column = this.closest('th').textContent.trim();
-    //         var tbody = this.closest('table').querySelector('tbody');
-    //         var rows = Array.from(tbody.querySelectorAll('tr'));
-
-    //         // Determine the column index
-    //         var columnIndex = Array.from(this.closest('tr').children).indexOf(this.closest('th'));
-
-    //         // Sort rows based on the column and order
-    //         rows.sort(function(a, b) {
-    //             var cellA = a.children[columnIndex].textContent.trim();
-    //             var cellB = b.children[columnIndex].textContent.trim();
-
-    //             if (order === 'asc') {
-    //                 return cellA.localeCompare(cellB, undefined, {numeric: true, sensitivity: 'base'});
-    //             } else {
-    //                 return cellB.localeCompare(cellA, undefined, {numeric: true, sensitivity: 'base'});
-    //             }
-    //         });
-
-    //         // Reorder rows
-    //         rows.forEach(function(row) {
-    //             tbody.appendChild(row);
-    //         });
-    //     });
-    // });
 
 </script>
 
