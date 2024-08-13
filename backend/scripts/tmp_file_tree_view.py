@@ -33,13 +33,13 @@ django.setup()
 
 from backend.models import *
 
-# Function to build the category tree
-def build_category_tree(files):
-    category_tree = defaultdict(lambda: {'files': [], 'sub_categories': defaultdict()})
+
+def build_search_tree(files):
+    search_tree = defaultdict(lambda: {'files': [], 'sub_categories': defaultdict()})
     
     for file in files:
         # Initialize the root node for the entity type if it doesn't exist
-        node = category_tree[file.entity_type]
+        node = search_tree[file.entity_type]
         
         # If primary category exists, initialize if necessary and move into it
         if file.primary_category:
@@ -56,7 +56,7 @@ def build_category_tree(files):
         # Append the file to the current node's files list
         node['files'].append(file.current_file_name)  
 
-    return category_tree
+    return search_tree
 
 
 # # # Build the tree
@@ -66,20 +66,24 @@ def build_category_tree(files):
 # # import pprint
 # # pprint.pprint(category_tree, width=80, sort_dicts=False)
 
-file_objects = File.objects.all()
-print(f"Number of file objects: {len(file_objects)}")
+# file_objects = File.objects.all()
+# print(f"Number of file objects: {len(file_objects)}")
 
-entity_tree = build_category_tree(
-    file_objects
-)
-# # Print the tree for visualization
-# import pprint
-# # pprint.pprint(category_tree, width=80, sort_dicts=False)
-# for k in entity_category_tree:
-#     print(k)
+# entity_tree = build_search_tree(
+#     file_objects
+# )
+# # # Print the tree for visualization
+# # import pprint
+# # # pprint.pprint(category_tree, width=80, sort_dicts=False)
+# # for k in entity_category_tree:
+# #     print(k)
 
-# primary_category_tree = build_category_tree()
+# # primary_category_tree = build_category_tree()
 
-# TODO: 
-    # build the primary category and entity trees
-        # integrate in frontned and finalize the functionaltiy with the breadcrumbs (back/forward, view-switching, etc.)
+# # TODO: 
+#     # build the primary category and entity trees
+#         # integrate in frontend and finalize the functionaltiy with the breadcrumbs (back/forward, view-switching, etc.)
+
+
+# select * from backend_file where entity_type = 'Entity1' and primary_category = 'Category1' and sub_categories = 'Sub1' and user_id = 1;
+

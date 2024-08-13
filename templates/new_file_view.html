@@ -170,12 +170,6 @@
 
     <main class="flex-1 p-6 px-8">
         
-        <!-- Breadcrumb Section -->
-        <nav class="breadcrumb">
-            <a href="#" id="breadcrumb-home">Home</a>
-            <span id="breadcrumb-current"></span>
-        </nav>
-
         <!-- Search Bar -->
         <div class="mb-6 flex justify-center">
             <input 
@@ -193,6 +187,52 @@
                 Search
             </button>
         </div>
+
+        
+        <!-- Breadcrumb Section -->
+        <nav class="flex" aria-label="Breadcrumb">
+
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse" id="breadcrumb-list">
+                
+                <!-- <li aria-current="page"> -->
+                <li class="inline-flex items-center">
+                    <div class="flex items-center">
+                        <!-- <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                        </svg> -->
+                        <!-- <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Flowbite</span> -->
+                        <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                            Home
+                        </a>                        
+                    </div>
+                </li>
+
+                <!-- <li class="inline-flex items-center"> -->
+                    <!-- <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                    Home
+                    </a> -->
+                    <!-- <div class="flex items-center">
+                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Home</span>
+                    </div> -->
+                <!-- </li> -->
+                <!-- <li>
+                    <div class="flex items-center">
+                    <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <a href="#" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Projects</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                    <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">Flowbite</span>
+                    </div>
+                </li> -->
+            </ol>
+        </nav>
 
         <div class="flex items-center justify-between mb-4">
             <h3 id="categories-title" class="text-2xl font-bold">
@@ -217,12 +257,12 @@
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
-            {% for l in entity_type_list %}
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.0 }}">
+            {% for l in entity_type_and_file_count %}
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="{{ l.entity_type }}">
                     <h2 class="text-xl font-bold mb-2">
-                        {{ l.0 }}
+                          {{ l.entity_type }}
                     </h2>
-                    <p class="text-gray-400">{{ l.1|length }} Files</p>
+                    <p class="text-gray-400">{{ l.file_count }} Files</p>
                 </div>
             {% endfor %}
         </div>
@@ -231,29 +271,202 @@
 
 </div>
 
-<input type="hidden" value="{{ sorted_entity_type_list_json }}" id="entity_file_input"/>
-<input type="hidden" value="{{ sorted_category_list_json }}" id="categorized_file_input"/>
-
 
 <script>
 
-    // Get the categorized files from the hidden input
-    let sorted_category_file_list = JSON.parse(document.getElementById('categorized_file_input').value);
-    let sorted_entity_type_list = JSON.parse(document.getElementById('entity_file_input').value);
-    
-    let file_category_dict = {};
-    for (let i = 0; i < sorted_category_file_list.length; i++) {
-        let sub_list = sorted_category_file_list[i];
-        file_category_dict[sub_list[0]] = sub_list[1];
-    }
-    console.log('ctg-dict:', file_category_dict);
 
-    let file_entity_type_dict = {};
-    for (let i=0; i < sorted_entity_type_list.length; i++) {
-        let sub_list = sorted_entity_type_list[i];
-        file_entity_type_dict[sub_list[0]] = sub_list[1];
-    }
-    console.log('entity-dict:', file_entity_type_dict);
+    $(document).ready(function() {
+
+        $('.category-card').on('click', function() {
+            var filter_value = $(this).data('category');
+            var selectedView = $('#viewDropdown').text().trim();
+
+            let final_selected_value;
+            if (selectedView.includes('Entity') === true){
+                final_selected_value = 'entity';
+            } else {
+                console.log('Category selected:', filter_value);
+                final_selected_value = 'category';
+            }
+
+            $.ajax({
+                url: '{% url "handle_filtering_file_data" %}',
+                type: 'POST',
+                data: {
+                    'view_type': final_selected_value,
+                    'filter_value': filter_value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for security
+                },
+                success: function(response) {
+                    // console.log('Category sent successfully:', response);
+                    console.log('data:', response);
+
+                    if (response['success'] === true){
+
+                        $('#category-list').empty();
+
+                        let filtered_file_count = response['filtered_file_count'];
+                        let filtered_file_objects = response['filtered_file_objects'];
+                     
+                        // Update the category list
+                        for (let i = 0; i < filtered_file_count.length; i++) {
+                            let file_count_dict = filtered_file_count[i];
+                            console.log('file:', file_count_dict);
+
+                            let card_div_elem = document.createElement('div');
+                            card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                            let h2_elem = document.createElement('h2');
+                            h2_elem.className = 'text-xl font-bold mb-2';
+                            h2_elem.textContent = file_count_dict['primary_text'];
+                            let p_elem = document.createElement('p');
+                            p_elem.className = 'text-gray-400';
+                            p_elem.textContent = file_count_dict['file_count'] + ' Files';
+                            
+                            $(card_div_elem).append(h2_elem);
+                            $(card_div_elem).append(p_elem);
+                            $('#category-list').append(card_div_elem);
+                        }
+
+                        // Update the breadcrumb list
+                        let breadcrumb_list = document.getElementById('breadcrumb-list');
+                        let child_list_elem = document.createElement('li');
+                        child_list_elem.className = 'inline-flex items-center';
+
+                        let div_elem = document.createElement('div');
+                        div_elem.className = 'flex items-center';
+
+                        // Create the SVG element
+                        let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
+                        svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
+                        svg_elem.setAttribute('aria-hidden', 'true');
+                        svg_elem.setAttribute('fill', 'none');
+                        svg_elem.setAttribute('viewBox', '0 0 6 10');
+
+                        // Create the path element inside the SVG
+                        let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
+                        path_elem.setAttribute('stroke', 'currentColor');
+                        path_elem.setAttribute('stroke-linecap', 'round');
+                        path_elem.setAttribute('stroke-linejoin', 'round');
+                        path_elem.setAttribute('stroke-width', '2');
+                        path_elem.setAttribute('d', 'm1 9 4-4-4-4');
+
+                        // Append the path to the SVG
+                        svg_elem.appendChild(path_elem);
+                        div_elem.appendChild(svg_elem);
+                        let a_elem = document.createElement('a');
+                        a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
+                        a_elem.textContent = filter_value;
+                        div_elem.appendChild(a_elem);
+                        child_list_elem.appendChild(div_elem);
+                        breadcrumb_list.appendChild(child_list_elem);
+
+                    }
+
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error occurred:', error);
+                }
+            });
+
+        });
+
+
+        document.getElementById('viewDropdown').addEventListener('click', function () {
+            const menu = document.getElementById('viewDropdownMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#viewDropdownMenu li').forEach(item => {
+            item.addEventListener('click', function () {
+
+                // TODO: go from here to implementing the dropdown selection with the cards changing;
+                const dropdownText = document.querySelector('#viewDropdown span');
+                const selectedView = this.textContent;
+                dropdownText.textContent = 'View by: ' + selectedView;
+                console.log('selected:', selectedView);
+                // $('#category-list').empty();
+
+                // if (selectedView == 'Entities'){
+
+                //     for (var key in file_entity_type_dict) {
+
+                //         console.log('key:', key);
+
+                //         let card_div_elem = document.createElement('div')
+                //         card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                //         let h2_elem = document.createElement('h2')
+                //         h2_elem.className = 'text-xl font-bold mb-2';
+                //         h2_elem.textContent = key;
+                //         let p_elem = document.createElement('p')
+                //         p_elem.className = 'text-gray-400';
+                //         p_elem.textContent = file_entity_type_dict[key].length + ' Files';
+
+                //         $(card_div_elem).append(h2_elem);
+                //         $(card_div_elem).append(p_elem);
+                //         $('#category-list').append(card_div_elem);
+
+                //     }
+                    
+                // } else {
+
+                //     for (var key in file_category_dict) {
+                //         console.log('key:', key);
+
+                //         let card_div_elem = document.createElement('div')
+                //         card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                //         let h2_elem = document.createElement('h2')
+                //         h2_elem.className = 'text-xl font-bold mb-2';
+                //         h2_elem.textContent = key;
+                //         let p_elem = document.createElement('p')
+                //         p_elem.className = 'text-gray-400';
+                //         p_elem.textContent = file_category_dict[key].length + ' Files';
+
+                //         $(card_div_elem).append(h2_elem);
+                //         $(card_div_elem).append(p_elem);
+                //         $('#category-list').append(card_div_elem);
+
+                //     }
+
+                // }
+
+                // // Change the h3 title based on the dropdown selection
+                // const categoriesTitle = document.getElementById('categories-title');
+                // // categoriesTitle.textContent = selectedView + ' Categories';
+                // categoriesTitle.textContent = selectedView;
+
+                // // Hide the menu after selection
+                // document.getElementById('viewDropdownMenu').classList.add('hidden');
+
+            });
+        });
+
+
+    });
+    
+
+
+    
+
+    // // Get the categorized files from the hidden input
+    // let sorted_category_file_list = JSON.parse(document.getElementById('categorized_file_input').value);
+    // let sorted_entity_type_list = JSON.parse(document.getElementById('entity_file_input').value);
+    
+    // let file_category_dict = {};
+    // for (let i = 0; i < sorted_category_file_list.length; i++) {
+    //     let sub_list = sorted_category_file_list[i];
+    //     file_category_dict[sub_list[0]] = sub_list[1];
+    // }
+    // console.log('ctg-dict:', file_category_dict);
+
+    // let file_entity_type_dict = {};
+    // for (let i=0; i < sorted_entity_type_list.length; i++) {
+    //     let sub_list = sorted_entity_type_list[i];
+    //     file_entity_type_dict[sub_list[0]] = sub_list[1];
+    // }
+    // console.log('entity-dict:', file_entity_type_dict);
+
+
+
 
 </script>
 

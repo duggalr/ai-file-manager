@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count, F
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -51,8 +52,7 @@ def home(request):
 
 
 def file_view(request):
-    file_objects = File.objects.all()
-
+    # file_objects = File.objects.all()
     # category_dict = {}
     # entity_type_dict = {}
     # for fn_obj in file_objects:
@@ -102,44 +102,84 @@ def file_view(request):
     
     # sorted_entity_type_list = sorted(entity_type_rv, key=lambda x: len(x[1]), reverse=True)
     # sorted_entity_type_list_json = json.dumps(sorted_entity_type_list)
+    # # print(sorted_category_list_json)
 
-    # print(sorted_category_list_json)
+    # # TODO: make efficent data structure to manage all breadcrumb navigation
 
-
-    entity_type_dict = {}
-    for fn_obj in file_objects:
-        if fn_obj.entity_type in entity_type_dict:
-            entity_type_dict[fn_obj.entity_type].append(file_dict)
-        else:
-            entity_type_dict[fn_obj.entity_type] = [{}]
-
-    # TODO: make efficent data structure to manage all breadcrumb navigation
+    # file_objects = File.objects.all()
+    entity_type_and_file_count = File.objects.values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+    print(entity_type_and_file_count)
 
     return render(request, 'new_file_view.html', {
         # 'file_objects': file_objects
         # 'categorized_files': sorted_list,
         # 'sorted_list_json': sorted_list_json
         
-        'entity_type_list': sorted_entity_type_list,
-        'category_list': sorted_category_list,
-        'sorted_entity_type_list_json': sorted_entity_type_list_json,
-        'sorted_category_list_json': sorted_category_list_json
+        # 'entity_type_list': sorted_entity_type_list,
+        # 'category_list': sorted_category_list,
+        # 'sorted_entity_type_list_json': sorted_entity_type_list_json,
+        # 'sorted_category_list_json': sorted_category_list_json
+
+        'entity_type_and_file_count': entity_type_and_file_count
     })
 
 
 
+from django.core import serializers
 
-def filtered_type_view(request):
-    # Get the 'category' parameter from the GET request
-    category = request.GET.get('category', None)
-    
-    # Print the category to the console (or handle it as needed)
-    print(f"Selected category: {category}")
-    
-    # # For demonstration, just return the selected category in the response
-    # return HttpResponse(f"Category selected: {category}")
 
-    return render(request, 'filtered_type_view.html', {
-        'selected_category': category
-    })
+def handle_filtering_file_data(request):
+    if request.method == 'POST':
+        filter_value = request.POST['filter_value'].strip()
+        view_type = request.POST['view_type'].strip()
+        print('category:', filter_value, view_type)
+
+        if view_type == 'entity':
+            filtered_file_objects = File.objects.filter(
+                entity_type = filter_value
+            )
+            print('count:', len(filtered_file_objects))
+            filtered_file_count = File.objects.filter(
+                entity_type = filter_value).annotate(
+                primary_text=F('primary_category')).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+            
+        else:
+            filtered_file_objects = File.objects.filter(
+                primary_category = filter_value
+            )
+            filtered_file_count = File.objects.filter(
+                primary_category = filter_value).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+        
+        serialized_file_objects = []
+        for fn_obj in filtered_file_objects:
+            file_size_string = size(fn_obj.file_size_in_bytes)
+            current_file_name_clean = (fn_obj.current_file_name).capitalize()
+            fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
+            fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
+            fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
+
+            file_dict = {
+                'user_directory_file_path': fn_obj.user_directory_file_path,
+                'current_file_path': fn_obj.current_file_path,
+                'current_file_name': current_file_name_clean,
+
+                'entity_type': fn_obj.entity_type,
+                'primary_category': fn_obj.primary_category,
+                'sub_categories': fn_obj.sub_categories,
+                'file_size_in_bytes': file_size_string,
+
+                'file_size_string': file_size_string,
+                'file_last_access_time': fn_last_access_time,
+                'file_created_at_date_time': fn_created_at_time,
+                'file_modified_at_date_time': fn_modified_at_time,
+            }
+            serialized_file_objects.append(file_dict)
+
+        serialized_file_count = list(filtered_file_count)
+
+        return JsonResponse({
+            'success': True,
+            'filtered_file_objects': serialized_file_objects,
+            'filtered_file_count': serialized_file_count
+        })
 
