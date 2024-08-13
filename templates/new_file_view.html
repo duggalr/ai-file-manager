@@ -205,12 +205,11 @@
             </ol>
         </nav>
 
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between mb-4" id="primary_section_sub_header">
             <h3 id="categories-title" class="text-2xl font-bold">
                 Types
             </h3>
         
-            <!-- Dropdown Menu -->
             <div class="relative">
                 <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
                     <span>View by: Entity</span>
@@ -236,6 +235,73 @@
                     <p class="text-gray-400">{{ l.file_count }} Files</p>
                 </div>
             {% endfor %}
+        </div>
+
+
+        <!-- File List -->
+        <div id="file-list-primary-div" class="mt-8 hidden">
+            <!-- <h3 id="file-table-list-header" class="text-2xl font-bold mb-4">
+                Recent Files
+            </h3> -->
+
+            <div class="mb-8">
+                <!-- <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-semibold">Files</h2>
+                    <a href="#" class="text-blue-400">View All</a>
+                </div> -->
+
+                <div class="bg-gray-800 rounded-lg mt-4">
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto" id="file-table">
+                            <thead>
+                                <tr>
+                                    <th class="resizable px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Name
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Type 
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Size 
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Last Modified
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                        Sub Categories
+                                        <span class="sort-arrows">
+                                            <span class="sort-arrow" data-order="asc">▲</span>
+                                            <span class="sort-arrow" data-order="desc">▼</span>
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="file-list-tbody" class="bg-gray-800"> 
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
     </main>
@@ -277,26 +343,111 @@
         
         // TODO: should be categories coming here and also, updating global view type to category and dropdown
         let filtered_file_count = data['filtered_file_count'];
+        let filtered_file_objects_list = data['filtered_file_objects'];
 
-        // Update the category list
-        for (let i = 0; i < filtered_file_count.length; i++) {
-            let file_count_dict = filtered_file_count[i];
-            console.log('file:', file_count_dict);
+        if (filtered_file_count === null){
 
-            let card_div_elem = document.createElement('div');
-            card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
-            card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
+            // TODO: File List View Update
+                // <tr>
+                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Document</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
+                // </tr>
+                // <tr>
+                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Image</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
+                // </tr>
+                // <tr>
+                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
+                //     <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
+                // </tr>
 
-            let h2_elem = document.createElement('h2');
-            h2_elem.className = 'text-xl font-bold mb-2';
-            h2_elem.textContent = file_count_dict['primary_text'];
-            let p_elem = document.createElement('p');
-            p_elem.className = 'text-gray-400';
-            p_elem.textContent = file_count_dict['file_count'] + ' Files';
+            // $('#file-list-tbody').clear();
+
+            $('#primary_section_sub_header').addClass('hidden');
+            for (i=0; i < filtered_file_objects_list.length; i++) {
+                let current_file_rw = filtered_file_objects_list[i];
+                console.log('current-file-row:', current_file_rw);
+
+                let tb_row = document.createElement('tr');
+                
+                let tb_data = document.createElement('td');
+                tb_data.className = 'resizable px-4 py-2 text-sm text-gray-300';
+                tb_data.textContent = current_file_rw['current_file_name'];
+
+                let tb_data_2 = document.createElement('td');
+                tb_data_2.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_2.textContent = current_file_rw['entity_type'];
+
+                let tb_data_3 = document.createElement('td');
+                tb_data_3.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_3.textContent = current_file_rw['file_size_in_bytes'];
+
+                let tb_data_4 = document.createElement('td');
+                tb_data_4.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_4.textContent = current_file_rw['file_modified_at_date_time'];
+
+                let tb_data_5 = document.createElement('td');
+                tb_data_5.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_5.textContent = current_file_rw['sub_categories'].join(', ');
+                
+                // // console.log('sub-t:', current_file_rw['sub_categories'])
+                // let sub_category_array = current_file_rw['sub_categories'];
+                // console.log('sub-category-array:', sub_category_array);
+                // for (y=0; y <= sub_category_array.length-1; y++) {
+                //     // tb_data_5.textContent += sub_category_array[y] + ', ';
+                //     // <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400 border border-gray-500">Dark</span>
+                //     let span_elem = document.createElement('span');
+                //     span_elem.className = 'bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400 border border-gray-500';
+                //     span_elem.textContent = sub_category_array[y];
+                //     tb_data_5.appendChild(span_elem);
+                // }
+
+                $(tb_row).append(tb_data);
+                $(tb_row).append(tb_data_2);
+                $(tb_row).append(tb_data_3);
+                $(tb_row).append(tb_data_4);
+                $(tb_row).append(tb_data_5);
+
+                $('#file-list-tbody').append(tb_row);
+                $('#file-list-primary-div').removeClass('hidden');
+
+            }
+
+        } else {
+
+            // Update the category list
+            for (let i = 0; i < filtered_file_count.length; i++) {
+                let file_count_dict = filtered_file_count[i];
+                console.log('file:', file_count_dict);
+
+                let card_div_elem = document.createElement('div');
+                card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
+
+                let h2_elem = document.createElement('h2');
+                h2_elem.className = 'text-xl font-bold mb-2';
+                h2_elem.textContent = file_count_dict['primary_text'];
+                let p_elem = document.createElement('p');
+                p_elem.className = 'text-gray-400';
+                p_elem.textContent = file_count_dict['file_count'] + ' Files';
+                
+                $(card_div_elem).append(h2_elem);
+                $(card_div_elem).append(p_elem);
+                $('#category-list').append(card_div_elem);
+            }
+
             
-            $(card_div_elem).append(h2_elem);
-            $(card_div_elem).append(p_elem);
-            $('#category-list').append(card_div_elem);
+
+
         }
 
         // // // Update the breadcrumb list
@@ -436,7 +587,6 @@
                     div_elem.appendChild(a_elem);
                     child_list_elem.appendChild(div_elem);
                     breadcrumb_list.appendChild(child_list_elem);
-
 
                     globalViewType = response['global_view_type'];
 

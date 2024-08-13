@@ -170,22 +170,27 @@ def handle_filtering_file_data(request):
 
         filtered_file_objects = File.objects.filter(**filters)
 
-        print(f"GLOBAL FILTER VALUE: {original_filter_value}")
+        print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
 
-        if original_filter_value == 'entity':
-            filtered_file_count = File.objects.filter(
-                **filters
-            ).annotate(
-                primary_text=F('primary_category')
-            ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
-        
-        elif original_filter_value == 'category':
-            filtered_file_count = File.objects.filter(
-                **filters
-            ).annotate(
-                primary_text=F('entity_type')
-            ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+        if len(filtered_entity_list_values) > 0 and len(filtered_category_list_values) > 0:
+            filtered_file_count = None
+            serialized_file_count = None
+        else:
+            if original_filter_value == 'entity':
+                filtered_file_count = File.objects.filter(
+                    **filters
+                ).annotate(
+                    primary_text=F('primary_category')
+                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+            
+            elif original_filter_value == 'category':
+                filtered_file_count = File.objects.filter(
+                    **filters
+                ).annotate(
+                    primary_text=F('entity_type')
+                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
 
+            serialized_file_count = list(filtered_file_count)
 
         serialized_file_objects = []
         for fn_obj in filtered_file_objects:
@@ -212,7 +217,6 @@ def handle_filtering_file_data(request):
             }
             serialized_file_objects.append(file_dict)
 
-        serialized_file_count = list(filtered_file_count)
 
         return JsonResponse({
             'success': True,
@@ -220,9 +224,6 @@ def handle_filtering_file_data(request):
             'filtered_file_count': serialized_file_count,
             'global_view_type': global_filter_type_value
         })
-
-
-
 
 
 
