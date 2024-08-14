@@ -210,9 +210,23 @@
                 Types
             </h3>
         
-            <div class="relative">
+            <!-- <div class="relative">
                 <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
                     <span>View by: Entity</span>
+                    <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M0 0h20v20H0z" fill="none"/>
+                        <path d="M10 12l-4-4h8l-4 4z"/>
+                    </svg>
+                </button>
+                <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
+                </ul>
+            </div> -->
+
+            <div class="relative">
+                <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
+                    <span id="viewDropdownText">View by: Entities</span>
                     <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                         <path d="M0 0h20v20H0z" fill="none"/>
                         <path d="M10 12l-4-4h8l-4 4z"/>
@@ -314,10 +328,103 @@
 
     let globalViewType = 'entity';
 
-    document.getElementById('viewDropdown').addEventListener('click', function () {
-        const menu = document.getElementById('viewDropdownMenu');
-        menu.classList.toggle('hidden');
+    // document.getElementById('viewDropdown').addEventListener('click', function () {
+    //     const menu = document.getElementById('viewDropdownMenu');
+    //     menu.classList.toggle('hidden');
+
+    //     var selectedView = $('#viewDropdown').text().trim();
+    //     console.log('selected-view:', selectedView)
+
+    //     // let final_selected_value;
+    //     // if (selectedView.includes('Entity') === true){
+    //     //     final_selected_value = 'entity';
+    //     // } else {
+    //     //     console.log('Category selected:', filter_value);
+    //     //     final_selected_value = 'category';
+    //     // }
+
+    // });
+
+    // Get elements
+    const dropdownButton = document.getElementById('viewDropdown');
+    const dropdownMenu = document.getElementById('viewDropdownMenu');
+    const dropdownText = document.getElementById('viewDropdownText');
+
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
     });
+
+    // Add event listener to each dropdown menu item
+    dropdownMenu.querySelectorAll('li').forEach(function(item) {
+        item.addEventListener('click', function() {
+            const selectedValue = this.textContent.trim();
+            console.log('Selected:', selectedValue);  // Print the selected value
+
+            // Set the button text to the selected value
+            dropdownText.textContent = 'View by: ' + selectedValue;
+
+            // Close the dropdown menu
+            dropdownMenu.classList.add('hidden');
+
+            console.log('selected-value:', selectedValue);
+            let current_tmp_selected_value;
+            if (selectedValue === 'Entities'){
+                current_tmp_selected_value = 'entity';
+            } else {
+                current_tmp_selected_value = 'category';
+            }
+
+            if (globalViewType != current_tmp_selected_value){
+
+                // globalViewType = current_tmp_selected_value;
+
+                // Fetch everything from breadcrumb list 
+                var listItems = $('#breadcrumb-list').children('li');
+                console.log('list-elements:', listItems);
+
+                var breadcrumb_value_list = [];
+                listItems.each(function(index, element) {
+
+                    console.log('child-elem;', element)
+                    let a_href_element = $(element).children('a');
+
+                    let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
+                    console.log('data-value-attribute:', data_value);
+                    breadcrumb_value_list.push(data_value);
+
+                });
+                console.log('breadcrumb:', breadcrumb_value_list);
+                
+                // TODO: 
+                    // on view change, nothing should change other than the cards so create a new function to handle this
+                        // ensure the correct data is first being returned from the backend or create a new view to handle this
+                            // literally just a card change
+
+                // filter_value --> current breadcrumb value
+
+                console.log('last-bc-value:', breadcrumb_value_list[breadcrumb_value_list.length - 1]);
+                let last_bc_value = breadcrumb_value_list[breadcrumb_value_list.length - 1];
+                var final_rv = {
+                    'current_filter_value': last_bc_value,
+                    'breadcrumb_value_list': breadcrumb_value_list,
+                    'switch_view_to':  current_tmp_selected_value
+                };
+                console.log('final-rv:', final_rv);
+                filterCategoryData(final_rv);
+
+            }
+            
+        });
+    });
+
+    // Optionally, close the dropdown if clicking outside of it
+    document.addEventListener('click', function(event) {
+        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+
 
     $('#home_breadcrumb').click(function(){
         $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
@@ -519,7 +626,7 @@
         // filterCategoryData('home', "");
  
         var final_rv = {
-            'current_filter_value': 'home',
+            'current_filter_value': 'Home',
             'breadcrumb_value_list': []
         };
         filterCategoryData(final_rv);
