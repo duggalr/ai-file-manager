@@ -196,7 +196,7 @@
                 
                 <li id="home_breadcrumb_parent" class="inline-flex items-center">
                     <div class="flex items-center">
-                        <a data-val="Home" id="home_breadcrumb" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        <a data-val="Home" id="home_breadcrumb" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white cursor-pointer">
                             Home
                         </a>
                     </div>
@@ -324,6 +324,88 @@
         // filterCatgoryData('home', "");
     });
 
+
+    function filterCategoryData(final_rv){
+
+        let filter_value = final_rv['current_filter_value'];
+
+        $.ajax({
+            url: '{% url "handle_filtering_file_data" %}',
+            type: 'POST',
+            data: {
+                'filter_data': JSON.stringify(final_rv),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+
+            success: function(response) {
+
+                console.log('data:', response);
+
+                if (response['success'] === true){
+
+                    if (response['home'] === false){
+
+                        // Append category to breadcrumb list
+                        let breadcrumb_list = document.getElementById('breadcrumb-list');
+                        
+                        let child_list_elem = document.createElement('li');
+                        child_list_elem.className = 'inline-flex items-center';
+                        
+                        let div_elem = document.createElement('div');
+                        div_elem.className = 'flex items-center';                    
+
+                        // Create the SVG element
+                        let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
+                        svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
+                        svg_elem.setAttribute('aria-hidden', 'true');
+                        svg_elem.setAttribute('fill', 'none');
+                        svg_elem.setAttribute('viewBox', '0 0 6 10');
+
+                        // Create the path element inside the SVG
+                        let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
+                        path_elem.setAttribute('stroke', 'currentColor');
+                        path_elem.setAttribute('stroke-linecap', 'round');
+                        path_elem.setAttribute('stroke-linejoin', 'round');
+                        path_elem.setAttribute('stroke-width', '2');
+                        path_elem.setAttribute('d', 'm1 9 4-4-4-4');
+
+                        // Append the path to the SVG
+                        svg_elem.appendChild(path_elem);
+                        div_elem.appendChild(svg_elem);
+
+                        let a_elem = document.createElement('a');
+                        a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
+                        a_elem.setAttribute('data-val', filter_value);
+                        a_elem.textContent = filter_value.split("-")[1];
+
+                        div_elem.appendChild(a_elem);
+                        child_list_elem.appendChild(div_elem);
+                        breadcrumb_list.appendChild(child_list_elem);
+
+                        globalViewType = response['global_view_type'];
+
+                        append_category_data(
+                            response
+                        );
+
+                    } else {
+                        
+                        globalViewType = response['global_view_type'];
+                        append_category_data(
+                            response
+                        );
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    };
+
+
     function append_category_data(data) {
 
         // let div_elem = document.createElement('div');
@@ -334,7 +416,6 @@
         // let global_view_type = response['global_view_type'];
         // let filtered_file_count = response['filtered_file_count'];
         // let filtered_file_objects = response['filtered_file_objects'];
-        
 
         $('#category-list').empty();
 
@@ -347,30 +428,9 @@
 
         if (filtered_file_count === null){
 
-            // TODO: File List View Update
-                // <tr>
-                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Project_Plan.docx</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Document</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">1.2 MB</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">2024-07-28</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Work, Planning</td>
-                // </tr>
-                // <tr>
-                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Logo_Design.png</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Image</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">3.4 MB</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">2024-08-01</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Branding, Design</td>
-                // </tr>
-                // <tr>
-                //     <td class="resizable px-4 py-2 text-sm text-gray-300">Music_Track.mp3</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Audio</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">7.5 MB</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">2024-07-25</td>
-                //     <td class="px-4 py-2 text-sm text-gray-300">Entertainment, Audio</td>
-                // </tr>
-
             // $('#file-list-tbody').clear();
+
+            $('#file-list-tbody').empty();
 
             $('#primary_section_sub_header').addClass('hidden');
             for (i=0; i < filtered_file_objects_list.length; i++) {
@@ -398,18 +458,6 @@
                 let tb_data_5 = document.createElement('td');
                 tb_data_5.className = 'px-4 py-2 text-sm text-gray-300';
                 tb_data_5.textContent = current_file_rw['sub_categories'].join(', ');
-                
-                // // console.log('sub-t:', current_file_rw['sub_categories'])
-                // let sub_category_array = current_file_rw['sub_categories'];
-                // console.log('sub-category-array:', sub_category_array);
-                // for (y=0; y <= sub_category_array.length-1; y++) {
-                //     // tb_data_5.textContent += sub_category_array[y] + ', ';
-                //     // <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400 border border-gray-500">Dark</span>
-                //     let span_elem = document.createElement('span');
-                //     span_elem.className = 'bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-400 border border-gray-500';
-                //     span_elem.textContent = sub_category_array[y];
-                //     tb_data_5.appendChild(span_elem);
-                // }
 
                 $(tb_row).append(tb_data);
                 $(tb_row).append(tb_data_2);
@@ -423,6 +471,9 @@
             }
 
         } else {
+
+            $('#file-list-primary-div').addClass('hidden');
+            $('#primary_section_sub_header').removeClass('hidden');
 
             // Update the category list
             for (let i = 0; i < filtered_file_count.length; i++) {
@@ -444,37 +495,24 @@
                 $(card_div_elem).append(p_elem);
                 $('#category-list').append(card_div_elem);
             }
-
             
-
 
         }
 
-        // // // Update the breadcrumb list
-        // // let breadcrumb_list = document.getElementById('breadcrumb-list');
-        // // let child_list_elem = document.createElement('li');
-        // // child_list_elem.className = 'inline-flex items-center';
-
-        // // let div_elem = document.createElement('div');
-        // // div_elem.className = 'flex items-center';
-
-        // if (view_type === 'home'){
-
-        //     // let a_elem = document.createElement('a');
-        //     // a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-        //     // a_elem.setAttribute('data-val', global_view_type);
-        //     // a_elem.textContent = filter_value;
-
-        //     // div_elem.appendChild(a_elem);
-        //     // child_list_elem.appendChild(div_elem);
-        //     // breadcrumb_list.appendChild(child_list_elem);                        
-
-        // } else {
-
-        // }
 
     };
 
+
+    $('#home_breadcrumb').click(function(){
+        $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
+        // filterCategoryData('home', "");
+ 
+        var final_rv = {
+            'current_filter_value': 'home',
+            'breadcrumb_value_list': []
+        };
+        filterCategoryData(final_rv);
+    });
 
     // $('.category-card').on('click', function() {
     $(document).on("click", ".category-card", function(){
@@ -489,11 +527,9 @@
         let breadcrumb_value_list = [];
         for (let i = 0; i < tmp_li_elements.length; i++) {
             // console.log('bc-tmp-li:', tmp_li_elements[i]);
-            
             // console.log('bc-tmp-dta-val:', $(tmp_li_elements[i]).children().children());
             let tp_li_bc_elements = $(tmp_li_elements[i]).children().children();
-
-            console.log('tp_li_bc_elements', tp_li_bc_elements);
+            // console.log('tp_li_bc_elements', tp_li_bc_elements);
 
             let ahref_tag;
             if (tp_li_bc_elements.length == 1){
@@ -504,13 +540,19 @@
                 ahref_tag = tp_li_bc_elements[1];
             }
 
-            console.log('ahref-tag:', ahref_tag);
-
+            // console.log('ahref-tag:', ahref_tag);
             breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
-
         }
 
         console.log('breadcrumb-LIST:', breadcrumb_value_list);
+        var final_rv = {
+            'current_filter_value': filter_value,
+            'breadcrumb_value_list': breadcrumb_value_list
+        };
+
+        console.log('final-rv:', final_rv);
+        filterCategoryData(final_rv);
+
 
         // // Fetch everything from breadcrumb list 
         // var listItems = $('#breadcrumb-list').children('li');
@@ -529,76 +571,6 @@
         // });
         // console.log('breadcrumb:', breadcrumb_value_list);
 
-
-        var final_rv = {
-            'current_filter_value': filter_value,
-            'breadcrumb_value_list': breadcrumb_value_list
-        };
-
-        console.log('final-rv:', final_rv);
-
-        $.ajax({
-            url: '{% url "handle_filtering_file_data" %}',
-            type: 'POST',
-            data: {
-                'filter_data': JSON.stringify(final_rv),
-                'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for security
-            },
-
-            success: function(response) {
-
-                console.log('data:', response);
-
-                if (response['success'] === true){
-
-                    // Append category to breadcrumb list
-                    let breadcrumb_list = document.getElementById('breadcrumb-list');
-                    
-                    let child_list_elem = document.createElement('li');
-                    child_list_elem.className = 'inline-flex items-center';
-                    
-                    let div_elem = document.createElement('div');
-                    div_elem.className = 'flex items-center';                    
-
-                    // Create the SVG element
-                    let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
-                    svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
-                    svg_elem.setAttribute('aria-hidden', 'true');
-                    svg_elem.setAttribute('fill', 'none');
-                    svg_elem.setAttribute('viewBox', '0 0 6 10');
-
-                    // Create the path element inside the SVG
-                    let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
-                    path_elem.setAttribute('stroke', 'currentColor');
-                    path_elem.setAttribute('stroke-linecap', 'round');
-                    path_elem.setAttribute('stroke-linejoin', 'round');
-                    path_elem.setAttribute('stroke-width', '2');
-                    path_elem.setAttribute('d', 'm1 9 4-4-4-4');
-
-                    // Append the path to the SVG
-                    svg_elem.appendChild(path_elem);
-                    div_elem.appendChild(svg_elem);
-
-                    let a_elem = document.createElement('a');
-                    a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-                    a_elem.setAttribute('data-val', filter_value);
-                    a_elem.textContent = filter_value.split("-")[1];
-
-                    div_elem.appendChild(a_elem);
-                    child_list_elem.appendChild(div_elem);
-                    breadcrumb_list.appendChild(child_list_elem);
-
-                    globalViewType = response['global_view_type'];
-
-                    append_category_data(
-                        response
-                    );
-
-                }
-
-            }
-
-        });
 
         // var selectedView = $('#viewDropdown').text().trim();
 
