@@ -383,28 +383,42 @@
                 var listItems = $('#breadcrumb-list').children('li');
                 console.log('list-elements:', listItems);
 
-                var breadcrumb_value_list = [];
-                listItems.each(function(index, element) {
+                // var breadcrumb_value_list = [];
+                // listItems.each(function(index, element) {
 
-                    console.log('child-elem;', element)
-                    let a_href_element = $(element).children('a');
+                //     console.log('child-elem;', element)
+                //     let a_href_element = $(element).children('a');
 
-                    let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
-                    console.log('data-value-attribute:', data_value);
-                    breadcrumb_value_list.push(data_value);
+                //     let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
+                //     console.log('data-value-attribute:', data_value);
+                //     breadcrumb_value_list.push(data_value);
 
-                });
-                console.log('breadcrumb:', breadcrumb_value_list);
-                
-                // TODO: 
-                    // on view change, nothing should change other than the cards so create a new function to handle this
-                        // ensure the correct data is first being returned from the backend or create a new view to handle this
-                            // literally just a card change
+                // });
+                // console.log('breadcrumb:', breadcrumb_value_list);
 
-                // filter_value --> current breadcrumb value
+                // // filter_value --> current breadcrumb value
+
+                let tmp_bc_list = document.getElementById('breadcrumb-list');
+                let tmp_li_elements = $(tmp_bc_list).children('li');
+                console.log('tmp_li_elements', tmp_li_elements);
+
+                let breadcrumb_value_list = [];
+                for (let i = 0; i < tmp_li_elements.length; i++) {
+                    let tp_li_bc_elements = $(tmp_li_elements[i]).children().children();
+                    let ahref_tag;
+                    if (tp_li_bc_elements.length == 1){
+                        ahref_tag = tp_li_bc_elements[0];
+                    } else if (tp_li_bc_elements.length > 1) {
+                        ahref_tag = tp_li_bc_elements[1];
+                    }
+                    breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
+                }
+
+                console.log('breadcrumb-LIST:', breadcrumb_value_list);
 
                 console.log('last-bc-value:', breadcrumb_value_list[breadcrumb_value_list.length - 1]);
                 let last_bc_value = breadcrumb_value_list[breadcrumb_value_list.length - 1];
+
                 var final_rv = {
                     'current_filter_value': last_bc_value,
                     'breadcrumb_value_list': breadcrumb_value_list,
@@ -413,8 +427,7 @@
                 console.log('final-rv:', final_rv);
                 filterCategoryData(final_rv);
 
-            }
-            
+            };           
         });
     });
 
@@ -444,6 +457,11 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
             },
 
+            // TODO:
+                // finish the functionality for the dropdown view switching
+                    // test everything extensively to ensure all good
+                    // go from there
+
             success: function(response) {
 
                 console.log('data:', response);
@@ -451,7 +469,6 @@
                 if (response['success'] === true){
 
                     if (response['home'] === false){
-
 
                         if (backtrack === false){
 
