@@ -325,7 +325,7 @@
     });
 
 
-    function filterCategoryData(final_rv){
+    function filterCategoryData(final_rv, backtrack=false){
 
         let filter_value = final_rv['current_filter_value'];
 
@@ -345,48 +345,59 @@
 
                     if (response['home'] === false){
 
-                        // Append category to breadcrumb list
-                        let breadcrumb_list = document.getElementById('breadcrumb-list');
-                        
-                        let child_list_elem = document.createElement('li');
-                        child_list_elem.className = 'inline-flex items-center';
-                        
-                        let div_elem = document.createElement('div');
-                        div_elem.className = 'flex items-center';                    
 
-                        // Create the SVG element
-                        let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
-                        svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
-                        svg_elem.setAttribute('aria-hidden', 'true');
-                        svg_elem.setAttribute('fill', 'none');
-                        svg_elem.setAttribute('viewBox', '0 0 6 10');
+                        if (backtrack === false){
 
-                        // Create the path element inside the SVG
-                        let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
-                        path_elem.setAttribute('stroke', 'currentColor');
-                        path_elem.setAttribute('stroke-linecap', 'round');
-                        path_elem.setAttribute('stroke-linejoin', 'round');
-                        path_elem.setAttribute('stroke-width', '2');
-                        path_elem.setAttribute('d', 'm1 9 4-4-4-4');
+                            // Append category to breadcrumb list
+                            let breadcrumb_list = document.getElementById('breadcrumb-list');
+                            
+                            let child_list_elem = document.createElement('li');
+                            child_list_elem.className = 'inline-flex items-center bc-list-parent';
+                            
+                            let div_elem = document.createElement('div');
+                            div_elem.className = 'flex items-center';                    
 
-                        // Append the path to the SVG
-                        svg_elem.appendChild(path_elem);
-                        div_elem.appendChild(svg_elem);
+                            // Create the SVG element
+                            let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
+                            svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
+                            svg_elem.setAttribute('aria-hidden', 'true');
+                            svg_elem.setAttribute('fill', 'none');
+                            svg_elem.setAttribute('viewBox', '0 0 6 10');
 
-                        let a_elem = document.createElement('a');
-                        a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-                        a_elem.setAttribute('data-val', filter_value);
-                        a_elem.textContent = filter_value.split("-")[1];
+                            // Create the path element inside the SVG
+                            let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
+                            path_elem.setAttribute('stroke', 'currentColor');
+                            path_elem.setAttribute('stroke-linecap', 'round');
+                            path_elem.setAttribute('stroke-linejoin', 'round');
+                            path_elem.setAttribute('stroke-width', '2');
+                            path_elem.setAttribute('d', 'm1 9 4-4-4-4');
 
-                        div_elem.appendChild(a_elem);
-                        child_list_elem.appendChild(div_elem);
-                        breadcrumb_list.appendChild(child_list_elem);
+                            // Append the path to the SVG
+                            svg_elem.appendChild(path_elem);
+                            div_elem.appendChild(svg_elem);
 
-                        globalViewType = response['global_view_type'];
+                            let a_elem = document.createElement('a');
+                            a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
+                            a_elem.setAttribute('data-val', filter_value);
+                            a_elem.textContent = filter_value.split("-")[1];
 
-                        append_category_data(
-                            response
-                        );
+                            div_elem.appendChild(a_elem);
+                            child_list_elem.appendChild(div_elem);
+                            breadcrumb_list.appendChild(child_list_elem);
+
+                            globalViewType = response['global_view_type'];
+                            append_category_data(
+                                response
+                            );
+
+                        } else {
+
+                            globalViewType = response['global_view_type'];
+                            append_category_data(
+                                response
+                            );
+
+                        }
 
                     } else {
                         
@@ -512,6 +523,50 @@
             'breadcrumb_value_list': []
         };
         filterCategoryData(final_rv);
+    });
+
+    // TODO: other breadcrumb on click listener
+
+    // $('.bc-list-parent').click(function(){
+    $(document).on("click", ".bc-list-parent", function(){
+        console.log('clicked');
+
+        $(this).nextAll('li').remove();
+
+        // var filter_value = $(this).data('category');
+        // console.log('Category selected:', filter_value);
+        // console.log('this-element:', $(this).children().children()[1].textContent)
+        var filter_value = $(this).children().children()[1].getAttribute('data-val');
+        console.log('Category selected:', filter_value);
+
+        let tmp_bc_list = document.getElementById('breadcrumb-list');
+
+        let tmp_li_elements = $(tmp_bc_list).children('li');
+        console.log('tmp_li_elements', tmp_li_elements);
+        
+        let breadcrumb_value_list = [];
+        for (let i = 0; i < tmp_li_elements.length; i++) {
+            let tp_li_bc_elements = $(tmp_li_elements[i]).children().children();
+            let ahref_tag;
+            if (tp_li_bc_elements.length == 1){
+                ahref_tag = tp_li_bc_elements[0];
+            } else if (tp_li_bc_elements.length > 1) {
+                ahref_tag = tp_li_bc_elements[1];
+            }
+            breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
+        }
+
+        console.log('breadcrumb-LIST:', breadcrumb_value_list);
+        var final_rv = {
+            'current_filter_value': filter_value,
+            'breadcrumb_value_list': breadcrumb_value_list
+        };
+        console.log('final-rv:', final_rv);
+        filterCategoryData(final_rv, backtrack=true);
+
+        // console.log('clicked-elem-one:', $(this));
+        // $(this).remove();;
+
     });
 
     // $('.category-card').on('click', function() {

@@ -179,6 +179,7 @@ def handle_filtering_file_data(request):
             })
 
         else:
+            
             breadcrumb_value_list = filter_data['breadcrumb_value_list'][1:]  # always skip the first value since it is home
 
             filtered_entity_list_values = []
@@ -203,6 +204,9 @@ def handle_filtering_file_data(request):
                     filter_value_string = bc.split('category-')[1]
                     filtered_category_list_values.append(filter_value_string)
 
+
+            filtered_entity_list_values = list(set(filtered_entity_list_values))
+            filtered_category_list_values = list(set(filtered_category_list_values))
             print('filtered_entity_list_values:', filtered_entity_list_values)
             print('filtered_category_list_values:', filtered_category_list_values)
 
