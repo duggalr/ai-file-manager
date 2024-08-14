@@ -41,7 +41,6 @@
         padding-right: 10px;
     }
 
-
     /* Ensure headers have the arrows inline */
     th .flex {
         display: flex;
@@ -205,26 +204,12 @@
             </ol>
         </nav>
 
-        <div class="flex items-center justify-between mb-4" id="primary_section_sub_header">
+        <div class="flex items-center justify-between mb-4 mt-4" id="primary_section_sub_header">
             <h3 id="categories-title" class="text-2xl font-bold">
                 Types
             </h3>
         
-            <!-- <div class="relative">
-                <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
-                    <span>View by: Entity</span>
-                    <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M0 0h20v20H0z" fill="none"/>
-                        <path d="M10 12l-4-4h8l-4 4z"/>
-                    </svg>
-                </button>
-                <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
-                </ul>
-            </div> -->
-
-            <div class="relative">
+            <div class="relative" id="dropdown_menu_parent_div">
                 <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
                     <span id="viewDropdownText">View by: Entities</span>
                     <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -250,7 +235,6 @@
                 </div>
             {% endfor %}
         </div>
-
 
         <!-- File List -->
         <div id="file-list-primary-div" class="mt-8 hidden">
@@ -325,124 +309,104 @@
 
 <script>
 
-
     let globalViewType = 'entity';
-
-    // document.getElementById('viewDropdown').addEventListener('click', function () {
-    //     const menu = document.getElementById('viewDropdownMenu');
-    //     menu.classList.toggle('hidden');
-
-    //     var selectedView = $('#viewDropdown').text().trim();
-    //     console.log('selected-view:', selectedView)
-
-    //     // let final_selected_value;
-    //     // if (selectedView.includes('Entity') === true){
-    //     //     final_selected_value = 'entity';
-    //     // } else {
-    //     //     console.log('Category selected:', filter_value);
-    //     //     final_selected_value = 'category';
-    //     // }
-
-    // });
 
     // Get elements
     const dropdownButton = document.getElementById('viewDropdown');
     const dropdownMenu = document.getElementById('viewDropdownMenu');
     const dropdownText = document.getElementById('viewDropdownText');
 
-    // Toggle dropdown on button click
-    dropdownButton.addEventListener('click', function() {
-        dropdownMenu.classList.toggle('hidden');
-    });
 
-    // Add event listener to each dropdown menu item
-    dropdownMenu.querySelectorAll('li').forEach(function(item) {
-        item.addEventListener('click', function() {
-            const selectedValue = this.textContent.trim();
-            console.log('Selected:', selectedValue);  // Print the selected value
+    function append_category_data(data) {
 
-            // Set the button text to the selected value
-            dropdownText.textContent = 'View by: ' + selectedValue;
+        let tmp_bc_list = document.getElementById('breadcrumb-list');
+        let tmp_li_elements = $(tmp_bc_list).children('li');
+        console.log('new-bc-list-length', tmp_li_elements.length);
 
-            // Close the dropdown menu
-            dropdownMenu.classList.add('hidden');
+        if (tmp_li_elements.length > 1){
+            $('#dropdown_menu_parent_div').addClass('hidden');
+        } else {
+            $('#dropdown_menu_parent_div').removeClass('hidden');
+        }
 
-            console.log('selected-value:', selectedValue);
-            let current_tmp_selected_value;
-            if (selectedValue === 'Entities'){
-                current_tmp_selected_value = 'entity';
-            } else {
-                current_tmp_selected_value = 'category';
+        $('#category-list').empty();
+
+        // TODO: should be categories coming here and also, updating global view type to category and dropdown
+        let filtered_file_count = data['filtered_file_count'];
+        let filtered_file_objects_list = data['filtered_file_objects'];
+
+        if (filtered_file_count === null){
+
+            // $('#file-list-tbody').clear();
+            $('#file-list-tbody').empty();
+
+            $('#primary_section_sub_header').addClass('hidden');
+            for (i=0; i < filtered_file_objects_list.length; i++) {
+                let current_file_rw = filtered_file_objects_list[i];
+                // console.log('current-file-row:', current_file_rw);
+
+                let tb_row = document.createElement('tr');
+                
+                let tb_data = document.createElement('td');
+                tb_data.className = 'resizable px-4 py-2 text-sm text-gray-300';
+                tb_data.textContent = current_file_rw['current_file_name'];
+
+                let tb_data_2 = document.createElement('td');
+                tb_data_2.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_2.textContent = current_file_rw['entity_type'];
+
+                let tb_data_3 = document.createElement('td');
+                tb_data_3.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_3.textContent = current_file_rw['file_size_in_bytes'];
+
+                let tb_data_4 = document.createElement('td');
+                tb_data_4.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_4.textContent = current_file_rw['file_modified_at_date_time'];
+
+                let tb_data_5 = document.createElement('td');
+                tb_data_5.className = 'px-4 py-2 text-sm text-gray-300';
+                tb_data_5.textContent = current_file_rw['sub_categories'].join(', ');
+
+                $(tb_row).append(tb_data);
+                $(tb_row).append(tb_data_2);
+                $(tb_row).append(tb_data_3);
+                $(tb_row).append(tb_data_4);
+                $(tb_row).append(tb_data_5);
+
+                $('#file-list-tbody').append(tb_row);
+                $('#file-list-primary-div').removeClass('hidden');
+
             }
 
-            if (globalViewType != current_tmp_selected_value){
+        } else {
 
-                // globalViewType = current_tmp_selected_value;
+            $('#file-list-primary-div').addClass('hidden');
+            $('#primary_section_sub_header').removeClass('hidden');
 
-                // Fetch everything from breadcrumb list 
-                var listItems = $('#breadcrumb-list').children('li');
-                console.log('list-elements:', listItems);
+            // Update the category list
+            for (let i = 0; i < filtered_file_count.length; i++) {
+                let file_count_dict = filtered_file_count[i];
+                // console.log('file:', file_count_dict);
 
-                // var breadcrumb_value_list = [];
-                // listItems.each(function(index, element) {
+                let card_div_elem = document.createElement('div');
+                card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
+                card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
 
-                //     console.log('child-elem;', element)
-                //     let a_href_element = $(element).children('a');
+                let h2_elem = document.createElement('h2');
+                h2_elem.className = 'text-xl font-bold mb-2';
+                h2_elem.textContent = file_count_dict['primary_text'];
+                let p_elem = document.createElement('p');
+                p_elem.className = 'text-gray-400';
+                p_elem.textContent = file_count_dict['file_count'] + ' Files';
+                
+                $(card_div_elem).append(h2_elem);
+                $(card_div_elem).append(p_elem);
+                $('#category-list').append(card_div_elem);
+            }
 
-                //     let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
-                //     console.log('data-value-attribute:', data_value);
-                //     breadcrumb_value_list.push(data_value);
-
-                // });
-                // console.log('breadcrumb:', breadcrumb_value_list);
-
-                // // filter_value --> current breadcrumb value
-
-                let tmp_bc_list = document.getElementById('breadcrumb-list');
-                let tmp_li_elements = $(tmp_bc_list).children('li');
-                console.log('tmp_li_elements', tmp_li_elements);
-
-                let breadcrumb_value_list = [];
-                for (let i = 0; i < tmp_li_elements.length; i++) {
-                    let tp_li_bc_elements = $(tmp_li_elements[i]).children().children();
-                    let ahref_tag;
-                    if (tp_li_bc_elements.length == 1){
-                        ahref_tag = tp_li_bc_elements[0];
-                    } else if (tp_li_bc_elements.length > 1) {
-                        ahref_tag = tp_li_bc_elements[1];
-                    }
-                    breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
-                }
-
-                console.log('breadcrumb-LIST:', breadcrumb_value_list);
-
-                console.log('last-bc-value:', breadcrumb_value_list[breadcrumb_value_list.length - 1]);
-                let last_bc_value = breadcrumb_value_list[breadcrumb_value_list.length - 1];
-
-                var final_rv = {
-                    'current_filter_value': last_bc_value,
-                    'breadcrumb_value_list': breadcrumb_value_list,
-                    'switch_view_to':  current_tmp_selected_value
-                };
-                console.log('final-rv:', final_rv);
-                filterCategoryData(final_rv);
-
-            };           
-        });
-    });
-
-    // Optionally, close the dropdown if clicking outside of it
-    document.addEventListener('click', function(event) {
-        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
-            dropdownMenu.classList.add('hidden');
         }
-    });
 
-
-    $('#home_breadcrumb').click(function(){
-        $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
-        // filterCatgoryData('home', "");
-    });
+    };
 
 
     function filterCategoryData(final_rv, backtrack=false){
@@ -457,16 +421,18 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
             },
 
-            // TODO:
-                // finish the functionality for the dropdown view switching
-                    // test everything extensively to ensure all good
-                    // go from there
-
             success: function(response) {
 
                 console.log('data:', response);
 
                 if (response['success'] === true){
+
+                    // console.log('HOME VIEW');
+                    if (response['global_view_type'] == 'category'){
+                        dropdownText.textContent = 'View by: Categories';
+                    } else {
+                        dropdownText.textContent = 'View by: Entities';
+                    }
 
                     if (response['home'] === false){
 
@@ -524,7 +490,7 @@
                         }
 
                     } else {
-                        
+
                         globalViewType = response['global_view_type'];
                         append_category_data(
                             response
@@ -541,101 +507,125 @@
     };
 
 
-    function append_category_data(data) {
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener('click', function() {
+        dropdownMenu.classList.toggle('hidden');
+    });
 
-        // let div_elem = document.createElement('div');
-        // div_elem.className = 'flex items-center';
 
-        // $('#category-list').empty();
+    // Menu items on click listener
+    dropdownMenu.querySelectorAll('li').forEach(function(item) {
+        item.addEventListener('click', function() {
+            const selectedValue = this.textContent.trim();
+            console.log('Selected:', selectedValue);  // Print the selected value
 
-        // let global_view_type = response['global_view_type'];
-        // let filtered_file_count = response['filtered_file_count'];
-        // let filtered_file_objects = response['filtered_file_objects'];
+            // Set the button text to the selected value
+            dropdownText.textContent = 'View by: ' + selectedValue;
 
-        $('#category-list').empty();
+            // Close the dropdown menu
+            dropdownMenu.classList.add('hidden');
 
-        // 'filtered_file_objects': serialized_file_objects,
-        //     'filtered_file_count': serialized_file_count,
-        
-        // TODO: should be categories coming here and also, updating global view type to category and dropdown
-        let filtered_file_count = data['filtered_file_count'];
-        let filtered_file_objects_list = data['filtered_file_objects'];
-
-        if (filtered_file_count === null){
-
-            // $('#file-list-tbody').clear();
-
-            $('#file-list-tbody').empty();
-
-            $('#primary_section_sub_header').addClass('hidden');
-            for (i=0; i < filtered_file_objects_list.length; i++) {
-                let current_file_rw = filtered_file_objects_list[i];
-                console.log('current-file-row:', current_file_rw);
-
-                let tb_row = document.createElement('tr');
-                
-                let tb_data = document.createElement('td');
-                tb_data.className = 'resizable px-4 py-2 text-sm text-gray-300';
-                tb_data.textContent = current_file_rw['current_file_name'];
-
-                let tb_data_2 = document.createElement('td');
-                tb_data_2.className = 'px-4 py-2 text-sm text-gray-300';
-                tb_data_2.textContent = current_file_rw['entity_type'];
-
-                let tb_data_3 = document.createElement('td');
-                tb_data_3.className = 'px-4 py-2 text-sm text-gray-300';
-                tb_data_3.textContent = current_file_rw['file_size_in_bytes'];
-
-                let tb_data_4 = document.createElement('td');
-                tb_data_4.className = 'px-4 py-2 text-sm text-gray-300';
-                tb_data_4.textContent = current_file_rw['file_modified_at_date_time'];
-
-                let tb_data_5 = document.createElement('td');
-                tb_data_5.className = 'px-4 py-2 text-sm text-gray-300';
-                tb_data_5.textContent = current_file_rw['sub_categories'].join(', ');
-
-                $(tb_row).append(tb_data);
-                $(tb_row).append(tb_data_2);
-                $(tb_row).append(tb_data_3);
-                $(tb_row).append(tb_data_4);
-                $(tb_row).append(tb_data_5);
-
-                $('#file-list-tbody').append(tb_row);
-                $('#file-list-primary-div').removeClass('hidden');
-
+            // console.log('selected-value:', selectedValue);
+            let current_tmp_selected_value;
+            if (selectedValue === 'Entities'){
+                current_tmp_selected_value = 'entity';
+            } else {
+                current_tmp_selected_value = 'category';
             }
 
-        } else {
+            if (globalViewType != current_tmp_selected_value){
 
-            $('#file-list-primary-div').addClass('hidden');
-            $('#primary_section_sub_header').removeClass('hidden');
+                // globalViewType = current_tmp_selected_value;
 
-            // Update the category list
-            for (let i = 0; i < filtered_file_count.length; i++) {
-                let file_count_dict = filtered_file_count[i];
-                console.log('file:', file_count_dict);
+                // Fetch everything from breadcrumb list 
+                var listItems = $('#breadcrumb-list').children('li');
+                console.log('list-elements:', listItems);
 
-                let card_div_elem = document.createElement('div');
-                card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
-                card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
+                // var breadcrumb_value_list = [];
+                // listItems.each(function(index, element) {
 
-                let h2_elem = document.createElement('h2');
-                h2_elem.className = 'text-xl font-bold mb-2';
-                h2_elem.textContent = file_count_dict['primary_text'];
-                let p_elem = document.createElement('p');
-                p_elem.className = 'text-gray-400';
-                p_elem.textContent = file_count_dict['file_count'] + ' Files';
-                
-                $(card_div_elem).append(h2_elem);
-                $(card_div_elem).append(p_elem);
-                $('#category-list').append(card_div_elem);
-            }
-            
+                //     console.log('child-elem;', element)
+                //     let a_href_element = $(element).children('a');
 
+                //     let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
+                //     console.log('data-value-attribute:', data_value);
+                //     breadcrumb_value_list.push(data_value);
+
+                // });
+                // console.log('breadcrumb:', breadcrumb_value_list);
+
+                // // filter_value --> current breadcrumb value
+
+                let tmp_bc_list = document.getElementById('breadcrumb-list');
+                let tmp_li_elements = $(tmp_bc_list).children('li');
+                console.log('tmp_li_elements', tmp_li_elements);
+
+                let breadcrumb_value_list = [];
+                for (let i = 0; i < tmp_li_elements.length; i++) {
+                    let tp_li_bc_elements = $(tmp_li_elements[i]).children().children();
+                    let ahref_tag;
+                    if (tp_li_bc_elements.length == 1){
+                        ahref_tag = tp_li_bc_elements[0];
+                    } else if (tp_li_bc_elements.length > 1) {
+                        ahref_tag = tp_li_bc_elements[1];
+                    }
+                    breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
+                }
+
+                console.log('breadcrumb-LIST:', breadcrumb_value_list);
+
+                console.log('last-bc-value:', breadcrumb_value_list[breadcrumb_value_list.length - 1]);
+                let last_bc_value = breadcrumb_value_list[breadcrumb_value_list.length - 1];
+
+                var final_rv = {
+                    'current_filter_value': last_bc_value,
+                    'breadcrumb_value_list': breadcrumb_value_list,
+                    'switch_view_to':  current_tmp_selected_value
+                };
+                console.log('final-rv:', final_rv);
+                // filterCategoryData(final_rv);
+
+                $.ajax({
+                    url: '{% url "switch_filtered_file_data" %}',
+                    type: 'POST',
+                    data: {
+                        'filter_data': JSON.stringify(final_rv),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+
+                    success: function(response) {
+
+                        console.log('data:', response);
+
+                        if (response['success'] === true){
+
+                            globalViewType = response['global_view_type'];
+                            append_category_data(
+                                response
+                            );
+
+                        }
+
+                    }
+
+                });
+
+            };
+        });
+    });
+
+    
+    document.addEventListener('click', function(event) {
+        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
         }
+    });
 
-
-    };
+    
+    $('#home_breadcrumb').click(function(){
+        $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
+        // filterCatgoryData('home', "");
+    });
 
 
     $('#home_breadcrumb').click(function(){
@@ -649,9 +639,7 @@
         filterCategoryData(final_rv);
     });
 
-    // TODO: other breadcrumb on click listener
 
-    // $('.bc-list-parent').click(function(){
     $(document).on("click", ".bc-list-parent", function(){
         console.log('clicked');
 
@@ -686,6 +674,7 @@
             'breadcrumb_value_list': breadcrumb_value_list
         };
         console.log('final-rv:', final_rv);
+
         filterCategoryData(final_rv, backtrack=true);
 
         // console.log('clicked-elem-one:', $(this));
@@ -693,7 +682,7 @@
 
     });
 
-    // $('.category-card').on('click', function() {
+
     $(document).on("click", ".category-card", function(){
         var filter_value = $(this).data('category');
         console.log('Category selected:', filter_value);
@@ -723,6 +712,13 @@
             breadcrumb_value_list.push(ahref_tag.getAttribute('data-val'));
         }
 
+        
+        // if (breadcrumb_value_list.length == 1){
+        //     $('#dropdown_menu_parent_div').addClass('hidden');
+        // } else {
+        //     $('#dropdown_menu_parent_div').removeClass('hidden');
+        // }
+        
         console.log('breadcrumb-LIST:', breadcrumb_value_list);
         var final_rv = {
             'current_filter_value': filter_value,
@@ -766,201 +762,6 @@
 
     });
 
-
-
-
-
-
-    // let globalViewType = 'entity';
-
-    // function filterCatgoryData(view_type, filter_value) {
-
-    //     // let div_elem = document.createElement('div');
-    //                 // div_elem.className = 'flex items-center';
-        
-    //     let breadcrumb_list = document.getElementById('breadcrumb-list');
-    //     let child_list_elem = document.createElement('li');
-    //     child_list_elem.className = 'inline-flex items-center';
-    //     let a_elem = document.createElement('a');
-    //     a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-    //     a_elem.setAttribute('data-val', );
-    //     a_elem.textContent = filter_value;
-    //     div_elem.appendChild(a_elem);
-    //     child_list_elem.appendChild(div_elem);
-    //     breadcrumb_list.appendChild(child_list_elem);
-
-    //     $.ajax({
-    //         url: '{% url "handle_filtering_file_data" %}',
-    //         type: 'POST',
-    //         data: {
-    //             'view_type': view_type,
-    //             'filter_value': filter_value,
-    //             'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token for security
-    //         },
-
-    //         success: function(response) {
-    //             // console.log('Category sent successfully:', response);
-    //             console.log('data:', response);
-
-    //             if (response['success'] === true){
-
-    //                 $('#category-list').empty();
-
-    //                 // globalViewType = 'category';
-
-    //                 let global_view_type = response['global_view_type'];
-    //                 let filtered_file_count = response['filtered_file_count'];
-    //                 let filtered_file_objects = response['filtered_file_objects'];
-                    
-    //                 // Update the category list
-    //                 for (let i = 0; i < filtered_file_count.length; i++) {
-    //                     let file_count_dict = filtered_file_count[i];
-    //                     console.log('file:', file_count_dict);
-
-    //                     let card_div_elem = document.createElement('div');
-    //                     card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
-    //                     card_div_elem.setAttribute('data-category', file_count_dict['primary_text']);
-
-    //                     let h2_elem = document.createElement('h2');
-    //                     h2_elem.className = 'text-xl font-bold mb-2';
-    //                     h2_elem.textContent = file_count_dict['primary_text'];
-    //                     let p_elem = document.createElement('p');
-    //                     p_elem.className = 'text-gray-400';
-    //                     p_elem.textContent = file_count_dict['file_count'] + ' Files';
-                        
-    //                     $(card_div_elem).append(h2_elem);
-    //                     $(card_div_elem).append(p_elem);
-    //                     $('#category-list').append(card_div_elem);
-    //                 }
-
-    //                 // // Update the breadcrumb list
-    //                 // let breadcrumb_list = document.getElementById('breadcrumb-list');
-    //                 // let child_list_elem = document.createElement('li');
-    //                 // child_list_elem.className = 'inline-flex items-center';
-
-    //                 // let div_elem = document.createElement('div');
-    //                 // div_elem.className = 'flex items-center';
-
-    //                 if (view_type === 'home'){
-
-    //                     // let a_elem = document.createElement('a');
-    //                     // a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-    //                     // a_elem.setAttribute('data-val', global_view_type);
-    //                     // a_elem.textContent = filter_value;
-
-    //                     // div_elem.appendChild(a_elem);
-    //                     // child_list_elem.appendChild(div_elem);
-    //                     // breadcrumb_list.appendChild(child_list_elem);                        
-
-    //                 } else {
-
-    //                      // Create the SVG element
-    //                     let svg_elem = document.createElementNS('http://www.w3.org/2000/svg', 'svg');  // Use createElementNS for SVG
-    //                     svg_elem.classList.add('rtl:rotate-180', 'w-3', 'h-3', 'text-gray-400', 'mx-1');
-    //                     svg_elem.setAttribute('aria-hidden', 'true');
-    //                     svg_elem.setAttribute('fill', 'none');
-    //                     svg_elem.setAttribute('viewBox', '0 0 6 10');
-
-    //                     // Create the path element inside the SVG
-    //                     let path_elem = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Use createElementNS for SVG
-    //                     path_elem.setAttribute('stroke', 'currentColor');
-    //                     path_elem.setAttribute('stroke-linecap', 'round');
-    //                     path_elem.setAttribute('stroke-linejoin', 'round');
-    //                     path_elem.setAttribute('stroke-width', '2');
-    //                     path_elem.setAttribute('d', 'm1 9 4-4-4-4');
-
-    //                     // Append the path to the SVG
-    //                     svg_elem.appendChild(path_elem);
-    //                     div_elem.appendChild(svg_elem);
-
-    //                     let a_elem = document.createElement('a');
-    //                     a_elem.className = 'inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white';
-    //                     a_elem.setAttribute('data-val', global_view_type);
-    //                     a_elem.textContent = filter_value;
-
-    //                     div_elem.appendChild(a_elem);
-    //                     child_list_elem.appendChild(div_elem);
-    //                     breadcrumb_list.appendChild(child_list_elem);
-
-    //                 }
-
-    //             }
-
-    //         },
-            
-    //         error: function(xhr, status, error) {
-    //             console.error('Error occurred:', error);
-    //         }
-        
-    //     });
-
-    // };
-    
-    // $('#home_breadcrumb').click(function(){
-    //     $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
-    //     filterCatgoryData('home', "");
-    // });
-
-    // $(document).ready(function() {
-
-    //     // $('.category-card').on('click', function() {
-    //     //     var filter_value = $(this).data('category');
-    //     //     var selectedView = $('#viewDropdown').text().trim();
-
-    //     //     let final_selected_value;
-    //     //     if (selectedView.includes('Entity') === true){
-    //     //         final_selected_value = 'entity';
-    //     //     } else {
-    //     //         console.log('Category selected:', filter_value);
-    //     //         final_selected_value = 'category';
-    //     //     }
-            
-    //     //     console.log('tmp:', filter_value, final_selected_value);
-    //     //     filterCatgoryData(final_selected_value, filter_value);
-
-    //     // });
-
-    //     $(document).on("click", ".category-card", function(){
-
-    //         var filter_value = $(this).data('category');
-    //         var selectedView = $('#viewDropdown').text().trim();
-
-    //         // let final_selected_value;
-    //         // if (selectedView.includes('Entity') === true){
-    //         //     final_selected_value = 'entity';
-    //         // } else {
-    //         //     console.log('Category selected:', filter_value);
-    //         //     final_selected_value = 'category';
-    //         // }
-        
-    //         // console.log('tmp:', filter_value, globalViewType);
-    //         // // filterCatgoryData(globalViewType, filter_value);
-
-    //         var listItems = $('#breadcrumb-list').children('li');
-    //         var breadcrumb_value_list = [];
-    //         listItems.each(function(index, element) {
-    //             // console.log('List item ' + index + ':', element);
-
-    //             console.log('child-elem;', element)
-    //             let a_href_element = $(element).children('a');
-                
-    //             let data_value = $($(element).children()[0]).children()[0].getAttribute('data-val');
-    //             breadcrumb_value_list.push(data_value);
-
-    //         });
-
-    //         console.log('breadcrumb:', breadcrumb_value_list);
-    //         filterCatgoryData(globalViewType, filter_value);
-
-    //     });
-
-    //     document.getElementById('viewDropdown').addEventListener('click', function () {
-    //         const menu = document.getElementById('viewDropdownMenu');
-    //         menu.classList.toggle('hidden');
-    //     });
-
-
-    // });
 
 </script>
 

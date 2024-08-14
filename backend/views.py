@@ -243,7 +243,7 @@ def handle_filtering_file_data(request):
                     ).annotate(
                         primary_text=F('primary_category')
                     ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
-                
+
                 elif original_filter_value == 'category':
                     filtered_file_count = File.objects.filter(
                         **filters
@@ -277,6 +277,180 @@ def handle_filtering_file_data(request):
                     'file_modified_at_date_time': fn_modified_at_time,
                 }
                 serialized_file_objects.append(file_dict)
+
+            return JsonResponse({
+                'success': True,
+                'filtered_file_objects': serialized_file_objects,
+                'filtered_file_count': serialized_file_count,
+                'global_view_type': global_filter_type_value,
+                'home': False
+            })
+
+
+def switch_filtered_file_data(request):
+    if request.method == 'POST':
+        print('post-data:', request.POST)
+
+        filter_data = json.loads(request.POST['filter_data'])
+        # print('filter_data:', filter_data, type(filter_data))
+        current_filter_value = filter_data['current_filter_value']
+        switch_view_to_value = filter_data['switch_view_to']
+
+        if current_filter_value == 'Home':
+            filtered_file_objects = File.objects.all()
+                
+            if switch_view_to_value == 'entity':
+                filtered_file_count = File.objects.annotate(
+                    primary_text=F('entity_type')
+                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+                global_view_type = 'entity'
+
+            else:
+                filtered_file_count = File.objects.annotate(
+                    primary_text=F('primary_category')
+                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+                global_view_type = 'category'
+
+            serialized_file_objects = []
+            for fn_obj in filtered_file_objects:
+                file_size_string = size(fn_obj.file_size_in_bytes)
+                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
+                fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
+                fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
+
+                file_dict = {
+                    'user_directory_file_path': fn_obj.user_directory_file_path,
+                    'current_file_path': fn_obj.current_file_path,
+                    'current_file_name': current_file_name_clean,
+
+                    'entity_type': fn_obj.entity_type,
+                    'primary_category': fn_obj.primary_category,
+                    'sub_categories': fn_obj.sub_categories,
+                    'file_size_in_bytes': file_size_string,
+
+                    'file_size_string': file_size_string,
+                    'file_last_access_time': fn_last_access_time,
+                    'file_created_at_date_time': fn_created_at_time,
+                    'file_modified_at_date_time': fn_modified_at_time,
+                }
+                serialized_file_objects.append(file_dict)
+
+            serialized_file_count = list(filtered_file_count)
+            return JsonResponse({
+                'success': True,
+                'filtered_file_objects': serialized_file_objects,
+                'filtered_file_count': serialized_file_count,
+                'global_view_type': global_view_type,
+                'home': True
+            })
+
+        else:
+            breadcrumb_value_list = filter_data['breadcrumb_value_list'][1:]  # always skip the first value since it is home
+
+            filtered_entity_list_values = []
+            filtered_category_list_values = []
+            original_filter_value = current_filter_value.split('-')[0]
+            global_filter_type_value = ''
+            
+            # if 'entity' in current_filter_value:
+            #     global_filter_type_value = 'category'
+            #     filter_value_string = current_filter_value.split('entity-')[1]
+            #     filtered_entity_list_values.append(filter_value_string)
+            # elif 'category' in current_filter_value:
+            #     global_filter_type_value = 'entity'
+            #     filter_value_string = current_filter_value.split('category-')[1]
+            #     filtered_category_list_values.append(filter_value_string)
+
+            for bc in breadcrumb_value_list:
+                if 'entity' in bc:
+                    filter_value_string = bc.split('entity-')[1]
+                    filtered_entity_list_values.append(filter_value_string)
+                elif 'category' in bc:
+                    filter_value_string = bc.split('category-')[1]
+                    filtered_category_list_values.append(filter_value_string)
+
+            filtered_entity_list_values = list(set(filtered_entity_list_values))
+            filtered_category_list_values = list(set(filtered_category_list_values))
+            print('filtered_entity_list_values:', filtered_entity_list_values)
+            print('filtered_category_list_values:', filtered_category_list_values)
+
+            filters = {}
+            if filtered_entity_list_values:
+                filters['entity_type__in'] = filtered_entity_list_values
+            if filtered_category_list_values:
+                filters['primary_category__in'] = filtered_category_list_values
+
+            filtered_file_objects = File.objects.filter(**filters)
+
+            print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
+
+            # if len(filtered_entity_list_values) > 0 and len(filtered_category_list_values) > 0:
+            #     filtered_file_count = None
+            #     serialized_file_count = None
+            # else:
+            #     if original_filter_value == 'entity':
+            #         filtered_file_count = File.objects.filter(
+            #             **filters
+            #         ).annotate(
+            #             primary_text=F('primary_category')
+            #         ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+                
+            #     elif original_filter_value == 'category':
+            #         filtered_file_count = File.objects.filter(
+            #             **filters
+            #         ).annotate(
+            #             primary_text=F('entity_type')
+            #         ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+
+            #     serialized_file_count = list(filtered_file_count)
+
+            if switch_view_to_value == 'entity':
+                filtered_file_count = File.objects.filter(
+                    **filters
+                ).annotate(
+                    primary_text=F('entity_type')
+                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+
+                global_view_type = 'entity'
+
+            else:
+                filtered_file_count = File.objects.filter(
+                    **filters
+                ).annotate(
+                    primary_text=F('primary_category')
+                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+                global_view_type = 'category'
+
+
+            serialized_file_objects = []
+            for fn_obj in filtered_file_objects:
+                file_size_string = size(fn_obj.file_size_in_bytes)
+                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
+                fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
+                fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
+
+                file_dict = {
+                    'user_directory_file_path': fn_obj.user_directory_file_path,
+                    'current_file_path': fn_obj.current_file_path,
+                    'current_file_name': current_file_name_clean,
+
+                    'entity_type': fn_obj.entity_type,
+                    'primary_category': fn_obj.primary_category,
+                    'sub_categories': fn_obj.sub_categories,
+                    'file_size_in_bytes': file_size_string,
+
+                    'file_size_string': file_size_string,
+                    'file_last_access_time': fn_last_access_time,
+                    'file_created_at_date_time': fn_created_at_time,
+                    'file_modified_at_date_time': fn_modified_at_time,
+                }
+                serialized_file_objects.append(file_dict)
+
+            serialized_file_count = list(filtered_file_count)
+
+            print('RETURN GLOBAL VIEW TYPE:', global_view_type)
 
             return JsonResponse({
                 'success': True,
