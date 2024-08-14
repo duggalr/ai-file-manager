@@ -112,6 +112,15 @@
 
 </style>
 
+
+<!-- 
+TODO:
+    - finalize the functionality / look of the main dashboard
+        - test, fix, finalize all functionality of the dashboard
+        - go from there
+-->
+
+
 <!-- Top Navbar -->
 <nav class="bg-gray-800 sticky top-0 z-50 shadow-lg">
     <div class="max-w-7xl mx-auto">
@@ -186,13 +195,10 @@
                 Search
             </button>
         </div>
-
         
         <!-- Breadcrumb Section -->
         <nav class="flex" aria-label="Breadcrumb">
-
             <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse" id="breadcrumb-list">
-                
                 <li id="home_breadcrumb_parent" class="inline-flex items-center">
                     <div class="flex items-center">
                         <a data-val="Home" id="home_breadcrumb" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white cursor-pointer">
@@ -200,7 +206,6 @@
                         </a>
                     </div>
                 </li>
-
             </ol>
         </nav>
 
@@ -220,6 +225,7 @@
                 <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
                     <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
                     <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
+                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Sub-Categories</li>
                 </ul>
             </div>
 
@@ -378,7 +384,8 @@
 
             }
 
-        } else {
+        } 
+        else {
 
             $('#file-list-primary-div').addClass('hidden');
             $('#primary_section_sub_header').removeClass('hidden');
@@ -529,7 +536,11 @@
             let current_tmp_selected_value;
             if (selectedValue === 'Entities'){
                 current_tmp_selected_value = 'entity';
-            } else {
+            }
+            else if (selectedValue === 'Sub-Categories') {
+                current_tmp_selected_value = 'Sub-Categories';
+            }
+            else {
                 current_tmp_selected_value = 'category';
             }
 
@@ -584,7 +595,6 @@
                 };
                 console.log('final-rv:', final_rv);
                 // filterCategoryData(final_rv);
-
                 $.ajax({
                     url: '{% url "switch_filtered_file_data" %}',
                     type: 'POST',

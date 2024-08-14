@@ -126,6 +126,8 @@ def file_view(request):
 
 
 from django.core import serializers
+from django.db import connection
+
 
 def handle_filtering_file_data(request):
     if request.method == 'POST':
@@ -198,13 +200,20 @@ def handle_filtering_file_data(request):
 
             filtered_entity_list_values = []
             filtered_category_list_values = []
+            filtered_subcategory_list_values = []
             original_filter_value = current_filter_value.split('-')[0]
             global_filter_type_value = ''
             
+            print(original_filter_value, breadcrumb_value_list)
+
             if 'entity' in current_filter_value:
                 global_filter_type_value = 'category'
                 filter_value_string = current_filter_value.split('entity-')[1]
                 filtered_entity_list_values.append(filter_value_string)
+            elif 'subcategory' in current_filter_value:
+                global_filter_type_value = 'entity'
+                filter_value_string = current_filter_value.split('subcategory-')[1]
+                filtered_subcategory_list_values.append(filter_value_string)
             elif 'category' in current_filter_value:
                 global_filter_type_value = 'entity'
                 filter_value_string = current_filter_value.split('category-')[1]
@@ -217,21 +226,30 @@ def handle_filtering_file_data(request):
                 elif 'category' in bc:
                     filter_value_string = bc.split('category-')[1]
                     filtered_category_list_values.append(filter_value_string)
+                elif 'subcategory' in bc:
+                    filter_value_string = bc.split('subcategory-')[1]
+                    # filtered_category_list_values.append(filter_value_string)
+                    filtered_subcategory_list_values.append(filter_value_string)
 
             filtered_entity_list_values = list(set(filtered_entity_list_values))
             filtered_category_list_values = list(set(filtered_category_list_values))
+            filtered_subcategory_list_values = list(set(filtered_subcategory_list_values))
             print('filtered_entity_list_values:', filtered_entity_list_values)
             print('filtered_category_list_values:', filtered_category_list_values)
+            print('filtered_subcategory_list_values:', filtered_subcategory_list_values)
 
             filters = {}
             if filtered_entity_list_values:
                 filters['entity_type__in'] = filtered_entity_list_values
             if filtered_category_list_values:
                 filters['primary_category__in'] = filtered_category_list_values
+            if filtered_subcategory_list_values:
+                filters['sub_categories__contains'] = filtered_subcategory_list_values
 
             filtered_file_objects = File.objects.filter(**filters)
 
             print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
+            print(f"ALL FILTER LISTER: {filters}")
 
             if len(filtered_entity_list_values) > 0 and len(filtered_category_list_values) > 0:
                 filtered_file_count = None
@@ -245,6 +263,13 @@ def handle_filtering_file_data(request):
                     ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
 
                 elif original_filter_value == 'category':
+                    filtered_file_count = File.objects.filter(
+                        **filters
+                    ).annotate(
+                        primary_text=F('entity_type')
+                    ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+
+                elif original_filter_value == 'subcategory':
                     filtered_file_count = File.objects.filter(
                         **filters
                     ).annotate(
@@ -305,6 +330,30 @@ def switch_filtered_file_data(request):
                 ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
                 global_view_type = 'entity'
 
+            # TODO: add sub-categories
+            elif switch_view_to_value == 'Sub-Categories':
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        SELECT 
+                sub_category as primary_text, COUNT(*) as file_count
+            FROM (
+                SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                FROM public.backend_file 
+            ) AS subcategory_unnested
+            GROUP BY sub_category
+            ORDER BY file_count DESC
+                    """)
+                    results = cursor.fetchall()
+                    # filtered_file_count = results
+                    global_view_type = 'subcategory'
+                    
+                    filtered_file_count = []
+                    for li in results:
+                        filtered_file_count.append({
+                            'primary_text': li[0],
+                            'file_count': li[1]
+                        })
+                
             else:
                 filtered_file_count = File.objects.annotate(
                     primary_text=F('primary_category')
