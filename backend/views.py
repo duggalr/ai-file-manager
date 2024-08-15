@@ -77,32 +77,30 @@ def handle_user_file_path_submit(request):
             user_directory_file_path = user_directory_file_path
         )
 
-        user_dir_name = os.path.basename(user_directory_file_path)
+        # user_dir_name = os.path.basename(user_directory_file_path)
+        # d_object = Directory.objects.create(
+        #     user_directory_name = user_dir_name,
+        #     user_directory_path = user_directory_file_path
+        # )
+        # d_object.save()
+        # for di in rv_list:
+        #     print('json-di:', di)
+        #     fobj = File.objects.create(
+        #         file_path = di['file_path'],
+        #         file_name = di['file_name'],
 
-        d_object = Directory.objects.create(
-            user_directory_name = user_dir_name,
-            user_directory_path = user_directory_file_path
-        )
-        d_object.save()
-
-        for di in rv_list:
-            print('json-di:', di)
-            fobj = File.objects.create(
-                file_path = di['current_image_file_path'],
-                file_name = di['current_image_file_name'],
-
-                entity_type = di['entity_type'],
-                primary_category = di['primary_category'],
-                sub_categories = di['sub_categories'],
+        #         entity_type = di['entity_type'],
+        #         primary_category = di['primary_category'],
+        #         sub_categories = di['sub_categories'],
     
-                file_size_in_bytes = di['file_size'],
-                file_last_access_time = di['last_access_time'],
-                file_created_at_date_time = di['creation_time'],
-                file_modified_at_date_time = di['last_modified_time'],
+        #         file_size_in_bytes = di['file_size_in_bytes'],
+        #         file_last_access_time = di['file_last_access_time'],
+        #         file_created_at_date_time = di['file_created_at_date_time'],
+        #         file_modified_at_date_time = di['file_modified_at_date_time'],
 
-                directory_object = d_object
-            )
-            fobj.save()
+        #         directory_object = d_object
+        #     )
+        #     fobj.save()
 
         return JsonResponse({
             'success': True
@@ -150,7 +148,9 @@ def handle_filtering_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.file_name).capitalize()
+                # current_file_name_clean = (fn_obj.file_name).capitalize()
+                current_file_name_clean = (fn_obj.generated_file_name).capitalize()
+
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
@@ -267,7 +267,9 @@ def handle_filtering_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.file_name).capitalize()
+                # current_file_name_clean = (fn_obj.file_name).capitalize()
+                current_file_name_clean = (fn_obj.generated_file_name).capitalize()
+                
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
@@ -509,3 +511,4 @@ def switch_filtered_file_data(request):
                 'global_view_type': global_filter_type_value,
                 'home': False
             })
+
