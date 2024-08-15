@@ -47,7 +47,7 @@ def file_view(request):
     #     directory_name = os.path.basename(dpath)
     #     distinct_dir_names.append([directory_name, dobj])
 
-    directory_objects = Directory.objects.all()
+    directory_objects = Directory.objects.all().order_by('-created_at')
 
     return render(request, 'dashboard/new_file_view.html', {
         # 'distinct_user_directory_list': distinct_dir_names,

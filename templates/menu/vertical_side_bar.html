@@ -6,11 +6,13 @@
             <!-- <i class="fa-solid fa-house"></i>&nbsp;&nbsp; -->
             View Files
         </a>
-        <ul class="ps-0 pt-0 py-0 space-y-2 list-disc list-inside text-gray-300" style="font-size: 14px;">
+        <ul class="ps-0 pt-0 py-0 space-y-2 list-none list-inside text-gray-300" style="font-size: 14px;">
             {% for dobj in directory_objects %}
                 <li class="cursor-pointer hover:text-blue-500 truncate">
                     <a href="{% url 'file_view' %}?directory={{ dobj.id }}">
-                        {{ dobj.user_directory_name }}
+                        <!-- <i class="fa-regular fa-folder"></i>
+                        &nbsp; -->
+                        - {{ dobj.user_directory_name }}
                     </a>
                 </li>
             {% endfor %}
