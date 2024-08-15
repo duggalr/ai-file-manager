@@ -10,7 +10,8 @@ import json
 import datetime
 from hurry.filesize import size
 from .models import File, Directory
-from .scripts import user_file_path_utils
+# from .scripts import user_file_path_utils
+from .scripts.file_process import mp_main_two
 
 
 # def home(request):
@@ -69,7 +70,10 @@ def handle_user_file_path_submit(request):
         user_directory_file_path = request.POST['user_file_path']
         print('user-fp:', user_directory_file_path)
 
-        rv_list = user_file_path_utils.main(
+        # rv_list = user_file_path_utils.main(
+        #     user_directory_file_path = user_directory_file_path
+        # )
+        rv_list = mp_main_two.main(
             user_directory_file_path = user_directory_file_path
         )
 

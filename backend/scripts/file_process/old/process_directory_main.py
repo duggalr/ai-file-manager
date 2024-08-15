@@ -50,21 +50,24 @@ def process_directory(fp, invalid_directories, valid_file_paths, invalid_file_pa
     for fn in directory_file_paths:
         current_fn_full_path = os.path.join(fp, fn)
         
-        if os.path.isdir(current_fn_full_path):
-            # Check if the directory is valid (i.e., not a virtual environment)
-            if is_valid_directory(current_fn_full_path):
-                # Recursively process the subdirectory
-                process_directory(current_fn_full_path, invalid_directories, valid_file_paths, invalid_file_paths)
-  
+        if '.app' not in current_fn_full_path:
+            if os.path.isdir(current_fn_full_path):
+                # Check if the directory is valid (i.e., not a virtual environment)
+                if is_valid_directory(current_fn_full_path):
+                    # Recursively process the subdirectory
+                    process_directory(current_fn_full_path, invalid_directories, valid_file_paths, invalid_file_paths)
+                else:
+                    # Mark the directory as invalid
+                    invalid_directories.append(current_fn_full_path)
             else:
-                # Mark the directory as invalid
-                invalid_directories.append(current_fn_full_path)
-        else:
-            # Check if the file is valid
-            if _is_valid_file(current_fn_full_path):
-                valid_file_paths.append(current_fn_full_path)
-            else:
-                invalid_file_paths.append(current_fn_full_path)
+                # Check if the file is valid
+                if _is_valid_file(current_fn_full_path):
+                    valid_file_paths.append(current_fn_full_path)
+                else:
+                    invalid_file_paths.append(current_fn_full_path)
+
+        else: # .app files are not valid
+            invalid_file_paths.append(current_fn_full_path)
 
     return valid_file_paths, invalid_directories, invalid_file_paths
 

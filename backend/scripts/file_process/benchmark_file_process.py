@@ -2,7 +2,8 @@ import time
 import multiprocessing
 from contextlib import contextmanager
 
-import mp_main_one
+# import mp_main_one
+import mp_main_two
 
 
 @contextmanager
@@ -26,18 +27,19 @@ def benchmark():
 
     # Run benchmark for the original modular approach
     with timer(f"Original Approach with {num_workers} workers"):
-        mp_main_one.main(
-            user_directory_file_path = directory_list[0]
+        mp_main_two.main(
+            user_directory_file_path = directory_list[3]
         )
         # for fp in directory_list:
         #     mp_main_one.main(
         #         user_directory_file_path = fp
         #     )
 
-    # # Run benchmark for the integrated approach
-    # with timer(f"Integrated Approach with {num_workers} workers"):
-    #     integrated_main()
 
 
-if __name__ == "__main__":
-    benchmark()
+# if __name__ == "__main__":
+#     benchmark()
+
+# import os
+# fp_one = '/Users/rahulduggal/Downloads/Visual Studio Code.app'
+# print(os.listdir(fp_one))
