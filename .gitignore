@@ -4,3 +4,4 @@ django_project_venv/
 __pycache__/
 test_output_files/
 todo.txt
+backend/scripts/file_process/screenshots
