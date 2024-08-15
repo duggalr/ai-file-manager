@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Top Navbar -->
+{% include 'menu/top_nav_bar.html' %}
+
+<!-- Main -->
+<div class="flex">
+
+    <!-- Vertical Sidebar -->
+    {% include 'menu/vertical_side_bar.html' %}
+
+    <!-- Main Content -->
+    <div class="w-full max-w-2xl mx-auto p-6 rounded-lg shadow-lg mt-8">
+
+        <h2 class="font-semibold text-gray-100 text-center mb-4" style="font-size: 26px;">
+            Enter a Directory Path to Organize
+        </h2>
+        
+        <hr class="border-gray-700 mt-4 mb-4">
+
+        <!-- File Path Form -->
+        <form id="uploadForm" class="space-y-6">
+            <div>
+                <label class="block text-gray-400 text-sm font-bold mb-2" for="directoryInput">
+                    Directory Filepath:
+                </label>
+                <div class="flex">
+                    <input 
+                        type="text" 
+                        id="directory_path_input" 
+                        name="directory_path" 
+                        placeholder="/user/documents/project_folder" 
+                        class="w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:border-blue-500" 
+                        required
+                    >
+                </div>
+            </div>
+
+            <button 
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring focus:border-blue-500"
+            >
+                Organize
+            </button>
+        </form>
+
+        <!-- Loader -->
+        <div id="loader" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-900 bg-opacity-50 z-50 hidden">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-100"></div>
+        </div>
+
+        <hr class="border-gray-700 mt-10 mb-0">
+
+        <!-- Entered File Paths List -->
+        <div id="filePathsList" class="mt-8">
+            <h3 class="text-xl font-semibold text-gray-200 mb-4">
+                Saved File Paths
+            </h3>
+            <ul class="space-y-4">
+
+                {% for dobj in directory_objects %}
+
+                    <li class="flex justify-between items-center bg-gray-700 p-3 rounded-md shadow-sm">
+                        <span class="text-gray-300">
+                            {{ dobj.user_directory_path }}
+                        </span>
+                        <button class="text-red-400 hover:text-red-600 focus:outline-none">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </li>
+
+                {% endfor %}
+
+                <!-- <li class="flex justify-between items-center bg-gray-700 p-3 rounded-md shadow-sm">
+                    <span class="text-gray-300">
+                        /user/documents/project_folder
+                    </span>
+                    <button class="text-red-400 hover:text-red-600 focus:outline-none">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </li> -->
+
+            </ul>
+        </div>
+
+        <!-- Response Message -->
+        <div id="responseMessage" class="mt-4 hidden p-3 text-center rounded-md bg-blue-600 text-white">
+            <!-- Success/Error message will be displayed here -->
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const filePath = document.getElementById('directory_path_input').value;
+        console.log('fp:', filePath);
+
+        $('#loader').removeClass('hidden');
+
+        $.ajax({
+            url: "{% url 'handle_user_file_path_submit' %}",
+            type: "POST",
+            dataType: "json",
+            data: {
+                user_file_path: filePath,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: (data) => {
+                // console.log(data);
+                $('#loader').hide();
+                if (data['success'] === true){
+                    window.location.href = '/file-view';
+                }
+            },
+            error: (error) => {
+                console.log(error);
+            }
+        });
+
+    });
+
+</script>
+
+{% endblock %}

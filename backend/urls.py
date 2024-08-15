@@ -4,7 +4,9 @@ from . import views
 
 urlpatterns = [
     # Application
-    path('', views.home, name='home'),
+    # path('', views.home, name='home'),
+
+    path('manage-file-path', views.manage_file_path, name='manage_file_path'),
     path('file-view', views.file_view, name='file_view'),
     path('handle_filtering_file_data', views.handle_filtering_file_data, name='handle_filtering_file_data'),
     path('switch_filtered_file_data', views.switch_filtered_file_data, name='switch_filtered_file_data'),

@@ -10,9 +10,9 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def main(user_file_path):
+def main(user_directory_file_path):
     file_path_output_dict = data_utils.main(
-        directory_fp = user_file_path
+        directory_fp = user_directory_file_path
     )
     output_file_path_list = file_path_output_dict['output_file_path_list']
     could_not_process_file_list = file_path_output_dict['could_not_process_file_list']
@@ -59,7 +59,7 @@ def main(user_file_path):
 # ## TODO: delete testing code below
 # directory_file_path = '/Users/rahulduggal/Desktop/search_fund_material'
 # main(
-#     user_file_path = directory_file_path
+#     user_directory_file_path = directory_file_path
 # )
 
 # file_path = '/Users/rahulduggal/Downloads/beater_top_two.jpg'

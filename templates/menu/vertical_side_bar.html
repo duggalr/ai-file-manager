@@ -1,0 +1,59 @@
+<aside class="bg-gray-800 w-56 sticky top-0 h-screen p-4 py-6 pt-6">
+    <nav class="space-y-5">
+        
+        <a href="{% url 'file_view' %}" class="font-light text-gray-300 hover:text-white flex items-center" style="font-size: 15.5px;">
+            <!-- <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 12H7a2 2 0 01-2-2V6a2 2 0 012-2h5.4a2 2 0 011.6.8l2.4 2.9a2 2 0 001.6.8H19a2 2 0 012 2v11a2 2 0 01-2 2z"></path></svg> -->
+            <!-- <i class="fa-solid fa-house"></i>&nbsp;&nbsp; -->
+            View Files
+        </a>
+        <ul class="ps-0 pt-0 py-0 space-y-2 list-disc list-inside text-gray-300" style="font-size: 14px;">
+            {% for dobj in directory_objects %}
+                <li class="cursor-pointer hover:text-blue-500 truncate">
+                    <a href="{% url 'file_view' %}?directory={{ dobj.id }}">
+                        {{ dobj.user_directory_name }}
+                    </a>
+                </li>
+            {% endfor %}
+            
+            <!-- <li class="cursor-pointer hover:text-blue-500">
+                Directory 2
+            </li>
+            <li class="cursor-pointer hover:text-blue-500">
+                Directory 3
+            </li> -->
+        </ul>
+
+        <a href="{% url 'manage_file_path' %}" class="text-base font-light text-gray-300 hover:text-white flex items-center pt-2" style="font-size: 15px;">
+            <!-- <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 12H7a2 2 0 01-2-2V6a2 2 0 012-2h5.4a2 2 0 011.6.8l2.4 2.9a2 2 0 001.6.8H19a2 2 0 012 2v11a2 2 0 01-2 2z"></path></svg> -->
+            <i class="fa-solid fa-list-ul"></i>&nbsp;&nbsp;Manage My Filepaths
+        </a>
+
+        <a href="#" class="text-base font-light text-gray-500 flex items-center cursor-not-allowed" style="font-size: 15px; pointer-events: none;">
+            <i class="fa-solid fa-gear"></i>&nbsp;&nbsp;Settings
+        </a>
+
+        <!-- <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 12H7a2 2 0 01-2-2V6a2 2 0 012-2h5.4a2 2 0 011.6.8l2.4 2.9a2 2 0 001.6.8H19a2 2 0 012 2v11a2 2 0 01-2 2z"></path></svg>
+            Settings -->
+        <!-- <a href="#" class="text-base font-medium text-gray-300 hover:text-white flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 12H7a2 2 0 01-2-2V6a2 2 0 012-2h5.4a2 2 0 011.6.8l2.4 2.9a2 2 0 001.6.8H19a2 2 0 012 2v11a2 2 0 01-2 2z"></path></svg>
+            All Files
+        </a>
+        <a href="#" class="text-base font-medium text-gray-300 hover:text-white flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a4 4 0 014-4h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7z"></path></svg>
+            Documents
+        </a>
+        <a href="#" class="text-base font-medium text-gray-300 hover:text-white flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12 7-12 6z"></path></svg>
+            Media Files
+        </a>
+        <a href="#" class="text-base font-medium text-gray-300 hover:text-white flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h14a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path></svg>
+            Code Files
+        </a>
+        <a href="#" class="text-base font-medium text-gray-300 hover:text-white flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v8m4-4H8"></path></svg>
+            Others
+        </a> -->
+    </nav>
+    <hr class="border-gray-700 mt-6">
+</aside>

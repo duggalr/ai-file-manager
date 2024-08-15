@@ -129,7 +129,6 @@ def main(directory_fp):
                 output_file_path = f"{output_file_path}.png"
                 # print(f"Input File: {file_path} | Output File: {output_file_path}")
                 
-                
                 return_output_image_fp = _main_file_to_image(
                     input_file_path = file_path,
                     output_file_path = output_file_path
