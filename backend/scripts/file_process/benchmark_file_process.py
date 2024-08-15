@@ -2,9 +2,8 @@ import time
 import multiprocessing
 from contextlib import contextmanager
 
-# Your original script functions
-from your_original_script import main as original_main
-from your_integrated_script import main as integrated_main
+import mp_main_one
+
 
 @contextmanager
 def timer(label: str):
@@ -18,13 +17,27 @@ def benchmark():
     # Adjust the number of cores used in multiprocessing to match your environment
     num_workers = multiprocessing.cpu_count()
 
+    directory_list = [
+        '/Users/rahulduggal/Desktop/test_directory_one',
+        '/Users/rahulduggal/Desktop/test_directory_two',
+        '/Users/rahulduggal/Desktop/test_directory_three',
+        '/Users/rahulduggal/Desktop/test_directory_four',
+    ]
+
     # Run benchmark for the original modular approach
     with timer(f"Original Approach with {num_workers} workers"):
-        original_main()
+        mp_main_one.main(
+            user_directory_file_path = directory_list[0]
+        )
+        # for fp in directory_list:
+        #     mp_main_one.main(
+        #         user_directory_file_path = fp
+        #     )
 
-    # Run benchmark for the integrated approach
-    with timer(f"Integrated Approach with {num_workers} workers"):
-        integrated_main()
+    # # Run benchmark for the integrated approach
+    # with timer(f"Integrated Approach with {num_workers} workers"):
+    #     integrated_main()
+
 
 if __name__ == "__main__":
     benchmark()

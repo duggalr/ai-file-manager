@@ -129,34 +129,6 @@ def encode_image(image: Image.Image):
     return buffered.getvalue()
 
 
-# def is_hidden(filepath):
-#     if platform.system() != 'Windows':
-#         return os.path.basename(filepath).startswith('.')
-#     else:
-#         import ctypes
-#         attrs = ctypes.windll.kernel32.GetFileAttributesW(str(filepath))
-#         return attrs != -1 and (attrs & 2)
-
-def is_hidden(filepath):
-    if platform.system() != 'Windows':
-        return os.path.basename(filepath).startswith('.')
-    else:
-        try:
-            import ctypes
-            attrs = ctypes.windll.kernel32.GetFileAttributesW(str(filepath))
-            return attrs != -1 and (attrs & 2)
-        except Exception:
-            return False
-
-
-def _is_valid_file(filepath):
-    if is_hidden(filepath):
-        return False
-    file_extension = filepath.split('.')[-1]
-    file_size_in_bytes = os.path.getsize(filepath)
-    valid_file_size_bytes = 50000000 if file_extension == 'pdf' else 10000000
-    return file_size_in_bytes <= valid_file_size_bytes
-
 
 def _is_image_file(file_path):
     try:
@@ -187,63 +159,104 @@ def text_to_image(text):
         font = ImageFont.truetype("arial.ttf", size=20)
     except OSError:
         font = ImageFont.load_default()
+
     margin, offset = 10, 10
     for line in text.splitlines():
+        bbox = draw.textbbox((0, 0), line, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
         draw.text((margin, offset), line, font=font, fill="black")
-        offset += draw.textsize(line, font=font)[1] + 5
+        offset += text_height + 5
         if offset > height - margin:
             break
+
+    # image.save(output_file_path, format='PNG')
+    # return output_file_path
     return image
+
+    # margin, offset = 10, 10
+    # for line in text.splitlines():
+    #     draw.text((margin, offset), line, font=font, fill="black")
+    #     offset += draw.textsize(line, font=font)[1] + 5
+    #     if offset > height - margin:
+    #         break
+
+    # return image
+
+    # # font = ImageFont.truetype('arial.ttf', 40)
+    # # # text = "Hello, World!"
+    # # text_width, text_height = draw.textbbox((0, 0), text, font=font)[2:4]
+    # # position = ((image.width - text_width) // 2, (image.height - text_height) // 2)
+    # # draw.text(position, text, fill='black', font=font)
 
 
 def process_single_file(file_path, category_prompt, op_wrapper):
-    try:
-        image = _main_file_to_image(file_path)
-        image_data = encode_image(image)
-        response = op_wrapper.generate_file_category_json(
-            image_data=f"data:image/png;base64,{base64.b64encode(image_data).decode()}",
-            prompt=category_prompt
-        )
-        json_response_data = json.loads(response)
-        file_size = os.path.getsize(file_path)
-        last_access_time = datetime.datetime.fromtimestamp(os.path.getatime(file_path))
-        last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-        creation_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
-        current_image_file_name = os.path.basename(file_path)
-        json_response_data.update({
-            'file_path': file_path,
-            'file_name': current_image_file_name,
-            'file_size_in_bytes': file_size,
-            'file_last_access_time': last_access_time,
-            'file_created_at_date_time': creation_time,
-            'file_modified_at_date_time': last_modified_time,
-            'screenshot_image': ContentFile(image_data, name=f"{uuid.uuid4()}.png")
-        })
-        return json_response_data
-    except Exception as e:
-        print(f"Error processing file {file_path}: {e}")
-        return None
+    # try:
+    image = _main_file_to_image(file_path)
+    image_data = encode_image(image)
+    response = op_wrapper.generate_file_category_json(
+        image_data=f"data:image/png;base64,{base64.b64encode(image_data).decode()}",
+        prompt=category_prompt
+    )
+    json_response_data = json.loads(response)
+    file_size = os.path.getsize(file_path)
+    last_access_time = datetime.datetime.fromtimestamp(os.path.getatime(file_path))
+    last_modified_time = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+    creation_time = datetime.datetime.fromtimestamp(os.path.getctime(file_path))
+    current_image_file_name = os.path.basename(file_path)
+    json_response_data.update({
+        'file_path': file_path,
+        'file_name': current_image_file_name,
+        'file_size_in_bytes': file_size,
+        'file_last_access_time': last_access_time,
+        'file_created_at_date_time': creation_time,
+        'file_modified_at_date_time': last_modified_time,
+        'screenshot_image': ContentFile(image_data, name=f"{uuid.uuid4()}.png")
+    })
+    return json_response_data
+    # except Exception as e:
+    #     print(f"Error processing file {file_path}: {e}")
+    #     return None
 
 
-def main(user_directory_file_path, dobject):
+import process_directory_main
+
+# def main(user_directory_file_path, dobject):
+def main(user_directory_file_path):
+
+    dobject = Directory.objects.create(
+        user_directory_name = os.path.basename(user_directory_file_path),
+        user_directory_path = user_directory_file_path
+    )
+    dobject.save()
+    
     could_not_process_file_list = []
-    output_file_path_list = []
-    processed_files = set()  # Set to track processed file paths
+    processed_files = set()
+    invalid_directories = []
+    valid_file_paths = []
+    invalid_file_paths = []
+    process_directory_main.process_directory(
+        user_directory_file_path,
+        invalid_directories,
+        valid_file_paths,
+        invalid_file_paths
+    )
 
-    for root, _, files in os.walk(user_directory_file_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            if _is_valid_file(file_path):
-                output_file_path_list.append(file_path)
-            else:
-                could_not_process_file_list.append(file_path)
+    print(f"Number of Valid File Paths: {len(valid_file_paths)}")
+    print(f"Number of Invalid Directories: {len(invalid_directories)}")
+    print(f"Number of Invalid File Paths: {len(invalid_file_paths)}")
+    # print('-------------------------------------------------------------------')
+    # print(f"Valid File Paths: {valid_file_paths}")
+    # print(f"Invalid Directories: {invalid_directories}")
+    # print(f"Invalid File Paths: {invalid_file_paths}")
 
     category_prompt = Prompts.CATEGORIZATION_PROMPT_V1.value
     op_wrapper = OpenAIWrapper()
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         process_worker = partial(process_single_file, category_prompt=category_prompt, op_wrapper=op_wrapper)
-        results = list(executor.map(process_worker, output_file_path_list))
+        results = list(executor.map(process_worker, valid_file_paths))
 
     for result in results:
         if result:
@@ -284,18 +297,22 @@ def main(user_directory_file_path, dobject):
     return results
 
 
-if __name__ == '__main__':
-    directory_list = [
-        '/Users/rahulduggal/Desktop/test_directory_one',
-        # '/Users/rahulduggal/Desktop/test_directory_two'
-    ]
-    for directory in directory_list:
-        d_object = Directory.objects.create(
-            user_directory_name = os.path.basename(directory),
-            user_directory_path = directory
-        )
-        d_object.save()
-        main(
-            directory, 
-            dobject=d_object
-        )
+# if __name__ == '__main__':
+#     directory_list = [
+#         # '/Users/rahulduggal/Desktop/test_directory_one',
+#         # '/Users/rahulduggal/Desktop/test_directory_two',
+#         # '/Users/rahulduggal/Desktop/test_directory_three',
+#         '/Users/rahulduggal/Desktop/test_directory_four',
+#     ]
+
+#     directory_fp = directory_list[0]
+#     d_object = Directory.objects.create(
+#         user_directory_name = os.path.basename(directory_fp),
+#         user_directory_path = directory_fp
+#     )
+#     d_object.save()
+
+#     main(
+#         user_directory_file_path = directory_fp,
+#         dobject = d_object
+#     )
