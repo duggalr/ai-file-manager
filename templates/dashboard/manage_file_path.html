@@ -67,7 +67,10 @@
                             {{ dobj.user_directory_path }}
                         </span>
                         <button class="text-red-400 hover:text-red-600 focus:outline-none">
-                            <i class="fa-solid fa-trash"></i>
+                            <a href="{% url 'delete_user_file_path' dobj.id %}">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                            <!-- <i class="fa-solid fa-trash"></i> -->
                         </button>
                     </li>
 

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, F
@@ -54,6 +54,12 @@ def file_view(request):
         'entity_type_and_file_count': entity_type_and_file_count,
         'directory_objects': directory_objects
     })
+
+
+def delete_user_file_path(request, uuid):
+    print('uuid', uuid)
+    Directory.objects.filter(id=uuid).delete()
+    return redirect('manage_file_path')
 
 
 ## AJAX
@@ -140,14 +146,15 @@ def handle_filtering_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                current_file_name_clean = (fn_obj.file_name).capitalize()
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
 
                 file_dict = {
-                    'user_directory_file_path': fn_obj.user_directory_file_path,
-                    'current_file_path': fn_obj.current_file_path,
+                    'user_directory_name': fn_obj.directory_object.user_directory_name,
+                    'user_directory_file_path': fn_obj.directory_object.user_directory_path,
+                    'current_file_path': fn_obj.file_path,
                     'current_file_name': current_file_name_clean,
 
                     'entity_type': fn_obj.entity_type,
@@ -256,14 +263,19 @@ def handle_filtering_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                current_file_name_clean = (fn_obj.file_name).capitalize()
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
 
                 file_dict = {
-                    'user_directory_file_path': fn_obj.user_directory_file_path,
-                    'current_file_path': fn_obj.current_file_path,
+                    # 'user_directory_file_path': fn_obj.user_directory_file_path,
+                    # 'current_file_path': fn_obj.current_file_path,
+                    # 'current_file_name': current_file_name_clean,
+
+                    'user_directory_name': fn_obj.directory_object.user_directory_name,
+                    'user_directory_file_path': fn_obj.directory_object.user_directory_path,
+                    'current_file_path': fn_obj.file_path,
                     'current_file_name': current_file_name_clean,
 
                     'entity_type': fn_obj.entity_type,
@@ -338,14 +350,19 @@ def switch_filtered_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                current_file_name_clean = (fn_obj.file_name).capitalize()
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
 
                 file_dict = {
-                    'user_directory_file_path': fn_obj.user_directory_file_path,
-                    'current_file_path': fn_obj.current_file_path,
+                    # 'user_directory_file_path': fn_obj.user_directory_file_path,
+                    # 'current_file_path': fn_obj.current_file_path,
+                    # 'current_file_name': current_file_name_clean,
+
+                    'user_directory_name': fn_obj.directory_object.user_directory_name,
+                    'user_directory_file_path': fn_obj.directory_object.user_directory_path,
+                    'current_file_path': fn_obj.file_path,
                     'current_file_name': current_file_name_clean,
 
                     'entity_type': fn_obj.entity_type,
@@ -450,14 +467,19 @@ def switch_filtered_file_data(request):
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
                 file_size_string = size(fn_obj.file_size_in_bytes)
-                current_file_name_clean = (fn_obj.current_file_name).capitalize()
+                current_file_name_clean = (fn_obj.file_name).capitalize()
                 fn_last_access_time = datetime.datetime.strftime(fn_obj.file_last_access_time, "%Y-%m-%d")
                 fn_created_at_time = datetime.datetime.strftime(fn_obj.file_created_at_date_time, "%Y-%m-%d")
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
 
                 file_dict = {
-                    'user_directory_file_path': fn_obj.user_directory_file_path,
-                    'current_file_path': fn_obj.current_file_path,
+                    # 'user_directory_file_path': fn_obj.user_directory_file_path,
+                    # 'current_file_path': fn_obj.current_file_path,
+                    # 'current_file_name': current_file_name_clean,
+
+                    'user_directory_name': fn_obj.directory_object.user_directory_name,
+                    'user_directory_file_path': fn_obj.directory_object.user_directory_path,
+                    'current_file_path': fn_obj.file_path,
                     'current_file_name': current_file_name_clean,
 
                     'entity_type': fn_obj.entity_type,
