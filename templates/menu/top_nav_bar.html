@@ -14,16 +14,22 @@
                     Dashboard
                 </a> -->
                 
-                <span class="text-gray-500 hover:text-gray-600 px-4 py-2 rounded-md font-normal cursor-pointer" style="font-size: 13px;">
-                    <i class="fa-solid fa-user"></i> rahul@lambdal.com
-                </span>
+                {% if user_profile_object is not none %}
+
+                    <span class="text-gray-500 hover:text-gray-600 px-4 py-2 rounded-md font-normal cursor-pointer" style="font-size: 13px;">
+                        <i class="fa-solid fa-user"></i> {{ user_profile_object.user_obj.email }}
+                    </span>
+
+                    <a href="{% url 'logout' %}" class="text-gray-300 hover:text-white px-4 py-2 rounded-md font-normal" style="font-size: 14px;">
+                        Logout
+                    </a>
+
+                {% endif %}
 
                 <!-- <a href="#" class="text-gray-300 hover:text-white px-4 py-2 rounded-md font-normal" style="font-size: 14px;">
                     Settings
                 </a> -->
-                <a href="#" class="text-gray-300 hover:text-white px-4 py-2 rounded-md font-normal" style="font-size: 14px;">
-                    Logout
-                </a>
+
             </div>
         </div>
     </div>

@@ -20,9 +20,11 @@
         
         <hr class="border-gray-700 mb-6">
 
+        {% if unprocessed_file_objects|length > 0 %}
+
         <ul class="space-y-4">
 
-            {% for obj in file_objects %}
+            {% for obj in unprocessed_file_objects %}
                 <li class="bg-gray-900 pt-2 rounded-lg shadow hover:shadow-xl transition duration-300 ease-in-out">
                     <h3 class="font-medium text-white truncate" title="{{ obj.file_name }}">
                         <span class="text-base">
@@ -42,10 +44,18 @@
 
         </ul>
 
+        {% else %}
+
+        <div class="text-center text-gray-400">
+            <p class="text-base">
+                No unprocessed files found...
+            </p>
+        </div>
+
+        {% endif %}
+
     </div>
 
 </div>
 
 {% endblock %}
-
-<!-- TODO: go from here -->

@@ -15,13 +15,8 @@ from hurry.filesize import size
 from authlib.integrations.django_client import OAuth
 
 from .models import File, Directory, UserOAuth, UserProfile
-# from .scripts import user_file_path_utils
 from .scripts.file_process import mp_main_two
 
-
-# TODO: 
-    # full focus on integrating user authentication / profile into app with all files, etc.
-    # then, full focus on prompt testing/finalization and celery-task-scheduling
 
 oauth = OAuth()
 oauth.register(
@@ -59,10 +54,17 @@ def callback(request):
                 user_obj = user_auth_obj,
             )
             up_object.save()
+            return redirect(request.build_absolute_uri(reverse("manage_file_path")))
         else:
             up_object = up_objects[0]
 
-        return redirect(request.build_absolute_uri(reverse("file_view")))
+            user_profile_directory_objects = Directory.objects.filter(
+                user_profile_obj = up_object
+            )
+            if len(user_profile_directory_objects) > 0:
+                return redirect(request.build_absolute_uri(reverse("file_view")))
+            else:
+                return redirect(request.build_absolute_uri(reverse("manage_file_path")))
 
     else:
         user_auth_obj = UserOAuth.objects.create(
@@ -80,7 +82,6 @@ def callback(request):
 
         return redirect(request.build_absolute_uri(reverse("file_view")))
 
-
 def login(request):
     return oauth.auth0.authorize_redirect(
         request, request.build_absolute_uri(reverse("callback"))
@@ -93,7 +94,7 @@ def logout(request):
         f"https://{settings.AUTH0_DOMAIN}/v2/logout?"
         + urlencode(
             {
-                "returnTo": request.build_absolute_uri(reverse("index")),
+                "returnTo": request.build_absolute_uri(reverse("landing")),
                 "client_id": settings.AUTH0_CLIENT_ID,
             },
             quote_via=quote_plus,
@@ -101,20 +102,48 @@ def logout(request):
     )
 
 
+def get_user_profile(request):
+    user_dict = request.session.get("user")
+    user_auth_obj = None
+    if user_dict is not None:
+        user_auth_objects = UserOAuth.objects.filter(
+            email = user_dict['userinfo']['email']
+        )
+        if len(user_auth_objects) == 0:
+            raise Exception
+        
+        user_auth_obj = user_auth_objects[0]
+
+    up_objects = UserProfile.objects.filter(
+        user_obj = user_auth_obj
+    )
+    up_obj = None
+    if len(up_objects) > 0:
+        up_obj = up_objects[0]
+        return up_obj
+    else:
+        return up_obj
+
 
 def landing(request):
-    return render(request, 'primary/landing.html')
+    up_obj = get_user_profile(request)
+    return render(request, 'primary/landing.html', {
+        'user_profile_object': up_obj
+    })
 
 
 def manage_file_path(request):
-    directory_objects = Directory.objects.all().order_by('-created_at')
+    up_obj = get_user_profile(request)
+    directory_objects = Directory.objects.filter(
+        user_profile_obj = up_obj
+    ).order_by('-created_at')
     return render(request, 'dashboard/manage_file_path.html', {
+        'user_profile_object': up_obj,
         'directory_objects': directory_objects
     })
 
 
 def file_view(request):
-
     # file_object_id = request.GET['directory']
     directory_object_id = request.GET.get('directory', None)
 
@@ -151,13 +180,23 @@ def file_view(request):
 
 
 def unprocessed_file_view(request):
-    file_objects = File.objects.filter(
-        processed = False
-    )
+    up_obj = get_user_profile(request)
+    directory_objects = Directory.objects.filter(
+        user_profile_obj = up_obj
+    ).order_by('-created_at')
+    
+    rv = []
+    for dobj in directory_objects:
+        file_objects = File.objects.filter(
+            directory_object = dobj,
+            processed = False
+        )
+        if len(file_objects) > 0:
+            for fobj in file_objects:
+                rv.append(fobj)
 
-    directory_objects = Directory.objects.all().order_by('-created_at')
     return render(request, 'dashboard/unprocessed_file_list.html', {
-        'file_objects': file_objects,
+        'unprocessed_file_objects': rv,
         'directory_objects': directory_objects
     })
 

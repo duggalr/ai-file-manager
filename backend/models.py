@@ -43,6 +43,7 @@ class Directory(models.Model):
     user_directory_path = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    user_profile_obj = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class File(models.Model):
@@ -71,4 +72,3 @@ class File(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     directory_object = models.ForeignKey('Directory', on_delete=models.CASCADE, blank=True, null=True)
-
