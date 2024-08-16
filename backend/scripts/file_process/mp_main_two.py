@@ -156,10 +156,11 @@ def process_single_file(file_path, category_prompt, op_wrapper, could_not_proces
 
 
 # Main function
-def main(user_directory_file_path):
+def main(user_directory_file_path, user_profile_object):
     dobject = Directory.objects.create(
-        user_directory_name=os.path.basename(user_directory_file_path),
-        user_directory_path=user_directory_file_path
+        user_directory_name = os.path.basename(user_directory_file_path),
+        user_directory_path = user_directory_file_path,
+        user_profile_obj = user_profile_object
     )
     dobject.save()
 

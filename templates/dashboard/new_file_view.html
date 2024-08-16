@@ -140,126 +140,146 @@
                 Search
             </button>
         </div>
-        
-        <!-- Breadcrumb Section -->
-        <nav class="flex" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse" id="breadcrumb-list">
-                <li id="home_breadcrumb_parent" class="inline-flex items-center">
-                    <div class="flex items-center">
-                        <a data-val="Home" id="home_breadcrumb" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white cursor-pointer">
-                            Home
-                        </a>
-                    </div>
-                </li>
-            </ol>
-        </nav>
 
-        <!-- Main Section Header -->
-        <div class="flex items-center justify-between mb-4 mt-2" id="primary_section_sub_header">
-            <h3 id="categories-title" class="text-2xl font-bold">
-                Types
-            </h3>
-        
-            <div class="relative" id="dropdown_menu_parent_div">
-                <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
-                    <span id="viewDropdownText">View by: Entities</span>
-                    <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M0 0h20v20H0z" fill="none"/>
-                        <path d="M10 12l-4-4h8l-4 4z"/>
-                    </svg>
-                </button>
-                <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
-                    <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Sub-Categories</li>
-                </ul>
+        {% if entity_type_and_file_count|length > 0 %}
+
+            <!-- Breadcrumb Section -->
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse" id="breadcrumb-list">
+                    <li id="home_breadcrumb_parent" class="inline-flex items-center">
+                        <div class="flex items-center">
+                            <a data-val="Home" id="home_breadcrumb" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white cursor-pointer">
+                                Home
+                            </a>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Main Section Header -->
+            <div class="flex items-center justify-between mb-4 mt-2" id="primary_section_sub_header">
+                <h3 id="categories-title" class="text-2xl font-bold">
+                    Types
+                </h3>
+            
+                <div class="relative" id="dropdown_menu_parent_div">
+                    <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
+                        <span id="viewDropdownText">View by: Entities</span>
+                        <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M0 0h20v20H0z" fill="none"/>
+                            <path d="M10 12l-4-4h8l-4 4z"/>
+                        </svg>
+                    </button>
+                    <ul id="viewDropdownMenu" class="absolute hidden text-gray-200 bg-gray-800 rounded-lg shadow-lg mt-1 right-0 w-40 z-10">
+                        <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Entities</li>
+                        <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Categories</li>
+                        <li class="hover:bg-gray-700 cursor-pointer px-4 py-2">Sub-Categories</li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        
-        <hr class="border-gray-700 mt-4 mb-4">
-        
-        <!-- Card View -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
-            {% for l in entity_type_and_file_count %}
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="entity-{{ l.entity_type }}">
-                    <h2 class="text-xl font-bold mb-2">
-                        <!-- <i class="fa-solid fa-folder"></i>
-                        &nbsp; -->
-                        {{ l.entity_type }}
-                    </h2>
-                    <p class="text-gray-400">
-                        <i class="fa-regular fa-folder-open" style="font-size: 15px;"></i>
-                        {{ l.file_count }} Files
-                    </p>
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- File List -->
-        <div id="file-list-primary-div" class="mt-8 hidden">
-            <!-- <h3 id="file-table-list-header" class="text-2xl font-bold mb-4">
-                Recent Files
-            </h3> -->
-
-            <div class="mb-8">
-                <!-- <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">Files</h2>
-                    <a href="#" class="text-blue-400">View All</a>
-                </div> -->
-
-                <div class="bg-gray-800 rounded-lg mt-4">
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full table-auto" id="file-table">
-                            <thead>
-                                <tr>
-                                    <th class="resizable px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Name
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Type 
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Size 
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Last Modified
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                    <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
-                                        Sub Categories
-                                        <span class="sort-arrows">
-                                            <span class="sort-arrow" data-order="asc">▲</span>
-                                            <span class="sort-arrow" data-order="desc">▼</span>
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="file-list-tbody" class="bg-gray-800"> 
-                            </tbody>
-                        </table>
+            
+            <hr class="border-gray-700 mt-4 mb-4">
+            
+            <!-- Card View -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
+                {% for l in entity_type_and_file_count %}
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="entity-{{ l.entity_type }}">
+                        <h2 class="text-xl font-bold mb-2">
+                            <!-- <i class="fa-solid fa-folder"></i>
+                            &nbsp; -->
+                            {{ l.entity_type }}
+                        </h2>
+                        <p class="text-gray-400">
+                            <i class="fa-regular fa-folder-open" style="font-size: 15px;"></i>
+                            {{ l.file_count }} Files
+                        </p>
                     </div>
-
-                </div>
-
+                {% endfor %}
             </div>
 
-        </div>
+            <!-- File List -->
+            <div id="file-list-primary-div" class="mt-8 hidden">
+                <!-- <h3 id="file-table-list-header" class="text-2xl font-bold mb-4">
+                    Recent Files
+                </h3> -->
+
+                <div class="mb-8">
+                    <!-- <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-semibold">Files</h2>
+                        <a href="#" class="text-blue-400">View All</a>
+                    </div> -->
+
+                    <div class="bg-gray-800 rounded-lg mt-4">
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full table-auto" id="file-table">
+                                <thead>
+                                    <tr>
+                                        <th class="resizable px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                            Name
+                                            <span class="sort-arrows">
+                                                <span class="sort-arrow" data-order="asc">▲</span>
+                                                <span class="sort-arrow" data-order="desc">▼</span>
+                                            </span>
+                                        </th>
+                                        <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                            Type 
+                                            <span class="sort-arrows">
+                                                <span class="sort-arrow" data-order="asc">▲</span>
+                                                <span class="sort-arrow" data-order="desc">▼</span>
+                                            </span>
+                                        </th>
+                                        <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                            Size 
+                                            <span class="sort-arrows">
+                                                <span class="sort-arrow" data-order="asc">▲</span>
+                                                <span class="sort-arrow" data-order="desc">▼</span>
+                                            </span>
+                                        </th>
+                                        <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                            Last Modified
+                                            <span class="sort-arrows">
+                                                <span class="sort-arrow" data-order="asc">▲</span>
+                                                <span class="sort-arrow" data-order="desc">▼</span>
+                                            </span>
+                                        </th>
+                                        <th class="px-4 py-2 text-left text-base font-semibold text-gray-400">
+                                            Sub Categories
+                                            <span class="sort-arrows">
+                                                <span class="sort-arrow" data-order="asc">▲</span>
+                                                <span class="sort-arrow" data-order="desc">▼</span>
+                                            </span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="file-list-tbody" class="bg-gray-800"> 
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="flex items-center justify-between mb-4 mt-2" id="primary_section_sub_header">
+                <h3 id="categories-title" class="text-2xl font-bold">
+                    Dashboard
+                </h3>
+            </div>
+
+            <hr class="border-gray-700 mt-4 mb-4">
+
+            <div class="h-60 rounded-lg">
+                <p class="text-gray-500 mt-6">
+                    No Files Saved Yet...
+                </p>
+            </div>
+
+        {% endif %}
 
     </main>
 
@@ -305,6 +325,7 @@
                 console.log('current-file-row:', current_file_rw);
 
                 let tb_row = document.createElement('tr');
+                tb_row.className = 'cursor-pointer';
                 
                 tb_row.setAttribute('file-object-id', current_file_rw['file_object_id']);
 
@@ -595,10 +616,10 @@
     });
 
     
-    $('#home_breadcrumb').click(function(){
-        $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
-        // filterCatgoryData('home', "");
-    });
+    // $('#home_breadcrumb').click(function(){
+    //     $('#breadcrumb-list').children('li').not('#home_breadcrumb_parent').remove();
+    //     // filterCatgoryData('home', "");
+    // });
 
 
     $('#home_breadcrumb').click(function(){
@@ -798,7 +819,6 @@
 
 
     // File Row Listener
-    // $('tr').addEventListener('click', function () {
     $(document).on("click", "tr", function(){
         const fileId = this.getAttribute('file-object-id');
         console.log('file-id:', fileId);
