@@ -35,27 +35,28 @@ from . import process_directory_main_two
 class Prompts(Enum):
     """
     """
-    CATEGORIZATION_PROMPT_V1 = """You are an AI that categorizes files based on their content. I have provided a screenshot of a file to you. Based on the screenshot, your task is to categorize the file into an entity type, the primary category and a few relevant sub-categories. Also, generate a semantically appropriate, human-readble name for the file, based on the screenshot. The name you generate is meant to be shown on the website, for the user to easily identify the file. Your response should be in JSON format.
+    CATEGORIZATION_PROMPT_V1 = """You task is to specialize in file categorization. I have provided you with a screenshot of a file. Your task is to analyze the content and context within the screenshot and categorize the file into an appropriate entity type, a primary category, and relevant sub-categories. Your categorization should be comprehensive and accurate, capturing the essence of the file's content.
 
-Please categorize the file as follows:
-- **File Name:**: The semantic name of the file based on the screenshot.
-- **Entity Type:**: The type of the file (ie. Book, Paper, Image, Invoice, CSV, etc.)
-- **Primary Category:** The main category that best describes the file.
-- **Sub-categories/Tags:** Additional categories or tags that further describe the file's content.
-
-Return your response in the following JSON format:
+Please structure your response in the following JSON format:
 
 {
-    "generated_file_name": "...",
-    "entity_type": "...",
-    "primary_category": "Primary Category Name",
+    "entity_type": "Specify the type of the file (e.g., Book, Paper, Image, Invoice, Spreadsheet, etc.)",
+    "primary_category": "Name of the main category that best describes the file",
     "sub_categories": [
-        "Sub-category 1",
-        "Sub-category 2",
+        "Relevant sub-category 1",
+        "Relevant sub-category 2",
         ...
     ]
 }
+
+Guidelines:
+- **Entity Type**: Identify the most accurate file type based on the content visible in the screenshot.
+- **Primary Category**: Determine the overarching category that encapsulates the file’s primary purpose or theme.
+- **Sub-categories/Tags**: List a few additional categories or tags that provide further context or details about the file's content.
+
+Ensure the categorization is logical, and the chosen tags are relevant and specific to the file’s content. 
 """
+
 
 class OpenAIWrapper:
     def __init__(self):
