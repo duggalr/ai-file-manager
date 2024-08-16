@@ -4,25 +4,22 @@
         <a href="{% url 'file_view' %}" class="font-light text-gray-300 hover:text-white flex items-center" style="font-size: 15.5px;">
             <!-- <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 12H7a2 2 0 01-2-2V6a2 2 0 012-2h5.4a2 2 0 011.6.8l2.4 2.9a2 2 0 001.6.8H19a2 2 0 012 2v11a2 2 0 01-2 2z"></path></svg> -->
             <!-- <i class="fa-solid fa-house"></i>&nbsp;&nbsp; -->
-            View Files
+            <i class="fa-solid fa-table-columns"></i>
+            &nbsp;
+            View All Files
         </a>
         <ul class="ps-0 pt-0 py-0 space-y-2 list-none list-inside text-gray-300" style="font-size: 14px;">
             {% for dobj in directory_objects %}
-                <li class="cursor-pointer hover:text-blue-500 truncate">
-                    <a href="{% url 'file_view' %}?directory={{ dobj.id }}">
+                <li class="cursor-pointer pl-2">
+                    <a href="{% url 'file_view' %}?directory={{ dobj.id }}" class="text-gray-300 hover:text-blue-500 truncate">
                         <!-- <i class="fa-regular fa-folder"></i>
                         &nbsp; -->
-                        - {{ dobj.user_directory_name }}
+                        <i class="fa-solid fa-angle-right pr-1" style="font-size: 12px;"></i>
+                        <!-- &nbsp; -->
+                        {{ dobj.user_directory_name }}
                     </a>
                 </li>
             {% endfor %}
-            
-            <!-- <li class="cursor-pointer hover:text-blue-500">
-                Directory 2
-            </li>
-            <li class="cursor-pointer hover:text-blue-500">
-                Directory 3
-            </li> -->
         </ul>
 
         <a href="{% url 'unprocessed_file_view' %}" class="text-base font-light text-gray-300 hover:text-white flex items-center pt-2" style="font-size: 15px;">

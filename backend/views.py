@@ -19,7 +19,7 @@ from .scripts.file_process import mp_main_two
 
 
 def manage_file_path(request):
-    directory_objects = Directory.objects.all()
+    directory_objects = Directory.objects.all().order_by('-created_at')
     return render(request, 'dashboard/manage_file_path.html', {
         'directory_objects': directory_objects
     })
@@ -32,14 +32,18 @@ def file_view(request):
 
     if directory_object_id is not None:
         directory_object = get_object_or_404(Directory, id = directory_object_id)
-    else:
-        directory_object = Directory.objects.all().order_by('-created_at').first()
-
-    entity_type_and_file_count = File.objects.filter(
-        directory_object = directory_object,
-        processed = True
-    ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+    # else:
+    #     directory_object = Directory.objects.all().order_by('-created_at').first()
+        entity_type_and_file_count = File.objects.filter(
+            directory_object = directory_object,
+            processed = True
+        ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
   
+    else:
+        entity_type_and_file_count = File.objects.filter(
+            processed = True
+        ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+
     # distinct_user_directory_paths = File.objects.values(
     #     'user_directory_file_path'
     # ).distinct()
@@ -62,8 +66,11 @@ def unprocessed_file_view(request):
     file_objects = File.objects.filter(
         processed = False
     )
+
+    directory_objects = Directory.objects.all().order_by('-created_at')
     return render(request, 'dashboard/unprocessed_file_list.html', {
-        'file_objects': file_objects
+        'file_objects': file_objects,
+        'directory_objects': directory_objects
     })
 
 
