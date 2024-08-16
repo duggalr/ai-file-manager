@@ -36,7 +36,8 @@ def file_view(request):
         directory_object = Directory.objects.all().order_by('-created_at').first()
 
     entity_type_and_file_count = File.objects.filter(
-        directory_object = directory_object
+        directory_object = directory_object,
+        processed = True
     ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
   
     # distinct_user_directory_paths = File.objects.values(
@@ -55,6 +56,16 @@ def file_view(request):
         'entity_type_and_file_count': entity_type_and_file_count,
         'directory_objects': directory_objects
     })
+
+
+def unprocessed_file_view(request):
+    file_objects = File.objects.filter(
+        processed = False
+    )
+    return render(request, 'dashboard/unprocessed_file_list.html', {
+        'file_objects': file_objects
+    })
+
 
 
 def delete_user_file_path(request, uuid):
@@ -116,7 +127,10 @@ def handle_filtering_file_data(request):
         current_filter_value = filter_data['current_filter_value']
 
         if current_filter_value == 'Home':
-            filtered_file_objects = File.objects.all()
+            # filtered_file_objects = File.objects.all()
+            filtered_file_objects = File.objects.filter(
+                processed = True
+            )
 
             # if 'switch_view_to' in filter_data:
             #     switch_view_to_value = filter_data['switch_view_to']
@@ -140,7 +154,7 @@ def handle_filtering_file_data(request):
             #     global_view_type = 'entity'
 
 
-            filtered_file_count = File.objects.annotate(
+            filtered_file_count = File.objects.filter(processed = True).annotate(
                 primary_text=F('entity_type')
             ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
             global_view_type = 'entity'
@@ -232,6 +246,8 @@ def handle_filtering_file_data(request):
             if filtered_subcategory_list_values:
                 filters['sub_categories__contains'] = filtered_subcategory_list_values
 
+            filters['processed'] = True
+
             filtered_file_objects = File.objects.filter(**filters)
 
             print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
@@ -315,10 +331,15 @@ def switch_filtered_file_data(request):
         switch_view_to_value = filter_data['switch_view_to']
 
         if current_filter_value == 'Home':
-            filtered_file_objects = File.objects.all()
+            # filtered_file_objects = File.objects.all()
+            filtered_file_objects = File.objects.filter(
+                processed = True
+            )
                 
             if switch_view_to_value == 'entity':
-                filtered_file_count = File.objects.annotate(
+                filtered_file_count = File.objects.filter(
+                    processed = True
+                ).annotate(
                     primary_text=F('entity_type')
                 ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
                 global_view_type = 'entity'
@@ -348,7 +369,9 @@ def switch_filtered_file_data(request):
                         })
                 
             else:
-                filtered_file_count = File.objects.annotate(
+                filtered_file_count = File.objects.filter(
+                    processed = True
+                ).annotate(
                     primary_text=F('primary_category')
                 ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
                 global_view_type = 'category'
@@ -428,6 +451,7 @@ def switch_filtered_file_data(request):
             if filtered_category_list_values:
                 filters['primary_category__in'] = filtered_category_list_values
 
+            filters['processed'] = True
             filtered_file_objects = File.objects.filter(**filters)
 
             print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
@@ -511,4 +535,3 @@ def switch_filtered_file_data(request):
                 'global_view_type': global_filter_type_value,
                 'home': False
             })
-

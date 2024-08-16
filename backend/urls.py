@@ -7,6 +7,7 @@ urlpatterns = [
     # path('', views.home, name='home'),
     path('manage-file-path', views.manage_file_path, name='manage_file_path'),
     path('file-view', views.file_view, name='file_view'),
+    path('files/unprocessed', views.unprocessed_file_view, name='unprocessed_file_view'),
     path('delete-user-file-path/<uuid:uuid>/', views.delete_user_file_path, name='delete_user_file_path'),
 
     # Ajax
