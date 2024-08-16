@@ -1,21 +1,109 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, F
 from django.db import connection
+from django.conf import settings
 from dotenv import load_dotenv
 load_dotenv()
 import os
 import json
 import datetime
+from urllib.parse import quote_plus, urlencode
 from hurry.filesize import size
-from .models import File, Directory
+from authlib.integrations.django_client import OAuth
+
+from .models import File, Directory, UserOAuth, UserProfile
 # from .scripts import user_file_path_utils
 from .scripts.file_process import mp_main_two
 
 
-# def home(request):
-#     return render(request, 'home.html')
+# TODO: 
+    # full focus on integrating user authentication / profile into app with all files, etc.
+    # then, full focus on prompt testing/finalization and celery-task-scheduling
+
+oauth = OAuth()
+oauth.register(
+    "auth0",
+    client_id=settings.AUTH0_CLIENT_ID,
+    client_secret=settings.AUTH0_CLIENT_SECRET,
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f"https://{settings.AUTH0_DOMAIN}/.well-known/openid-configuration",
+)
+
+def callback(request):
+    # token = oauth.auth0.authorize_access_token(request)
+    # request.session["user"] = token
+    # return redirect(request.build_absolute_uri(reverse("manage_file_path")))
+
+    token = oauth.auth0.authorize_access_token(request)
+    request.session["user"] = token
+
+    user_info = token['userinfo']
+    user_email = user_info['email']
+    user_auth_type = user_info['sub']
+    user_email_verified = user_info['email_verified']
+    user_name = user_info['name']
+
+    user_auth_objects = UserOAuth.objects.filter(email = user_email)
+    user_auth_obj = None
+    if len(user_auth_objects) > 0:
+        user_auth_obj = user_auth_objects[0]
+
+        up_objects = UserProfile.objects.filter(user_obj = user_auth_obj)
+        if len(up_objects) == 0:
+            up_object = UserProfile.objects.create(
+                user_obj = user_auth_obj,
+            )
+            up_object.save()
+        else:
+            up_object = up_objects[0]
+
+        return redirect(request.build_absolute_uri(reverse("file_view")))
+
+    else:
+        user_auth_obj = UserOAuth.objects.create(
+            auth_type = user_auth_type,
+            email = user_email,
+            email_verified = user_email_verified,
+            name = user_name,
+        )
+        user_auth_obj.save()
+
+        up_object = UserProfile.objects.create(
+            user_obj = user_auth_obj,
+        )
+        up_object.save()
+
+        return redirect(request.build_absolute_uri(reverse("file_view")))
+
+
+def login(request):
+    return oauth.auth0.authorize_redirect(
+        request, request.build_absolute_uri(reverse("callback"))
+    )
+
+def logout(request):
+    request.session.clear()
+
+    return redirect(
+        f"https://{settings.AUTH0_DOMAIN}/v2/logout?"
+        + urlencode(
+            {
+                "returnTo": request.build_absolute_uri(reverse("index")),
+                "client_id": settings.AUTH0_CLIENT_ID,
+            },
+            quote_via=quote_plus,
+        ),
+    )
+
+
+
+def landing(request):
+    return render(request, 'primary/landing.html')
 
 
 def manage_file_path(request):

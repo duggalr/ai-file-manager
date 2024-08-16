@@ -13,6 +13,27 @@ import uuid
 # }
 
 
+class UserOAuth(models.Model):
+    """
+    User has signed up using Auth0.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    auth_type = models.CharField(max_length=500)
+    email = models.EmailField()
+    email_verified = models.BooleanField()
+    name = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class UserProfile(models.Model):
+    """
+    User Profile object containing topic information for each user
+    """
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user_obj = models.ForeignKey(UserOAuth, on_delete=models.CASCADE)
+
 
 class Directory(models.Model):
     """

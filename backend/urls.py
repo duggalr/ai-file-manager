@@ -3,8 +3,13 @@ from . import views
 
 
 urlpatterns = [
+    # Auth0
+    path("login", views.login, name="login"),
+    path("logout", views.logout, name="logout"),
+    path("callback", views.callback, name="callback"),
+
     # Application
-    # path('', views.home, name='home'),
+    path('', views.landing, name='landing'),
     path('manage-file-path', views.manage_file_path, name='manage_file_path'),
     path('file-view', views.file_view, name='file_view'),
     path('files/unprocessed', views.unprocessed_file_view, name='unprocessed_file_view'),
