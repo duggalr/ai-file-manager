@@ -177,6 +177,8 @@ def handle_filtering_file_data(request):
                 fn_modified_at_time = datetime.datetime.strftime(fn_obj.file_modified_at_date_time, "%Y-%m-%d")
 
                 file_dict = {
+                    'file_object_id': fn_obj.id,
+
                     'user_directory_name': fn_obj.directory_object.user_directory_name,
                     'user_directory_file_path': fn_obj.directory_object.user_directory_path,
                     'current_file_path': fn_obj.file_path,
@@ -302,6 +304,8 @@ def handle_filtering_file_data(request):
                     # 'current_file_path': fn_obj.current_file_path,
                     # 'current_file_name': current_file_name_clean,
 
+                    'file_object_id': fn_obj.id,
+
                     'user_directory_name': fn_obj.directory_object.user_directory_name,
                     'user_directory_file_path': fn_obj.directory_object.user_directory_path,
                     'current_file_path': fn_obj.file_path,
@@ -395,6 +399,8 @@ def switch_filtered_file_data(request):
                     # 'user_directory_file_path': fn_obj.user_directory_file_path,
                     # 'current_file_path': fn_obj.current_file_path,
                     # 'current_file_name': current_file_name_clean,
+
+                    'file_object_id': fn_obj.id,
 
                     'user_directory_name': fn_obj.directory_object.user_directory_name,
                     'user_directory_file_path': fn_obj.directory_object.user_directory_path,
@@ -514,6 +520,8 @@ def switch_filtered_file_data(request):
                     # 'current_file_path': fn_obj.current_file_path,
                     # 'current_file_name': current_file_name_clean,
 
+                    'file_object_id': fn_obj.id,
+
                     'user_directory_name': fn_obj.directory_object.user_directory_name,
                     'user_directory_file_path': fn_obj.directory_object.user_directory_path,
                     'current_file_path': fn_obj.file_path,
@@ -542,3 +550,30 @@ def switch_filtered_file_data(request):
                 'global_view_type': global_filter_type_value,
                 'home': False
             })
+
+
+import subprocess
+import platform
+
+def open_user_file(request):
+    if request.method == 'POST':
+        print("POST:", request.POST)
+
+        file_id = request.POST['file_id']
+        try:
+            file = File.objects.get(id=file_id)
+            current_file_path = file.file_path
+            
+            # Open file based on OS
+            if platform.system() == 'Darwin':  # macOS
+                subprocess.call(('open', current_file_path))
+            elif platform.system() == 'Windows':  # Windows
+                os.startfile(current_file_path)
+            else:  # Linux
+                subprocess.call(('xdg-open', current_file_path))
+
+            return JsonResponse({'success': True})
+        except File.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'File not found'})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'})

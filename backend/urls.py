@@ -14,4 +14,5 @@ urlpatterns = [
     path('handle-user-file-path-submit', views.handle_user_file_path_submit, name='handle_user_file_path_submit'),
     path('handle_filtering_file_data', views.handle_filtering_file_data, name='handle_filtering_file_data'),
     path('switch_filtered_file_data', views.switch_filtered_file_data, name='switch_filtered_file_data'),
+    path('open_user_file', views.open_user_file, name='open_user_file'),
 ]

@@ -302,10 +302,12 @@
             $('#primary_section_sub_header').addClass('hidden');
             for (i=0; i < filtered_file_objects_list.length; i++) {
                 let current_file_rw = filtered_file_objects_list[i];
-                // console.log('current-file-row:', current_file_rw);
+                console.log('current-file-row:', current_file_rw);
 
                 let tb_row = document.createElement('tr');
                 
+                tb_row.setAttribute('file-object-id', current_file_rw['file_object_id']);
+
                 let tb_data = document.createElement('td');
                 tb_data.className = 'resizable px-4 py-2 text-sm text-gray-300';
                 tb_data.textContent = current_file_rw['current_file_name'];
@@ -733,6 +735,88 @@
 
     });
 
+
+    // Sorting functionality
+    document.querySelectorAll('.sort-arrow').forEach(function(arrow) {
+        arrow.addEventListener('click', function() {
+            var order = this.getAttribute('data-order');
+            var column = this.closest('th').textContent.trim();
+            var tbody = this.closest('table').querySelector('tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Determine the column index
+            var columnIndex = Array.from(this.closest('tr').children).indexOf(this.closest('th'));
+
+            // Sort rows based on the column and order
+            rows.sort(function(a, b) {
+                var cellA = a.children[columnIndex].textContent.trim();
+                var cellB = b.children[columnIndex].textContent.trim();
+
+                if (order === 'asc') {
+                    return cellA.localeCompare(cellB, undefined, {numeric: true, sensitivity: 'base'});
+                } else {
+                    return cellB.localeCompare(cellA, undefined, {numeric: true, sensitivity: 'base'});
+                }
+            });
+
+            // Reorder rows
+            rows.forEach(function(row) {
+                tbody.appendChild(row);
+            });
+        });
+    });
+
+
+    // Resizable columns
+    document.querySelectorAll('.resizable').forEach(function (cell) {
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        cell.appendChild(resizeHandle);
+
+        let startX, startWidth;
+
+        resizeHandle.addEventListener('mousedown', function (e) {
+            startX = e.pageX;
+            startWidth = parseInt(document.defaultView.getComputedStyle(cell).width, 10);
+            document.documentElement.addEventListener('mousemove', doDrag, false);
+            document.documentElement.addEventListener('mouseup', stopDrag, false);
+        });
+
+        function doDrag(e) {
+            const th = cell.closest('table').querySelector('th.resizable');
+            th.style.width = (startWidth + e.pageX - startX) + 'px';
+            document.querySelectorAll('td.resizable').forEach(function (td) {
+                td.style.width = (startWidth + e.pageX - startX) + 'px';
+            });
+        }
+
+        function stopDrag() {
+            document.documentElement.removeEventListener('mousemove', doDrag, false);
+            document.documentElement.removeEventListener('mouseup', stopDrag, false);
+        }
+    });
+
+
+    // File Row Listener
+    // $('tr').addEventListener('click', function () {
+    $(document).on("click", "tr", function(){
+        const fileId = this.getAttribute('file-object-id');
+        console.log('file-id:', fileId);
+        
+        $.ajax({
+            url: '{% url "open_user_file" %}',
+            type: 'POST',
+            data: {
+                'file_id': fileId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+
+            success: function(response) {
+                console.log('data:', response);
+            }
+        });
+
+    });
 
 </script>
 
