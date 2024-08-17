@@ -125,7 +125,10 @@
                 // console.log(data);
                 $('#loader').hide();
                 if (data['success'] === true){
-                    window.location.href = '/file-view';
+                    // window.location.href = '/file-view';
+
+                    console.log('data-response:', data);
+
                 }
             },
             error: (error) => {

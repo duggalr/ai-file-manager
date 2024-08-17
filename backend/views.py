@@ -15,7 +15,7 @@ from hurry.filesize import size
 from authlib.integrations.django_client import OAuth
 
 from .models import File, Directory, UserOAuth, UserProfile
-from .scripts.file_process import mp_main_two
+# from .scripts.file_process import mp_main_two
 
 
 oauth = OAuth()
@@ -348,6 +348,8 @@ def delete_user_file_path(request, uuid):
     return redirect('manage_file_path')
 
 
+from .tasks import process_user_directory
+
 ## AJAX
 def handle_user_file_path_submit(request):
     if request.method == 'POST':
@@ -362,13 +364,24 @@ def handle_user_file_path_submit(request):
         # rv_list = user_file_path_utils.main(
         #     user_directory_file_path = user_directory_file_path
         # )
-        rv_list = mp_main_two.main(
-            user_directory_file_path = user_directory_file_path,
-            user_profile_object = user_profile_object
+        # rv_list = mp_main_two.main(
+        #     user_directory_file_path = user_directory_file_path,
+        #     user_profile_object = user_profile_object
+        # )
+
+        user_profile_object.files_under_process = True
+        user_profile_object.save()
+        
+        task = process_user_directory.delay(
+            user_directory_path = user_directory_file_path,
+            user_profile_object_id = user_profile_object.id
         )
 
+        print(f"Task ID: {task.id}")
+
         return JsonResponse({
-            'success': True
+            'success': True,
+            'task_id': task.id  # Send task ID to the frontend
         })
 
         # user_dir_name = os.path.basename(user_directory_file_path)

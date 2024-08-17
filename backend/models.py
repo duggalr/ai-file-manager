@@ -32,6 +32,7 @@ class UserProfile(models.Model):
     """
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user_view_preference = models.TextField(default='entity')
+    files_under_process = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user_obj = models.ForeignKey(UserOAuth, on_delete=models.CASCADE)
