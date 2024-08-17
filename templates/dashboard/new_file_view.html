@@ -159,77 +159,74 @@
 
             <!-- Main modal -->
             <div
-                id="select-view-modal"
-                tabindex="-1"
-                aria-hidden="true"
-                class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-            >
-                <div class="relative p-4 w-full max-w-md max-h-full">
-                    <!-- Modal content -->
-                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                        <!-- Modal header -->
-                        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                                Set your default view
-                            </h3>
-                            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="select-view-modal">
-                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                                </svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                        </div>
-                        <!-- Modal body -->
-                        <div class="p-4 md:p-5">
-                            <form class="space-y-4" action="#">
-
-                                <div class="flex items-center mb-4">
-                                    <input id="default-checkbox" type="checkbox" value="entity" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="default-checkbox" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                        Entities
-                                    </label>
-                                </div>
-
-                                <div class="flex items-center mb-4">
-                                    <input id="default-checkbox" type="checkbox" value="category" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="default-checkbox" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                        Categories
-                                    </label>
-                                </div>
-
-                                <div class="flex items-center mb-4">
-                                    <input id="default-checkbox" type="checkbox" value="sub_category" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="default-checkbox" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                        Sub-Categories
-                                    </label>
-                                </div>
-
-                                <hr class="border-gray-700 mt-4 mb-4">
-
-                                <!-- <button 
-                                type="button" 
-                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                >Submit</button> -->
-
-                                <button
+            id="select-view-modal"
+            tabindex="-1"
+            aria-hidden="true"
+            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        >
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <!-- Modal content -->
+                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    <!-- Modal header -->
+                    <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            Set your default view
+                        </h3>
+                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="select-view-modal">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <!-- Modal body -->
+                    <div class="p-4 md:p-5">
+                        <form class="space-y-4" action="#">
+                            <!-- Change checkboxes to radio buttons -->
+                            <div class="flex items-center mb-4">
+                                <input id="entity-radio" name="view_preference" type="radio" value="entity" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600" 
+                                {% if user_profile_object.user_view_preference == 'entity' %} checked {% endif %}>
+                                <label for="entity-radio" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Entities
+                                </label>
+                            </div>
+        
+                            <div class="flex items-center mb-4">
+                                <input id="category-radio" name="view_preference" type="radio" value="category" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                                {% if user_profile_object.user_view_preference == 'category' %} checked {% endif %}>
+                                <label for="category-radio" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Categories
+                                </label>
+                            </div>
+        
+                            <div class="flex items-center mb-4">
+                                <input id="sub-category-radio" name="view_preference" type="radio" value="sub_category" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600"
+                                {% if user_profile_object.user_view_preference == 'sub_category' %} checked {% endif %}>
+                                <label for="sub-category-radio" class="ms-2 pl-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                    Sub-Categories
+                                </label>
+                            </div>
+        
+                            <hr class="border-gray-700 mt-4 mb-4">
+        
+                            <button
                                 type="submit"
                                 class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                >Submit</button>
-
-                            </form>
-                        </div>
+                            >Submit</button>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
             <!-- class="text-blue-400" -->
-            <span
-                data-modal-target="select-view-modal"
-                data-modal-toggle="select-view-modal"
+            <!-- data-modal-target="select-view-modal"
+            data-modal-toggle="select-view-modal" -->
+            <!-- <span
                 class="block text-white cursor-pointer hover:text-blue-400 font-normal text-sm text-right"
             >
                 Set a default file view
-            </span>
+            </span> -->
 
             <!-- Main Section Header -->
             <div class="flex items-center justify-between mb-4 mt-3" id="primary_section_sub_header">
@@ -248,8 +245,23 @@
                     Toggle modal
                     </button> -->
 
+                    <span
+                        data-modal-target="select-view-modal"
+                        data-modal-toggle="select-view-modal"
+                        class="block text-white cursor-pointer hover:text-blue-400 font-normal text-sm text-right cursor-pointer mb-2"
+                    >
+                        Set a default file view
+                    </span>
+
                     <button id="viewDropdown" class="bg-gray-800 text-white font-semibold py-2 px-4 rounded inline-flex items-center focus:outline-none">
-                        <span id="viewDropdownText">View by: Entities</span>
+                        {% if user_profile_object.user_view_preference == 'entity' %}
+                            <span id="viewDropdownText">View by: Entities</span>
+                        {% elif user_profile_object.user_view_preference == 'category' %}
+                            <span id="viewDropdownText">View by: Categories</span>
+                        {% elif user_profile_object.user_view_preference == 'sub_category' %}
+                            <span id="viewDropdownText">View by: Sub-Categories</span>
+                        {% endif %}
+                        <!-- <span id="viewDropdownText">View by: Entities</span> -->
                         <svg class="fill-current h-4 w-4 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M0 0h20v20H0z" fill="none"/>
                             <path d="M10 12l-4-4h8l-4 4z"/>
@@ -268,11 +280,25 @@
             <!-- Card View -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="category-list">
                 {% for l in entity_type_and_file_count %}
-                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="entity-{{ l.entity_type }}">
+                    
+                    {% if user_profile_object.user_view_preference == 'entity' %}
+                    
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="entity-{{ l.primary_text }}">
+
+                    {% elif user_profile_object.user_view_preference == 'category' %}
+
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="category-{{ l.primary_text }}">
+
+                    {% elif user_profile_object.user_view_preference == 'sub_category' %}
+
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card" data-category="subcategory-{{ l.primary_text }}">
+
+                    {% endif %}
+                    
                         <h2 class="text-xl font-bold mb-2">
                             <!-- <i class="fa-solid fa-folder"></i>
                             &nbsp; -->
-                            {{ l.entity_type }}
+                            {{ l.primary_text }}
                         </h2>
                         <p class="text-gray-400">
                             <i class="fa-regular fa-folder-open" style="font-size: 15px;"></i>
@@ -373,7 +399,11 @@
 
 <script>
 
-    let globalViewType = 'entity';
+    let user_preference = '{{ user_profile_preference }}';
+    console.log('up:', user_preference);
+
+    // let globalViewType = 'entity';
+    let globalViewType = user_preference;
 
     // Get elements
     const dropdownButton = document.getElementById('viewDropdown');
@@ -460,7 +490,11 @@
 
                 let card_div_elem = document.createElement('div');
                 card_div_elem.className = 'bg-gray-800 p-4 rounded-lg shadow-lg hover:bg-gray-700 cursor-pointer category-card';
-                card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
+                if (globalViewType == 'sub_category'){
+                    card_div_elem.setAttribute('data-category', 'subcategory' + '-' + file_count_dict['primary_text']);
+                } else {
+                    card_div_elem.setAttribute('data-category', globalViewType + '-' + file_count_dict['primary_text']);
+                }
 
                 let h2_elem = document.createElement('h2');
                 h2_elem.className = 'text-xl font-bold mb-2';
@@ -506,6 +540,8 @@
                     // console.log('HOME VIEW');
                     if (response['global_view_type'] == 'category'){
                         dropdownText.textContent = 'View by: Categories';
+                    } else if (response['global_view_type'] == 'sub_category'){
+                        dropdownText.textContent = 'View by: Sub-Categories';
                     } else {
                         dropdownText.textContent = 'View by: Entities';
                     }
@@ -924,19 +960,18 @@
     });
 
 
-
-    // TODO: start here by ensuring ajax post request works and go from there
-
     // User Preference AJAX Post Submit
     const form = document.querySelector('form');
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
         let selectedPreference = null;
 
+        const checkboxes = document.querySelectorAll('input[type="radio"]');
         checkboxes.forEach(function (checkbox) {
+            console.log('checkbox:', checkbox);
             if (checkbox.checked) {
                 selectedPreference = checkbox.value;
             }
@@ -952,12 +987,9 @@
                 'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include the CSRF token
             },
             success: function(response) {
-                if (response.status === 'success') {
-                    // Optionally hide the modal
-                    document.querySelector('[data-modal-hide="select-view-modal"]').click();
-                    alert(response.message);
-                } else {
-                    alert(response.message);
+                if (response.success === true) {
+                    // document.querySelector('[data-modal-hide="select-view-modal"]').click();
+                    location.reload();
                 }
             },
             error: function(xhr, status, error) {

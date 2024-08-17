@@ -152,20 +152,98 @@ def file_view(request):
         if directory_object.user_profile_obj != up_object:
             return redirect('file_view')
 
-        final_entity_type_and_file_count = File.objects.filter(
-            directory_object = directory_object,
-            processed = True
-        ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+        if up_object.user_view_preference == 'entity':
+            final_entity_type_and_file_count = File.objects.filter(
+                directory_object = directory_object,
+                processed = True
+            ).annotate(
+                primary_text=F('entity_type')
+            ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+        
+        elif up_object.user_view_preference == 'category':
+            final_entity_type_and_file_count = File.objects.filter(
+                directory_object = directory_object,
+                processed = True
+            ).annotate(
+                primary_text=F('primary_category')
+            ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
   
+        elif up_object.user_view_preference == 'sub_category':        
+            with connection.cursor() as cursor:
+                cursor.execute("""
+            SELECT 
+                sub_category as primary_text, COUNT(*) as file_count
+            FROM (
+                SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                FROM public.backend_file 
+                WHERE processed = true
+                AND directory_object_id IN (
+                    SELECT id FROM public.backend_directory
+                    WHERE user_profile_obj_id = %s
+                )
+            ) AS subcategory_unnested
+            GROUP BY sub_category
+            ORDER BY file_count DESC
+        """, [up_object.id])
+        
+                results = cursor.fetchall()
+                # filtered_file_count = []
+                final_entity_type_and_file_count = []
+                for li in results:
+                    # filtered_file_count.append({
+                    final_entity_type_and_file_count.append({
+                        'primary_text': li[0],
+                        'file_count': li[1]
+                    })
+
     else:
        # entity_type_and_file_count = File.objects.filter(
         #     processed = True,
         # ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
 
-        final_entity_type_and_file_count = File.objects.filter(
-            processed = True,
-            directory_object__user_profile_obj = up_object
-        ).values('entity_type').annotate(file_count=Count('entity_type')).order_by('-file_count')
+        if up_object.user_view_preference == 'entity':
+            final_entity_type_and_file_count = File.objects.filter(
+                processed = True,
+                directory_object__user_profile_obj = up_object
+            ).annotate(
+                primary_text=F('entity_type')
+            ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+
+        elif up_object.user_view_preference == 'category':
+            final_entity_type_and_file_count = File.objects.filter(
+                processed = True,
+                directory_object__user_profile_obj = up_object
+            ).annotate(
+                primary_text=F('primary_category')
+            ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+
+        elif up_object.user_view_preference == 'sub_category':
+            with connection.cursor() as cursor:
+                cursor.execute("""
+            SELECT 
+                sub_category as primary_text, COUNT(*) as file_count
+            FROM (
+                SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                FROM public.backend_file 
+                WHERE processed = true
+                AND directory_object_id IN (
+                    SELECT id FROM public.backend_directory
+                    WHERE user_profile_obj_id = %s
+                )
+            ) AS subcategory_unnested
+            GROUP BY sub_category
+            ORDER BY file_count DESC
+        """, [up_object.id])
+        
+                results = cursor.fetchall()
+                # filtered_file_count = []
+                final_entity_type_and_file_count = []
+                for li in results:
+                    # filtered_file_count.append({
+                    final_entity_type_and_file_count.append({
+                        'primary_text': li[0],
+                        'file_count': li[1]
+                    })
 
         # user_dir_objects = Directory.objects.filter(
         #     user_profile_obj = up_object
@@ -233,6 +311,8 @@ def file_view(request):
     return render(request, 'dashboard/new_file_view.html', {
         # 'distinct_user_directory_list': distinct_dir_names,
         # 'entity_type_and_file_count': final_entity_type_rv_list,
+        
+        'user_profile_preference': up_object.user_view_preference,        
         'entity_type_and_file_count': final_entity_type_and_file_count,
         'directory_objects': directory_objects,
         'user_profile_object': up_object,
@@ -324,44 +404,63 @@ def handle_filtering_file_data(request):
         current_filter_value = filter_data['current_filter_value']
 
         user_profile_object = get_user_profile(request)
-        print('user-profile-object:', user_profile_object)
+        print('user-profile-object:', user_profile_object, user_profile_object.user_view_preference)
 
         if current_filter_value == 'Home':
             # filtered_file_objects = File.objects.all()
             filtered_file_objects = File.objects.filter(
-                processed = True
-            )
-
-            # if 'switch_view_to' in filter_data:
-            #     switch_view_to_value = filter_data['switch_view_to']
-            #     if switch_view_to_value == 'entity':
-            #         filtered_file_count = File.objects.annotate(
-            #             primary_text=F('entity_type')
-            #         ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
-            #         global_view_type = 'entity'
-
-            #     else:
-            #         filtered_file_count = File.objects.annotate(
-            #             primary_text=F('primary_category')
-            #         ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
-            #         global_view_type = 'category'
-
-            # else:
-            #     filtered_file_count = File.objects.annotate(
-            #         primary_text=F('entity_type')
-            #     ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
-            
-            #     global_view_type = 'entity'
-
-
-            filtered_file_count = File.objects.filter(
                 processed = True,
                 directory_object__user_profile_obj = user_profile_object
-            ).annotate(
-                primary_text=F('entity_type')
-            ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+            )
+
+            if user_profile_object.user_view_preference == 'entity':
+                # final_entity_type_and_file_count = File.objects.filter(
+                filtered_file_count = File.objects.filter(
+                    processed = True,
+                    directory_object__user_profile_obj = user_profile_object
+                ).annotate(
+                    primary_text=F('entity_type')
+                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
             
-            global_view_type = 'entity'
+            elif user_profile_object.user_view_preference == 'category':
+                # final_entity_type_and_file_count = File.objects.filter(
+                filtered_file_count = File.objects.filter(
+                    processed = True,
+                    directory_object__user_profile_obj = user_profile_object
+                ).annotate(
+                    primary_text=F('primary_category')
+                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+
+            elif user_profile_object.user_view_preference == 'sub_category':
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                SELECT 
+                    sub_category as primary_text, COUNT(*) as file_count
+                FROM (
+                    SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                    FROM public.backend_file 
+                    WHERE processed = true
+                    AND directory_object_id IN (
+                        SELECT id FROM public.backend_directory
+                        WHERE user_profile_obj_id = %s
+                    )
+                ) AS subcategory_unnested
+                GROUP BY sub_category
+                ORDER BY file_count DESC
+            """, [user_profile_object.id])
+            
+                    results = cursor.fetchall()
+                    filtered_file_count = []
+                    # final_entity_type_and_file_count = []
+                    for li in results:
+                        filtered_file_count.append({
+                        # final_entity_type_and_file_count.append({
+                            'primary_text': li[0],
+                            'file_count': li[1]
+                        })
+
+            # global_view_type = 'entity'
+            global_view_type = user_profile_object.user_view_preference
 
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
@@ -805,24 +904,16 @@ def open_user_file(request):
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 
-
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from .models import UserProfile
-
-@csrf_exempt
-@login_required
-def update_view_preference(request):
+def update_view_preference(request):    
     if request.method == 'POST':
+        up_object = get_user_profile(request)
+        if up_object is None:
+            return JsonResponse({'success': False, 'message': 'Authentication Error.'})
+
         new_preference = request.POST.get('preference')
-        try:
-            # Assuming a one-to-one relationship between User and UserProfile
-            profile = UserProfile.objects.get(user=request.user)
-            profile.user_view_preference = new_preference
-            profile.save()
-            return JsonResponse({'status': 'success', 'message': 'Preference updated successfully.'})
-        except UserProfile.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Profile not found.'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request.'})
+        print('usr-pref:', new_preference)
+        up_object.user_view_preference = new_preference
+        up_object.save()
+        return JsonResponse({'success': True, 'message': 'Preference updated successfully.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})
