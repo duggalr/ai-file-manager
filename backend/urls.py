@@ -21,4 +21,6 @@ urlpatterns = [
     path('switch_filtered_file_data', views.switch_filtered_file_data, name='switch_filtered_file_data'),
     path('open_user_file', views.open_user_file, name='open_user_file'),
     path('update-preference/', views.update_view_preference, name='update_view_preference'),
+
+    path('check-status/', views.check_processing_status, name='check_processing_status'),
 ]

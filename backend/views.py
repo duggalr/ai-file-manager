@@ -930,3 +930,12 @@ def update_view_preference(request):
         return JsonResponse({'success': True, 'message': 'Preference updated successfully.'})
 
     return JsonResponse({'success': False, 'message': 'Invalid request.'})
+
+
+
+def check_processing_status(request):
+    user_profile_object = get_user_profile(request)
+    return JsonResponse({
+        'files_under_process': user_profile_object.files_under_process
+    })
+
