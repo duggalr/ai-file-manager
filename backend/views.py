@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import JsonResponse
@@ -5,8 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count, F
 from django.db import connection
 from django.conf import settings
-from dotenv import load_dotenv
-load_dotenv()
 import os
 import json
 import datetime
@@ -803,3 +803,26 @@ def open_user_file(request):
             return JsonResponse({'success': False, 'error': 'File not found'})
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile
+
+@csrf_exempt
+@login_required
+def update_view_preference(request):
+    if request.method == 'POST':
+        new_preference = request.POST.get('preference')
+        try:
+            # Assuming a one-to-one relationship between User and UserProfile
+            profile = UserProfile.objects.get(user=request.user)
+            profile.user_view_preference = new_preference
+            profile.save()
+            return JsonResponse({'status': 'success', 'message': 'Preference updated successfully.'})
+        except UserProfile.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Profile not found.'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request.'})
