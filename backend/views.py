@@ -367,7 +367,7 @@ def handle_user_file_path_submit(request):
 
         user_profile_object.files_under_process = True
         user_profile_object.save()
-        
+
         process_user_directory.delay(
             user_directory_path = user_directory_file_path,
             user_profile_object_id = user_profile_object.id
