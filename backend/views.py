@@ -19,6 +19,7 @@ from .models import File, Directory, UserOAuth, UserProfile
 from .tasks import process_user_directory
 
 
+
 oauth = OAuth()
 oauth.register(
     "auth0",
@@ -360,61 +361,21 @@ def check_processing_status(request):
 
 def handle_user_file_path_submit(request):
     if request.method == 'POST':
-
         user_profile_object = get_user_profile(request)
-        # print('user-profile-object:', user_profile_object)
-
-        # user_file_path = request.POST['user_file_path']
         user_directory_file_path = request.POST['user_file_path']
         print('user-fp:', user_directory_file_path)
-
-        # rv_list = user_file_path_utils.main(
-        #     user_directory_file_path = user_directory_file_path
-        # )
-        # rv_list = mp_main_two.main(
-        #     user_directory_file_path = user_directory_file_path,
-        #     user_profile_object = user_profile_object
-        # )
 
         user_profile_object.files_under_process = True
         user_profile_object.save()
         
-        task = process_user_directory.delay(
+        process_user_directory.delay(
             user_directory_path = user_directory_file_path,
             user_profile_object_id = user_profile_object.id
         )
 
-        print(f"Task ID: {task.id}")
-
         return JsonResponse({
             'success': True,
-            'task_id': task.id  # Send task ID to the frontend
         })
-
-        # user_dir_name = os.path.basename(user_directory_file_path)
-        # d_object = Directory.objects.create(
-        #     user_directory_name = user_dir_name,
-        #     user_directory_path = user_directory_file_path
-        # )
-        # d_object.save()
-        # for di in rv_list:
-        #     print('json-di:', di)
-        #     fobj = File.objects.create(
-        #         file_path = di['file_path'],
-        #         file_name = di['file_name'],
-
-        #         entity_type = di['entity_type'],
-        #         primary_category = di['primary_category'],
-        #         sub_categories = di['sub_categories'],
-    
-        #         file_size_in_bytes = di['file_size_in_bytes'],
-        #         file_last_access_time = di['file_last_access_time'],
-        #         file_created_at_date_time = di['file_created_at_date_time'],
-        #         file_modified_at_date_time = di['file_modified_at_date_time'],
-
-        #         directory_object = d_object
-        #     )
-        #     fobj.save()
 
 
 def handle_filtering_file_data(request):
@@ -938,3 +899,64 @@ def update_view_preference(request):
 
     return JsonResponse({'success': False, 'message': 'Invalid request.'})
 
+
+
+
+
+# def handle_user_file_path_submit(request):
+#     if request.method == 'POST':
+
+#         user_profile_object = get_user_profile(request)
+#         # print('user-profile-object:', user_profile_object)
+
+#         # user_file_path = request.POST['user_file_path']
+#         user_directory_file_path = request.POST['user_file_path']
+#         print('user-fp:', user_directory_file_path)
+
+#         # rv_list = user_file_path_utils.main(
+#         #     user_directory_file_path = user_directory_file_path
+#         # )
+#         # rv_list = mp_main_two.main(
+#         #     user_directory_file_path = user_directory_file_path,
+#         #     user_profile_object = user_profile_object
+#         # )
+
+#         user_profile_object.files_under_process = True
+#         user_profile_object.save()
+        
+#         task = process_user_directory.delay(
+#             user_directory_path = user_directory_file_path,
+#             user_profile_object_id = user_profile_object.id
+#         )
+
+#         print(f"Task ID: {task.id}")
+
+#         return JsonResponse({
+#             'success': True,
+#             'task_id': task.id  # Send task ID to the frontend
+#         })
+
+#         # user_dir_name = os.path.basename(user_directory_file_path)
+#         # d_object = Directory.objects.create(
+#         #     user_directory_name = user_dir_name,
+#         #     user_directory_path = user_directory_file_path
+#         # )
+#         # d_object.save()
+#         # for di in rv_list:
+#         #     print('json-di:', di)
+#         #     fobj = File.objects.create(
+#         #         file_path = di['file_path'],
+#         #         file_name = di['file_name'],
+
+#         #         entity_type = di['entity_type'],
+#         #         primary_category = di['primary_category'],
+#         #         sub_categories = di['sub_categories'],
+    
+#         #         file_size_in_bytes = di['file_size_in_bytes'],
+#         #         file_last_access_time = di['file_last_access_time'],
+#         #         file_created_at_date_time = di['file_created_at_date_time'],
+#         #         file_modified_at_date_time = di['file_modified_at_date_time'],
+
+#         #         directory_object = d_object
+#         #     )
+#         #     fobj.save()
