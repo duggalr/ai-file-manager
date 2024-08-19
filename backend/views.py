@@ -16,6 +16,7 @@ from authlib.integrations.django_client import OAuth
 
 from .models import File, Directory, UserOAuth, UserProfile
 # from .scripts.file_process import mp_main_two
+from .tasks import process_user_directory
 
 
 oauth = OAuth()
@@ -348,9 +349,15 @@ def delete_user_file_path(request, uuid):
     return redirect('manage_file_path')
 
 
-from .tasks import process_user_directory
 
 ## AJAX
+def check_processing_status(request):
+    user_profile_object = get_user_profile(request)
+    return JsonResponse({
+        'files_under_process': user_profile_object.files_under_process
+    })
+
+
 def handle_user_file_path_submit(request):
     if request.method == 'POST':
 
@@ -930,12 +937,4 @@ def update_view_preference(request):
         return JsonResponse({'success': True, 'message': 'Preference updated successfully.'})
 
     return JsonResponse({'success': False, 'message': 'Invalid request.'})
-
-
-
-def check_processing_status(request):
-    user_profile_object = get_user_profile(request)
-    return JsonResponse({
-        'files_under_process': user_profile_object.files_under_process
-    })
 
