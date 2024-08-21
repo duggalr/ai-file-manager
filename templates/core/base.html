@@ -54,6 +54,16 @@
 
 <body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white font-sans">
 
+    {% if request.path == '/' %}
+
+        <!-- Banner Section -->
+        <!-- <div class="bg-purple-900 text-white py-1 text-center font-normal"> -->
+        <div class=" bg-gradient-to-r from-purple-800 via-purple-800 to-purple-600 text-white py-1 text-center font-normal">
+            Made with ❤️ by <a href="https://lambdalabs.com/" class="text-blue-400" target="_blank" rel="noopener noreferrer">Lambda Labs</a>
+        </div>
+    
+    {% endif %}
+
     {% block content %}
     {% endblock %}
 
