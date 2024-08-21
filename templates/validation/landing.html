@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
+<div class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
 
     <!-- Top Navbar -->
     <nav class="flex justify-between items-center p-6 px-14">
@@ -170,13 +170,13 @@
             <h2 class="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-blue-500 via-purple-600 to-blue-700 bg-clip-text text-transparent">
                 Blog
             </h2>
-            <p class="text-gray-400 text-center tracking-wide" style="font-size: 16px;">
+            <p class="text-gray-600 dark:text-gray-400 text-center tracking-wide" style="font-size: 16px;">
                 Follow our journey, as we build this publicly and talk through interesting problems we have solved.
             </p>
             
             <div class="flex justify-center mt-12">
                 <!-- Blog Post Card -->
-                <div class="max-w-xl p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="max-w-2xl p-6 bg-gray-100 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transform transition-transform duration-300 ease-in-out hover:translate-y-1 cursor-pointer">
                     <a href="#">
                         <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                             Lorem ipsum Lorem ipsum
@@ -193,6 +193,7 @@
                     </a>
                 </div>
             </div>
+            
         </div>
     </section>
     
@@ -248,10 +249,10 @@
             <div class="font-bold text-violet-500 dark:text-violet-500" style="font-size: 23px;">
                 File Companion
                 <span class="pl-2 space-x-2">
-                    <a href="https://github.com/" class="text-blue-400 dark:text-gray-400 text-sm dark:hover:text-blue-400">
+                    <a href="https://github.com/" class="text-gray-400 dark:text-gray-400 text-sm hover:text-blue-400 dark:hover:text-blue-400">
                         <i class="fa-brands fa-twitter"></i>
                     </a>
-                    <a href="https://github.com/" class="text-blue-400 dark:text-gray-400 text-sm dark:hover:text-blue-400">
+                    <a href="https://github.com/" class="text-gray-400 dark:text-gray-400 text-sm hover:text-blue-400 dark:hover:text-blue-400">
                         <i class="fa-brands fa-linkedin"></i>
                     </a>
                 </span>
@@ -259,8 +260,8 @@
             
 
             <div class="text-gray-600 dark:text-gray-400 space-x-4 pt-2">
-                <a href="#" class="hover:text-blue-400">Privacy Policy</a>
-                <a href="#" class="hover:text-blue-400">Contact Us</a>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400">Privacy Policy</a>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400">Contact Us</a>
             </div>
         </div>
     </footer>
