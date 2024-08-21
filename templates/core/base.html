@@ -54,20 +54,90 @@
 
 <body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white font-sans">
 
-    {% if request.path == '/' %}
-
         <!-- Banner Section -->
         <!-- <div class="bg-purple-900 text-white py-1 text-center font-normal"> -->
         <div class=" bg-gradient-to-r from-purple-800 via-purple-800 to-purple-600 text-white py-1 text-center font-normal">
             Made with ❤️ by <a href="https://lambdalabs.com/" class="text-blue-400" target="_blank" rel="noopener noreferrer">Lambda Labs</a>
         </div>
     
-    {% endif %}
+       <!-- Top Navbar -->
+       <nav class="flex justify-between items-center p-6 px-14">
+        <div class="text-3xl font-bold cursor-pointer hover:text-blue-400">
+            <a href="{% url 'landing' %}">
+                <i class="fa-brands fa-nfc-directional"></i>
+            </a>
+        </div>
+        <div class="justify-center space-x-8">
+            {% if request.path == '/' %}
+                <a href="#blog" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Blog</a>
+            {% else %}
+                <a href="{% url 'blog_post_one' %}" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Blog</a>
+            {% endif %}
+            
+            <!-- <a href="#faq" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Faq</a> -->
+            <a href="#contact" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Contact</a>
+        </div>
+        <div>
+            <button
+                id="theme-toggle"
+                type="button"
+                class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
+            >
+                <svg
+                    id="theme-toggle-light-icon"
+                    class="hidden w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+                    ></path>
+                </svg>
+                <svg
+                    id="theme-toggle-dark-icon"
+                    class="hidden w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                    ></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
 
     {% block content %}
     {% endblock %}
 
-    <script>
+    <!-- Footer -->
+    <footer class="bg-gray-200 dark:bg-gray-800 p-4 mt-40">
+        <div class="flex justify-between max-w-full mx-auto">
+            <div class="font-bold text-violet-500 dark:text-violet-500" style="font-size: 23px;">
+                File Companion
+                <span class="pl-2 space-x-2">
+                    <a href="https://github.com/" class="text-gray-400 dark:text-gray-400 text-sm hover:text-blue-400 dark:hover:text-blue-400">
+                        <i class="fa-brands fa-twitter"></i>
+                    </a>
+                    <a href="https://github.com/" class="text-gray-400 dark:text-gray-400 text-sm hover:text-blue-400 dark:hover:text-blue-400">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </a>
+                </span>
+            </div>
+            
+
+            <div class="text-gray-600 dark:text-gray-400 space-x-4 pt-2">
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400">Privacy Policy</a>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- <script>
         var themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
         var themeToggleLightIcon = document.getElementById("theme-toggle-light-icon");
     
@@ -116,7 +186,49 @@
                 }
             }
         });
+    </script> -->
+
+    <script>
+        var themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
+        var themeToggleLightIcon = document.getElementById("theme-toggle-light-icon");
+    
+        // Function to set the theme
+        function setTheme(theme) {
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("color-theme", "dark");
+                themeToggleDarkIcon.classList.add("hidden");
+                themeToggleLightIcon.classList.remove("hidden");
+            } else {
+                document.documentElement.classList.remove("dark");
+                localStorage.setItem("color-theme", "light");
+                themeToggleDarkIcon.classList.remove("hidden");
+                themeToggleLightIcon.classList.add("hidden");
+            }
+        }
+    
+        // Check the saved theme in localStorage
+        var savedTheme = localStorage.getItem("color-theme");
+    
+        // If no theme is saved, default to dark mode
+        if (!savedTheme) {
+            setTheme("dark");
+        } else {
+            setTheme(savedTheme);
+        }
+    
+        // Toggle theme on button click
+        var themeToggleBtn = document.getElementById("theme-toggle");
+    
+        themeToggleBtn.addEventListener("click", function () {
+            if (document.documentElement.classList.contains("dark")) {
+                setTheme("light");
+            } else {
+                setTheme("dark");
+            }
+        });
     </script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
 
     <!-- Dark Mode Toggle Script -->

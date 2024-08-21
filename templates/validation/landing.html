@@ -3,56 +3,10 @@
 {% block content %}
 
 <div class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
-
-    <!-- Top Navbar -->
-    <nav class="flex justify-between items-center p-6 px-14">
-        <div class="text-3xl font-bold cursor-pointer hover:text-blue-400">
-            <a href="{% url 'landing' %}">
-                <i class="fa-brands fa-nfc-directional"></i>
-            </a>
-        </div>
-        <div class="justify-center space-x-8">
-            <a href="#blog" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Blog</a>
-            <!-- <a href="#faq" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Faq</a> -->
-            <a href="#contact" class="text-gray-400 hover:text-blue-400 transition" style="font-size: 16.5px;">Contact</a>
-        </div>
-        <div>
-            <button
-                id="theme-toggle"
-                type="button"
-                class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5"
-            >
-                <svg
-                    id="theme-toggle-light-icon"
-                    class="hidden w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-                    ></path>
-                </svg>
-                <svg
-                    id="theme-toggle-dark-icon"
-                    class="hidden w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                    ></path>
-                </svg>
-            </button>
-        </div>
-    </nav>
     
     <!-- Header -->
     <header class="text-center py-12 mt-10 relative overflow-hidden">
-         
+
         <!-- Launching Soon Badge -->
         <div class="absolute inset-x-0 top-4 flex justify-center z-10 animate-fadeIn">
             <span class="inline-block bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-400 font-normal px-3 py-0.5 rounded-lg shadow-md border border-gray-300 dark:border-gray-700" style="font-size: 12.5px;">
@@ -176,24 +130,27 @@
             
             <div class="flex justify-center mt-12">
                 <!-- Blog Post Card -->
-                <div class="max-w-2xl p-6 bg-gray-100 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transform transition-transform duration-300 ease-in-out hover:translate-y-1 cursor-pointer">
-                    <a href="#">
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            Lorem ipsum Lorem ipsum
+                <a href="{% url 'blog_post_one' %}">
+                <div class="max-w-2xl p-6 bg-gray-100 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transform transition-transform duration-300 ease-in-out hover:translate-y-1 cursor-pointer">                    
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-700 dark:text-gray-300">
+                            Welcome to File Companion
                         </h5>
-                    </a>
-                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 mt-5">
-                        Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.
+                    <p class="mb-3 font-normal text-gray-500 dark:text-gray-400 mt-5">
+                        We’re taking the ethos of “build and grow in public,” with the hope of fostering a like-minded community along the way.
+                        The purpose of this blog is to document the development journey of File Companion from the ground up...
                     </p>
-                    <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-4">
+                    <a
+                    href="{% url 'blog_post_one' %}"
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-4">
                         Read more
                         <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
                         </svg>
                     </a>
                 </div>
+                </a>
             </div>
-            
+
         </div>
     </section>
     
@@ -244,7 +201,7 @@
     </section> -->
 
     <!-- Footer -->
-    <footer class="bg-gray-200 dark:bg-gray-800 p-4 mt-52">
+    <!-- <footer class="bg-gray-200 dark:bg-gray-800 p-4 mt-52">
         <div class="flex justify-between max-w-full mx-auto">
             <div class="font-bold text-violet-500 dark:text-violet-500" style="font-size: 23px;">
                 File Companion
@@ -264,7 +221,7 @@
                 <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-blue-400">Contact Us</a>
             </div>
         </div>
-    </footer>
+    </footer> -->
 </div>
 
 <!-- Tailwind CSS Animations -->
