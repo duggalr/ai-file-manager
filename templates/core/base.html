@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    
+    <!-- Tailwind -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"> -->
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        content: ["./*.html"],
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                blue: {
+                  light: "#00ccdd"
+                }
+              }
+            }
+          }
+        },
+        darkMode: "class"
+      };
+    </script>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.1/tailwind.min.css"
+    />
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.css"
+        rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.1/tailwind.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.css"
+      rel="stylesheet"
+    />
+
+    <title>File Companion</title>
+</head>
+
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white font-sans">
+
+    {% block content %}
+    {% endblock %}
+
+
+    <script>
+        var themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
+        var themeToggleLightIcon = document.getElementById("theme-toggle-light-icon");
+    
+        // console.log('current-color:', localStorage.getItem("color-theme"))
+        // console.log('tmp', !localStorage.getItem("color-theme") &&
+        // window.matchMedia("(prefers-color-scheme: dark)").matches)
+
+        // Default to dark mode
+        if (
+            localStorage.getItem("color-theme") === "dark" ||
+            (!localStorage.getItem("color-theme") &&
+             window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+            document.documentElement.classList.add("dark");
+            themeToggleLightIcon.classList.remove("hidden");
+        } else {
+            document.documentElement.classList.add("dark"); // Default to dark mode
+            localStorage.setItem("color-theme", "dark");
+            themeToggleLightIcon.classList.remove("hidden");
+        }
+    
+        var themeToggleBtn = document.getElementById("theme-toggle");
+    
+        themeToggleBtn.addEventListener("click", function () {
+            // Toggle icons inside the button
+            themeToggleDarkIcon.classList.toggle("hidden");
+            themeToggleLightIcon.classList.toggle("hidden");
+    
+            // If set via local storage previously
+            if (localStorage.getItem("color-theme")) {
+                if (localStorage.getItem("color-theme") === "light") {
+                    document.documentElement.classList.add("dark");
+                    localStorage.setItem("color-theme", "dark");
+                } else {
+                    document.documentElement.classList.remove("dark");
+                    localStorage.setItem("color-theme", "light");
+                }
+            } else {
+                // If NOT set via local storage previously
+                if (document.documentElement.classList.contains("dark")) {
+                    document.documentElement.classList.remove("dark");
+                    localStorage.setItem("color-theme", "light");
+                } else {
+                    document.documentElement.classList.add("dark");
+                    localStorage.setItem("color-theme", "dark");
+                }
+            }
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+
+    <!-- Dark Mode Toggle Script -->
+    <!-- <script>
+        const toggleButton = document.getElementById('dark-mode-toggle');
+        const htmlElement = document.documentElement;
+
+        // Check for saved mode in localStorage
+        const isDarkMode = localStorage.getItem('dark-mode') === 'true';
+        if (isDarkMode) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        // Toggle dark mode on button click and save preference
+        toggleButton.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            const isDarkModeActive = htmlElement.classList.contains('dark');
+            localStorage.setItem('dark-mode', isDarkModeActive);
+        });
+    </script> -->
+</body>
+</html>
