@@ -25,7 +25,7 @@
             An AI that will semantically organize your existing and new files, so you don't have to...
         </p>
     
-        <div class="flex justify-center items-center space-x-2 animate-fadeIn delay-200">
+        <!-- <div class="flex justify-center items-center space-x-2 animate-fadeIn delay-200">
             <input 
                 type="email" 
                 placeholder="Enter your email" 
@@ -35,10 +35,31 @@
             <button type="submit" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-full hover:from-purple-600 hover:to-blue-600 transition">
                 Join Waitlist
             </button>
+        </div> -->
+
+        <div id="email_form_div" class="flex justify-center items-center space-x-2 animate-fadeIn delay-200">
+            <form id="emailForm">
+                {% csrf_token %}
+                <input 
+                    type="email" 
+                    name="email"
+                    id="emailInput" 
+                    placeholder="Enter your email" 
+                    class="px-4 py-3 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-96 text-black dark:text-gray-400 bg-gray-200 dark:bg-gray-800"
+                    required
+                >
+                <button type="submit" id="submitBtn" class="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-full hover:from-purple-600 hover:to-blue-600 transition">
+                    Join Waitlist
+                </button>
+            </form>
+        </div>
+        
+        <div id="successMessage" class="hidden mt-4 text-center">
+            <p style="font-size: 15px;" class="bg-green-800 text-gray-300 py-2 px-4 rounded-full inline-block">Thanks for joining the waitlist! 🙏 You'll be the first to know when we launch!</p>
         </div>
     
         <p class="text-gray-600 dark:text-gray-400 mt-3 animate-fadeIn delay-300" style="font-size: 14px;">
-            <strong>3,000+</strong> people are (not so patiently) waiting. &#128517;
+            <strong id="subscriber_count">{{ total_email_subscribers }}</strong> people are (not so patiently) waiting. &#128517;
         </p>
         
         <!-- MVP Product Image -->
@@ -259,6 +280,10 @@
     //     }
     // });
 
+
+    let tmpvar = "{{ csrf_token }}";
+    console.log('tmp', tmpvar)
+
     // Fade-in animation on scroll for Blog section
     window.addEventListener('scroll', function() {
         const blogSection = document.querySelector('#blog');
@@ -271,6 +296,79 @@
 
     // Optionally trigger the scroll event on page load to handle sections already in view
     window.dispatchEvent(new Event('scroll'));
+
+
+
+    // Email Form Submission
+    document.getElementById('emailForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form from submitting the traditional way
+
+        const emailInput = document.getElementById('emailInput').value;
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        console.log('email:', emailInput)
+        
+        // Disable the submit button to prevent multiple submissions
+        submitBtn.disabled = true;
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'handle_email_submission' %}",
+            data: {
+                email: emailInput,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (res) {
+                console.log('res:', res);
+                if (res['success'] === true){
+                    successMessage.classList.remove('hidden');
+                    successMessage.classList.add('animate-fadeIn');
+                    document.getElementById('email_form_div').classList.add('hidden');
+                    
+                    // let new_subscriber_amount = parseInt(document.getElementById('subscriber_count').innerText) + res['total_email_subscribers'];
+                    let new_subscriber_amount = 127 + res['total_email_subscribers'];
+                    document.getElementById('subscriber_count').innerText = new_subscriber_amount;
+                } else{
+                    if ('duplicate' in res){
+                        successMessage.classList.remove('hidden');
+                        successMessage.classList.add('animate-fadeIn');
+                        document.getElementById('email_form_div').classList.add('hidden');
+                    } else{
+                        // error occured
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle server errors
+                console.error('AJAX Error:', status, error);
+                alert('An unexpected error occurred. Please try again later.');
+            }
+        });
+
+        // fetch("{% url 'handle_email_submission' %}", {
+        //     method: 'POST',
+        //     // headers: {
+        //     //     'Content-Type': 'application/json',
+        //     // },
+        //     data: {
+        //         email: emailInput,
+        //         csrfmiddlewaretoken: '{{ csrf_token }}'
+        //     }
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     if (data.success) {
+        //         successMessage.classList.remove('hidden');
+        //         successMessage.classList.add('animate-fadeIn');
+        //     } else {
+        //         alert(data.error);
+        //     }
+        // })
+        // .finally(() => {
+        //     submitBtn.disabled = false;
+        // });
+    });
 
 </script>
 
