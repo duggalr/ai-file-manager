@@ -29,7 +29,7 @@ django.setup()
 
 # Import Django models
 from backend.models import Directory, File
-from . import process_directory_main_two
+# from . import process_directory_main_two
 
 
 class Prompts(Enum):

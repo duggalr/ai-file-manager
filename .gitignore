@@ -7,3 +7,6 @@ todo.txt
 backend/scripts/file_process/screenshots
 screenshots/
 dump.rdb
+experiments/
+outputs/
+outputs_two/
