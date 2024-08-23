@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import EmailSubscriber
 
 
-
 def landing(request):
     total_email_subscribers = EmailSubscriber.objects.count()
     tmp_email_subscriber_count = 127 + total_email_subscribers  # TODO: delete afterwards
