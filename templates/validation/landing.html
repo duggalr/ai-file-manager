@@ -345,29 +345,6 @@
                 alert('An unexpected error occurred. Please try again later.');
             }
         });
-
-        // fetch("{% url 'handle_email_submission' %}", {
-        //     method: 'POST',
-        //     // headers: {
-        //     //     'Content-Type': 'application/json',
-        //     // },
-        //     data: {
-        //         email: emailInput,
-        //         csrfmiddlewaretoken: '{{ csrf_token }}'
-        //     }
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     if (data.success) {
-        //         successMessage.classList.remove('hidden');
-        //         successMessage.classList.add('animate-fadeIn');
-        //     } else {
-        //         alert(data.error);
-        //     }
-        // })
-        // .finally(() => {
-        //     submitBtn.disabled = false;
-        // });
     });
 
 </script>

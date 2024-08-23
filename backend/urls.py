@@ -7,5 +7,6 @@ urlpatterns = [
     path('blog/welcome', views.blog_post_one, name='blog_post_one'),
 
     # AJAX
-    path('handle_email_submission', views.handle_email_submission, name='handle_email_submission'),
+    path('api/handle_email_submission', views.handle_email_submission, name='handle_email_submission'),
+    path('api/get_email_subscriber_count', views.get_email_subscriber_count, name='get_email_subscriber_count'),
 ]
