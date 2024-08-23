@@ -60,7 +60,7 @@ const Landing = () => {
                 setSubscriberCount(response.data.total_email_subscribers);
                 setLoading(false);
             } catch (error) {
-                setError('Failed to fetch subscriber count');
+                // setError('Failed to fetch subscriber count');
                 setLoading(false);
             }
         };
