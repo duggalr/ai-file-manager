@@ -31,7 +31,7 @@ if 'PRODUCTION_ENV' not in os.environ:
 else:
     SECRET_KEY = os.environ['SECRET_KEY']
     DEBUG = True  # TODO: change this to false
-    ALLOWED_HOSTS = ['ai-file-manager-dev.ca-central-1.elasticbeanstalk.com']
+    ALLOWED_HOSTS = ['ai-file-manager-dev.ca-central-1.elasticbeanstalk.com', 'api.filecompanion.app']
 
 
 # Application definition
@@ -168,3 +168,16 @@ if 'PRODUCTION_ENV' not in os.environ:
 else:
     CORS_ALLOWED_ORIGINS = []
     CORS_EXPOSE_HEADERS = ['Content-Type']
+
+
+if 'PRODUCTION_ENV' in os.environ:
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_SAMESITE = 'Strict'
+    SESSION_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_SSL_REDIRECT = True
+    # X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 604800  # set low, but when site is ready for deployment, set to at least 15768000 (6 months)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
