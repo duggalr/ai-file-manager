@@ -11,3 +11,7 @@ experiments/
 outputs/
 outputs_two/
 new_scripts
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
