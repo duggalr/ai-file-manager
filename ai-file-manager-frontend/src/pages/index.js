@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import axios from 'axios';
+import Link from 'next/link';
 
 
 const Landing = () => {
@@ -226,7 +227,7 @@ const Landing = () => {
                         </p>
                         
                         <div className="flex justify-center mt-12">
-                            <a href="/blog/welcome">
+                            <Link href="/blog/welcome">
                                 <div className="max-w-2xl p-6 bg-gray-100 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 transform transition-transform duration-300 ease-in-out hover:translate-y-1 cursor-pointer">
                                     <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-700 dark:text-gray-300">
                                         Blog Post #1: Welcome
@@ -236,7 +237,7 @@ const Landing = () => {
                                         The purpose of this blog is to document the development journey of File Companion from the beginning... 
                                     </p>                                    
                                 </div>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </section>
