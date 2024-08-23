@@ -92,7 +92,7 @@ const Landing = () => {
                     </h1>
                 
                     <p className="text-gray-600 dark:text-gray-400 mb-12 mt-4 tracking-normal text-[23px]">
-                        An AI that will semantically organize your existing and new files, so you don't have to...
+                        An AI that will semantically organize your existing and new files, so you don&apos;t have to...
                     </p>
                 
                     {/* <div id="email_form_div" className="flex justify-center items-center space-x-2">
@@ -136,7 +136,7 @@ const Landing = () => {
                         ) : (
                             <div id="successMessage" className="mt-0 text-center">
                                 <p className="text-[15px] bg-green-800 text-gray-300 py-2 px-4 rounded-full inline-block">
-                                    Thanks for joining the waitlist! 🙏 You'll be the first to know when we launch!
+                                    Thanks for joining the waitlist! 🙏 You&apos;ll be the first to know when we launch!
                                 </p>
                             </div>
                         )}
@@ -149,7 +149,7 @@ const Landing = () => {
                     )}
                                     
                     <div id="successMessage" className="hidden mt-4 text-center">
-                        <p className="text-[15px] bg-green-800 text-gray-300 py-2 px-4 rounded-full inline-block">Thanks for joining the waitlist! 🙏 You'll be the first to know when we launch!</p>
+                        <p className="text-[15px] bg-green-800 text-gray-300 py-2 px-4 rounded-full inline-block">Thanks for joining the waitlist! 🙏 You&apos;ll be the first to know when we launch!</p>
                     </div>
                 
                     <p className="text-gray-600 dark:text-gray-400 mt-3 text-[14px]">
@@ -223,7 +223,7 @@ const Landing = () => {
                             Blog
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 text-center tracking-wide text-[17px]">
-                            Join us on our journey as we build in public, and share the unique challenges we've tackled along the way.
+                            Join us on our journey as we build in public, and share the unique challenges we&apos;ve tackled along the way.
                         </p>
                         
                         <div className="flex justify-center mt-12">
