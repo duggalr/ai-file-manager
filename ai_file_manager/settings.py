@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv, find_dotenv
 
-if 'LOCAL_ENV' in os.environ:
+if 'PRODUCTION_ENV' not in os.environ:
     ENV_FILE = find_dotenv()
     load_dotenv(ENV_FILE)
 
@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-if 'LOCAL_ENV' in os.environ:
+if 'PRODUCTION_ENV' not in os.environ:
     SECRET_KEY = 'django-insecure-r98qbgttq=gm5a*mw-3o!2wot*@50jhkih^r=zvu65d=wx0alx'
     DEBUG = True
     ALLOWED_HOSTS = []
@@ -32,6 +32,7 @@ else:
     SECRET_KEY = os.environ['SECRET_KEY']
     DEBUG = True  # TODO: change this to false
     ALLOWED_HOSTS = ['ai-file-manager-dev.ca-central-1.elasticbeanstalk.com']
+
 
 # Application definition
 INSTALLED_APPS = [
@@ -83,7 +84,7 @@ WSGI_APPLICATION = 'ai_file_manager.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if 'LOCAL_ENV' in os.environ:
+if 'PRODUCTION_ENV' not in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -105,6 +106,7 @@ else:
             'PORT': os.environ['RDS_DB_PORT'],
         }
     }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -148,16 +150,16 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Load Auth0 application settings into memory
-AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
-AUTH0_CLIENT_ID = os.environ["AUTH0_CLIENT_ID"]
-AUTH0_CLIENT_SECRET = os.environ["AUTH0_CLIENT_SECRET"]
+# # Load Auth0 application settings into memory
+# AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
+# AUTH0_CLIENT_ID = os.environ["AUTH0_CLIENT_ID"]
+# AUTH0_CLIENT_SECRET = os.environ["AUTH0_CLIENT_SECRET"]
 
 # # Celery settings
 # CELERY_BROKER_URL = "redis://localhost:6379"
 # CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-if 'LOCAL_ENV' in os.environ:
+if 'PRODUCTION_ENV' not in os.environ:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
