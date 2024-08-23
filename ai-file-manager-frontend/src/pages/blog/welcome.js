@@ -45,7 +45,7 @@ const WelcomeBlog = () => {
                         Welcome! &#128075;
                         The purpose of this blog is to document the development journey of File Companion from the beginning. 
                         As we build this project, we aim to share our insights, highlight both the technical and non-technical challenges we encounter, 
-                        and provide a glimpse into the problems we're tackling next.
+                        and provide a glimpse into the problems we&apos;re tackling next.
                     </p>
 
                     <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
