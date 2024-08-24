@@ -3,6 +3,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import axios from 'axios';
 import Link from 'next/link';
+import Head from 'next/head';
 
 
 const Landing = () => {
@@ -102,7 +103,7 @@ const Landing = () => {
                                 name="email"
                                 id="emailInput" 
                                 placeholder="Enter your email" 
-                                class="px-4 py-3 mr-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-96 text-black dark:text-gray-400 bg-gray-200 dark:bg-gray-800"
+                                className="px-4 py-3 mr-2 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-96 text-black dark:text-gray-400 bg-gray-200 dark:bg-gray-800"
                                 required
                             />
                             <button type="submit" id="submitBtn" className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-full hover:from-purple-600 hover:to-blue-600 transition">
@@ -161,40 +162,40 @@ const Landing = () => {
                             <foreignObject x="13" y="68" width="30" height="30">
                                 <i className="fa-solid fa-file-excel text-blue-500"></i>
                             </foreignObject>
-                            <path d="M 50,80 C 300,80 200,250 500,250" stroke="#3b82f6" stroke-width="4" fill="transparent" />
+                            <path d="M 50,80 C 300,80 200,250 500,250" stroke="#3b82f6" strokeWidth="4" fill="transparent" />
                             <circle cx="50" cy="80" r="10" fill="#3b82f6" />
                     
                             <foreignObject x="13" y="148" width="30" height="30">
                                 <i className="fa-solid fa-file-pdf text-purple-500"></i>
                             </foreignObject>
-                            <path d="M 50,160 C 300,160 200,250 500,250" stroke="#8b5cf6" stroke-width="4" fill="transparent" />
+                            <path d="M 50,160 C 300,160 200,250 500,250" stroke="#8b5cf6" strokeWidth="4" fill="transparent" />
                             <circle cx="50" cy="160" r="10" fill="#8b5cf6" />
                     
                             <foreignObject x="13" y="228" width="30" height="30">
                                 <i className="fa-solid fa-file-code text-yellow-400"></i>
                             </foreignObject>
-                            <path d="M 50,240 C 300,240 200,250 500,250" stroke="#fde047" stroke-width="4" fill="transparent" />
+                            <path d="M 50,240 C 300,240 200,250 500,250" stroke="#fde047" strokeWidth="4" fill="transparent" />
                             <circle cx="50" cy="240" r="10" fill="#fde047" />
                     
                             <foreignObject x="13" y="308" width="30" height="30">
                                 <i className="fa-solid fa-file-word text-orange-500"></i>
                             </foreignObject>
-                            <path d="M 50,320 C 300,320 200,250 500,250" stroke="#f97316" stroke-width="4" fill="transparent" />
+                            <path d="M 50,320 C 300,320 200,250 500,250" stroke="#f97316" strokeWidth="4" fill="transparent" />
                             <circle cx="50" cy="320" r="10" fill="#f97316" />
                     
                             <foreignObject x="13" y="388" width="30" height="30">
                                 <i className="fa-solid fa-photo-film text-green-500"></i>
                             </foreignObject>
-                            <path d="M 50,400 C 300,400 200,250 500,250" stroke="#22c55e" stroke-width="4" fill="transparent" />
+                            <path d="M 50,400 C 300,400 200,250 500,250" stroke="#22c55e" strokeWidth="4" fill="transparent" />
                             <circle cx="50" cy="400" r="10" fill="#22c55e" />
                     
-                            <path d="M 500,250 C 800,250 700,150 950,150" stroke="#3b82f6" stroke-width="4" fill="transparent" />
-                            <path d="M 500,250 C 800,250 700,150 950,150" stroke="#8b5cf6" stroke-width="4" fill="transparent" />
+                            <path d="M 500,250 C 800,250 700,150 950,150" stroke="#3b82f6" strokeWidth="4" fill="transparent" />
+                            <path d="M 500,250 C 800,250 700,150 950,150" stroke="#8b5cf6" strokeWidth="4" fill="transparent" />
                     
-                            <path d="M 500,250 C 800,250 700,250 950,250" stroke="#fde047" stroke-width="4" fill="transparent" />
-                            <path d="M 500,250 C 800,250 700,250 950,250" stroke="#f97316" stroke-width="4" fill="transparent" />
+                            <path d="M 500,250 C 800,250 700,250 950,250" stroke="#fde047" strokeWidth="4" fill="transparent" />
+                            <path d="M 500,250 C 800,250 700,250 950,250" stroke="#f97316" strokeWidth="4" fill="transparent" />
                     
-                            <path d="M 500,250 C 800,250 700,350 950,350" stroke="#22c55e" stroke-width="4" fill="transparent" />
+                            <path d="M 500,250 C 800,250 700,350 950,350" stroke="#22c55e" strokeWidth="4" fill="transparent" />
                     
                             <foreignObject x="950" y="138" width="30" height="30">
                                 <i className="fas fa-folder text-blue-500"></i>
@@ -207,7 +208,7 @@ const Landing = () => {
                             </foreignObject>
                     
                             <rect x="420" y="225" width="160" height="44" fill="#8E39EA" rx="8" ry="8"/>
-                            <text x="501" y="249" fill="#ffffff" font-size="19px" font-family="Arial" text-anchor="middle" dominant-baseline="middle">
+                            <text x="501" y="249" fill="#ffffff" fontSize="19px" fontFamily="Arial" textAnchor="middle" dominantBaseline="middle">
                                 File Companion
                             </text>
 

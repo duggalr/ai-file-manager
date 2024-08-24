@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import Link from 'next/link';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
@@ -102,7 +103,7 @@ const WelcomeBlog = () => {
                         In the coming blog posts, we&apos;ll dive deeper into the technical details of the project and highlight the challenges we&apos;ve faced—and those we anticipate—as we continue building out the application.
                     </p>
                     <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed" data-aos="fade-in">
-                        In the meantime, if you&apos;re interested in this problem, have questions, or want to contribute, feel free to <a href="">reach out</a>—we&apos;d love to hear from you!
+                        In the meantime, if you&apos;re interested in this problem, have questions, or want to contribute, feel free to <Link href="mailto:rahul@filecompanion.app">reach out</Link>—we&apos;d love to hear from you!
                     </p>
                     <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed" data-aos="fade-in">
                         The V1 will be out very soon, and we hope you are as excited as we are! 😅
