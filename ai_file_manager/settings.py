@@ -29,7 +29,7 @@ if 'PRODUCTION_ENV' not in os.environ:
     DEBUG = True
     ALLOWED_HOSTS = []
 else:
-    SECRET_KEY = os.environ['SECRET_KEY']
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
     DEBUG = True  # TODO: change this to false
     ALLOWED_HOSTS = ['ai-file-manager-dev.ca-central-1.elasticbeanstalk.com', 'api.filecompanion.app']
 
@@ -99,11 +99,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_DB_USER'],
-            'PASSWORD': os.environ['RDS_DB_PASSWORD'],
-            'HOST': os.environ['RDS_DB_HOST'],
-            'PORT': os.environ['RDS_DB_PORT'],
+            'NAME': os.environ['PROD_RDS_DB_NAME'],
+            'USER': os.environ['PROD_RDS_DB_USER'],
+            'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
+            'HOST': os.environ['PROD_RDS_DB_HOST'],
+            'PORT': os.environ['PROD_RDS_DB_PORT'],
         }
     }
 
