@@ -37,7 +37,7 @@ const Landing = () => {
             setSubscriberCount(new_subscriber_count);
             setSuccessMessage(true);
         } else{
-            if ('duplicate' in res){
+            if ('duplicate' in response_data){
                 setSuccessMessage(true);
             } else{
                 // error occured
