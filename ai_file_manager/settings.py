@@ -166,7 +166,9 @@ if 'PRODUCTION_ENV' not in os.environ:
     CORS_ALLOW_ALL_ORIGINS = True
     CORS_ORIGIN_ALLOW_ALL = True
 else:
-    CORS_ALLOWED_ORIGINS = []
+    CORS_ALLOWED_ORIGINS = [
+        'https://www.filecompanion.app/',
+    ]
     CORS_EXPOSE_HEADERS = ['Content-Type']
 
 

@@ -14,6 +14,8 @@ const Landing = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [subscriberCount, setSubscriberCount] = useState(127);
   
+    const apiURL = process.env.NEXT_PUBLIC_API_URL;
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading(true);
@@ -21,9 +23,10 @@ const Landing = () => {
         let data = JSON.stringify({ email });
         console.log('data:', data)
 
-        const apiUrl = 'http://127.0.0.1:8000/api/handle_email_submission';
+        // const apiUrl = 'http://127.0.0.1:8000/api/handle_email_submission';
+        let current_url = apiURL + '/handle_email_submission';
         let response = await axios.post(
-            apiUrl,
+            current_url,
             data
         );
         console.log('res', response);
@@ -57,7 +60,9 @@ const Landing = () => {
         // Function to fetch subscriber count
         const fetchSubscriberCount = async () => {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/get_email_subscriber_count');
+                let current_url = apiURL + '/get_email_subscriber_count';
+                const response = await axios.post(current_url);
+                // const response = await axios.post('http://127.0.0.1:8000/api/get_email_subscriber_count');
                 setSubscriberCount(response.data.total_email_subscribers);
                 setLoading(false);
             } catch (error) {

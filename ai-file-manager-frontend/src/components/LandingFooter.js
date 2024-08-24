@@ -9,11 +9,8 @@ const LandingFooter = () => {
                 <div className="font-bold text-violet-500 dark:text-violet-500 text-[23px]">
                     File Companion
                     <span className="pl-3 space-x-3">
-                        <Link href="https://github.com/" className="text-gray-400 dark:text-gray-400 text-base hover:text-blue-400 dark:hover:text-blue-400">
+                        <Link href="https://x.com/filecompanion" className="text-gray-400 dark:text-gray-400 text-base hover:text-blue-400 dark:hover:text-blue-400">
                             <i className="fa-brands fa-twitter"></i>
-                        </Link>
-                        <Link href="https://github.com/" className="text-gray-400 dark:text-gray-400 text-base hover:text-blue-400 dark:hover:text-blue-400">
-                            <i className="fa-brands fa-linkedin"></i>
                         </Link>
                     </span>
                 </div>
