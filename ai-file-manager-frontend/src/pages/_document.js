@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
+import { useState, useEffect } from 'react';
 import Script from 'next/script';
 
  
