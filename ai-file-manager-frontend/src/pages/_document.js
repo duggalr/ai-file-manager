@@ -48,7 +48,7 @@ export default function Document() {
                 {/* Google Analytics Script */}
                 <Script
                     async
-                    src={`https://www.googletagmanager.com/gtag/js?id=G-ZHQCXN1986`}
+                    src={`https://www.googletagmanager.com/gtag/js?id=G-6N4PD5VHJ0`}
                 />
                 <Script id="google-analytics" strategy="afterInteractive">
                     {`
@@ -56,7 +56,7 @@ export default function Document() {
                     function gtag(){dataLayer.push(arguments);}
                     gtag('js', new Date());
 
-                    gtag('config', 'G-ZHQCXN1986');
+                    gtag('config', 'G-6N4PD5VHJ0');
                     `}
                 </Script>
                     
