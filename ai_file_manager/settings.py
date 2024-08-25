@@ -30,8 +30,8 @@ if 'PRODUCTION_ENV' not in os.environ:
     ALLOWED_HOSTS = []
 else:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    DEBUG = True  # TODO: change this to false
-    ALLOWED_HOSTS = ['ai-file-manager-dev.ca-central-1.elasticbeanstalk.com', 'api.filecompanion.app']
+    DEBUG = False
+    ALLOWED_HOSTS = ['api.filecompanion.app']
 
 
 # Application definition
