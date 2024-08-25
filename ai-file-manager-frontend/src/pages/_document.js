@@ -6,6 +6,26 @@ export default function Document() {
 
     const heapEnvId = process.env.NEXT_PUBLIC_HEAP_ENV_ID;
     
+    useEffect(() => {
+
+        // Function to generate a unique user ID for anonymous users
+        const generateUniqueUserId = () => {
+            return `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        };
+
+        // Function to set user identity
+        const setUserIdentity = (userId) => {
+            if (window.heap) {
+                window.heap.identify(userId);
+            }
+        };
+
+        // Generate and set user identity
+        const userId = generateUniqueUserId();
+        setUserIdentity(userId);
+
+    }, []);
+
     return (
         <Html>
             <Head>
