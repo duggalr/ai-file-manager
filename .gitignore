@@ -6,3 +6,6 @@ test_output_files/
 todo.txt
 backend/scripts/file_process/screenshots
 screenshots/
+ai-file-manager-frontend
+project_venv
+backend/scripts/experiments/
