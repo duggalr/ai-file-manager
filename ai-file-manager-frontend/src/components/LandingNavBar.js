@@ -34,17 +34,16 @@ const LandingNavBar = () => {
                 {pathname === '/' && (
                     <>
                         <Link href="#blog" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Blog</Link>
-                        <Link href="#contact" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Contact</Link>
+                        <Link href="mailto:rahul@filecompanion.app" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Contact</Link>
                     </>
                 )}
 
                 {pathname === '/blog/welcome' && (
                     <>
                         <Link href="/" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Home</Link>
-                        <Link href="#contact" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Contact</Link>
+                        <Link href="mailto:rahul@filecompanion.app" className="text-gray-400 hover:text-blue-400 transition text-[16.5px]">Contact</Link>
                     </>
                 )}
-
 
             </div>
             <div>
