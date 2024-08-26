@@ -16,7 +16,10 @@ const LandingFooter = () => {
                 </div>
 
                 <div className="text-gray-600 dark:text-gray-400 space-x-4 pt-2">
-                    <Link href="mailto:rahul@filecompanion.app" className="hover:text-blue-400">Contact Us</Link>
+                    {/* <a href="mailto:duggalr42@gmail.com" className="hover:text-blue-400">Contact Us</a> */}
+                    <span className="hover:text-blue-400">
+                        rahul@filecompanion.app
+                    </span>
                 </div>
             </div>
         </footer>
