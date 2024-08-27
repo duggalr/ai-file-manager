@@ -12,13 +12,33 @@ import uuid
 #     ]
 # }
 
-
 class EmailSubscriber(models.Model):
     """
     Landing Page Email Submission
     """
     email = models.EmailField(unique=True)
     subscribed_at = models.DateTimeField(auto_now_add=True)
+
+class UserOAuth(models.Model):
+    """
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    auth_zero_id = models.TextField()
+    name = models.TextField()
+    email = models.EmailField()
+    email_verified = models.BooleanField()
+    profile_picture_url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class UserProfile(models.Model):
+    """
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_auth_obj = models.ForeignKey(UserOAuth, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 
 # class UserOAuth(models.Model):

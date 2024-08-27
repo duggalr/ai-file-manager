@@ -187,3 +187,9 @@ if 'PRODUCTION_ENV' in os.environ:
     SECURE_HSTS_SECONDS = 604800  # set low, but when site is ready for deployment, set to at least 15768000 (6 months)
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+
+## AUTH0 
+AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
+API_IDENTIFIER = os.environ['API_IDENTIFIER']
+ALGORITHMS = ["RS256"]
