@@ -39,6 +39,19 @@ class UserProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Directory(models.Model):
+    """
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_directory_name = models.TextField()
+    user_directory_path = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user_profile_obj = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+
+
+
+
 
 
 # class UserOAuth(models.Model):
