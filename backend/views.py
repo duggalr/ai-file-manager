@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import EmailSubscriber, UserOAuth, Directory, UserProfile
-from . import token_validation
+from .scripts_two import token_validation
 
 
 # def landing(request):
@@ -18,6 +18,40 @@ from . import token_validation
 
 # def blog_post_one(request):
 #     return render(request, 'validation/blog_post_one.html')
+
+
+
+def get_user_from_token(request):
+    # Extract access token from the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401), None, None
+
+    try:
+        access_token = auth_header.split()[1]
+    except IndexError:
+        return JsonResponse({'success': False, 'message': 'Invalid token format'}, status=401), None, None
+
+    # Verify the access token
+    user_verified, user_info_dict = token_validation.verify_access_token(access_token=access_token)
+
+    print(f"Verified: {user_verified}")
+    print(f"User Info Dict: {user_info_dict}")
+
+    if not user_verified or user_info_dict is None:
+        return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403), None, None
+
+    try:
+        user_auth_obj = UserOAuth.objects.get(auth_zero_id=user_info_dict['sub'])
+        user_profile_obj = UserProfile.objects.get(user_auth_obj=user_auth_obj)
+        return None, user_auth_obj, user_profile_obj
+    except UserOAuth.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'User not found'}, status=404), None, None
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'User profile not found'}, status=404), None, None
+
+
+
 
 
 @csrf_exempt
@@ -121,4 +155,65 @@ def get_user_filepaths(request):
             'success': True,
             'user_directory_list': dir_rv,
             'user_object_details': user_rv_dict
+        })
+
+
+from .tasks import process_user_directory
+
+@csrf_exempt
+def check_processing_status(request):
+    # user_profile_object = get_user_profile(request)
+     # Call the utility function to get user information
+
+    if request.method == 'POST':
+        error_response, user_auth_obj, user_profile_obj = get_user_from_token(request)
+
+        # Check if there was an error response
+        if error_response:
+            return error_response
+
+        return JsonResponse({
+            'files_under_process': user_profile_obj.files_under_process
+        })
+
+
+@csrf_exempt
+def handle_user_directory_filepath_submission(request):
+    if request.method == 'POST':
+        # access_token = request.headers.get('Authorization').split()[1]
+        # if not access_token:
+        #     return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
+        
+        # user_verified, user_info_dict = token_validation.verify_access_token(
+        #     access_token = access_token
+        # )
+
+        # print(f"Verified: {user_verified}")
+        # print(f"User Info Dict: {user_info_dict}")
+
+        # if user_info_dict is None:
+        #     return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+        # user_auth_obj = UserOAuth.objects.get(
+        #     auth_zero_id = user_info_dict['sub']
+        # )
+        # user_profile_obj = UserProfile.objects.get(
+        #     user_auth_obj = user_auth_obj
+        # )    
+        # user_profile_obj.files_under_process = True
+        # user_profile_obj.save()
+
+        error_response, user_auth_obj, user_profile_obj = get_user_from_token(request)
+        data = json.loads(request.body)
+
+        user_directory_path = data['directory_path']
+        task = process_user_directory.delay(
+            user_directory_path = user_directory_path,
+            user_profile_object_id = user_profile_obj.id
+        )
+
+        print(f"Task ID: {task.id}")
+        return JsonResponse({
+            'success': True,
+            'task_id': task.id  # Send task ID to the frontend
         })
