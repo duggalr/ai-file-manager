@@ -102,42 +102,48 @@ def get_email_subscriber_count(request):
 def save_user_profile(request):
     if request.method == 'POST':
         print('headers:', request.headers)
-        
+
         access_token = request.headers.get('Authorization').split()[1]
+        print('access-token:', access_token)
         if not access_token:
             return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
         
-        user_verified, user_info_dict = token_validation.verify_access_token(
+        user_verified, user_token_dict = token_validation.verify_access_token(
             access_token = access_token
         )
 
-        print(f"Verified: {user_verified}")
-        print(f"User Info Dict: {user_info_dict}")
+#         user_auth_zero_sub_id = user_token_dict['sub']
 
-        if user_info_dict is None:
-            return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+        # token_validation.get_user_profile(access_token)
 
-        user_auth_zero_sub_id = user_info_dict['sub']
-        exisiting_user_auth_objects = UserOAuth.objects.filter(
-            auth_zero_id = user_auth_zero_sub_id
-        )
-        if len(exisiting_user_auth_objects) > 0:
-            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
-        else:
-            user_auth_object = UserOAuth.objects.create(
-                auth_zero_id = user_info_dict['sub'],
-                name = user_info_dict['name'],
-                email = user_info_dict['email'],
-                email_verified = user_info_dict['email_verified'],
-                profile_picture_url = user_info_dict['picture']
-            )
-            user_auth_object.save()
+        # print(f"Verified: {user_verified}")
+        # print(f"User Info Dict: {user_info_dict}")
 
-            user_profile_object = UserProfile.objects.create(
-                user_auth_obj = user_auth_object
-            )
-            user_profile_object.save()
-            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+        # if user_info_dict is None:
+        #     return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+        # user_auth_zero_sub_id = user_info_dict['sub']
+        # exisiting_user_auth_objects = UserOAuth.objects.filter(
+        #     auth_zero_id = user_auth_zero_sub_id
+        # )
+        # if len(exisiting_user_auth_objects) > 0:
+        #     return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+        # else:
+        #     user_auth_object = UserOAuth.objects.create(
+        #         auth_zero_id = user_info_dict['sub'],
+        #         name = user_info_dict['name'],
+        #         email = user_info_dict['email'],
+        #         email_verified = user_info_dict['email_verified'],
+        #         profile_picture_url = user_info_dict['picture']
+        #     )
+        #     user_auth_object.save()
+
+        #     user_profile_object = UserProfile.objects.create(
+        #         user_auth_obj = user_auth_object
+        #     )
+        #     user_profile_object.save()
+        #     return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+
 
 
 @csrf_exempt
@@ -191,6 +197,9 @@ def check_processing_status(request):
      # Call the utility function to get user information
 
     if request.method == 'POST':
+
+        print(request.headers)
+
         error_response, user_auth_obj, user_profile_obj = get_user_from_token(request)
 
         if error_response:
