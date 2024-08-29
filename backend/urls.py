@@ -14,4 +14,8 @@ urlpatterns = [
 
     path('api/check_processing_status', views.check_processing_status, name='check_processing_status'),
     path('api/handle_user_directory_filepath_submission', views.handle_user_directory_filepath_submission, name='handle_user_directory_filepath_submission'),
+
+
+    path('api/get_user_profile_information', views.get_user_profile_information, name='get_user_profile_information'),
+
 ]

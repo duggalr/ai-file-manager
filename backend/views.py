@@ -20,7 +20,7 @@ from .scripts_two import token_validation
 #     return render(request, 'validation/blog_post_one.html')
 
 
-
+# Helper function to get user object from access token
 def get_user_from_token(request):
     # Extract access token from the Authorization header
     auth_header = request.headers.get('Authorization')
@@ -51,6 +51,24 @@ def get_user_from_token(request):
         return JsonResponse({'success': False, 'message': 'User profile not found'}, status=404), None, None
 
 
+
+
+
+@csrf_exempt
+def get_user_profile_information(request):
+    if request.method == 'POST':
+        error_response, user_auth_obj, user_profile_obj = get_user_from_token(request)
+        if error_response:
+            return error_response
+        
+        return JsonResponse({
+            'success': True,
+            'user_details': {
+                'name': user_auth_obj.name,
+                'email': user_auth_obj.email,
+                'profile_picture_url': user_auth_obj.profile_picture_url,
+            }
+        })
 
 
 
@@ -99,20 +117,27 @@ def save_user_profile(request):
         if user_info_dict is None:
             return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
 
-        user_auth_object = UserOAuth.objects.create(
-            auth_zero_id = user_info_dict['sub'],
-            name = user_info_dict['name'],
-            email = user_info_dict['email'],
-            email_verified = user_info_dict['email_verified'],
-            profile_picture_url = user_info_dict['picture']
+        user_auth_zero_sub_id = user_info_dict['sub']
+        exisiting_user_auth_objects = UserOAuth.objects.filter(
+            auth_zero_id = user_auth_zero_sub_id
         )
-        user_auth_object.save()
+        if len(exisiting_user_auth_objects) > 0:
+            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+        else:
+            user_auth_object = UserOAuth.objects.create(
+                auth_zero_id = user_info_dict['sub'],
+                name = user_info_dict['name'],
+                email = user_info_dict['email'],
+                email_verified = user_info_dict['email_verified'],
+                profile_picture_url = user_info_dict['picture']
+            )
+            user_auth_object.save()
 
-        user_profile_object = UserProfile.objects.create(
-            user_auth_obj = user_auth_object
-        )
-        user_profile_object.save()
-        return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+            user_profile_object = UserProfile.objects.create(
+                user_auth_obj = user_auth_object
+            )
+            user_profile_object.save()
+            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
 
 
 @csrf_exempt
@@ -168,7 +193,6 @@ def check_processing_status(request):
     if request.method == 'POST':
         error_response, user_auth_obj, user_profile_obj = get_user_from_token(request)
 
-        # Check if there was an error response
         if error_response:
             return error_response
 
