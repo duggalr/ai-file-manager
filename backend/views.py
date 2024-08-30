@@ -112,37 +112,35 @@ def save_user_profile(request):
             access_token = access_token
         )
 
-#         user_auth_zero_sub_id = user_token_dict['sub']
+        if user_verified is False:
+            return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
 
-        # token_validation.get_user_profile(access_token)
+        user_profile_info = json.loads(request.body)
 
-        # print(f"Verified: {user_verified}")
-        # print(f"User Info Dict: {user_info_dict}")
+        print(f"Verified: {user_verified}")
+        print(f"User Profile Dict: {user_profile_info}")
 
-        # if user_info_dict is None:
-        #     return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+        user_auth_zero_sub_id = user_profile_info['sub']
+        exisiting_user_auth_objects = UserOAuth.objects.filter(
+            auth_zero_id = user_auth_zero_sub_id
+        )
+        if len(exisiting_user_auth_objects) > 0:
+            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+        else:
+            user_auth_object = UserOAuth.objects.create(
+                auth_zero_id = user_auth_zero_sub_id,
+                name = user_profile_info['name'],
+                email = user_profile_info['email'],
+                email_verified = user_profile_info['email_verified'],
+                profile_picture_url = user_profile_info['picture']
+            )
+            user_auth_object.save()
 
-        # user_auth_zero_sub_id = user_info_dict['sub']
-        # exisiting_user_auth_objects = UserOAuth.objects.filter(
-        #     auth_zero_id = user_auth_zero_sub_id
-        # )
-        # if len(exisiting_user_auth_objects) > 0:
-        #     return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
-        # else:
-        #     user_auth_object = UserOAuth.objects.create(
-        #         auth_zero_id = user_info_dict['sub'],
-        #         name = user_info_dict['name'],
-        #         email = user_info_dict['email'],
-        #         email_verified = user_info_dict['email_verified'],
-        #         profile_picture_url = user_info_dict['picture']
-        #     )
-        #     user_auth_object.save()
-
-        #     user_profile_object = UserProfile.objects.create(
-        #         user_auth_obj = user_auth_object
-        #     )
-        #     user_profile_object.save()
-        #     return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
+            user_profile_object = UserProfile.objects.create(
+                user_auth_obj = user_auth_object
+            )
+            user_profile_object.save()
+            return JsonResponse({'success': True, 'message': 'User profile saved successfully'})
 
 
 
