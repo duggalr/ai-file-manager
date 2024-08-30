@@ -18,4 +18,8 @@ urlpatterns = [
 
     path('api/get_user_profile_information', views.get_user_profile_information, name='get_user_profile_information'),
 
+    path('api/view_directory_files', views.view_directory_files, name='view_directory_files'),
+
+    path('api/update_view_preference', views.update_view_preference, name='update_view_preference'),
+
 ]

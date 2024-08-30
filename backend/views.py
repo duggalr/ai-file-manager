@@ -4,7 +4,9 @@ import json
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import EmailSubscriber, UserOAuth, Directory, UserProfile
+from django.db import connection
+from django.db.models import Count, F
+from .models import EmailSubscriber, UserOAuth, Directory, UserProfile, File
 from .scripts_two import token_validation
 
 
@@ -248,3 +250,150 @@ def handle_user_directory_filepath_submission(request):
             'success': True,
             'task_id': task.id  # Send task ID to the frontend
         })
+
+
+# TODO:
+@csrf_exempt
+def view_directory_files(request):
+    if request.method == 'POST':
+        print('headers:', request.headers)
+        
+        access_token = request.headers.get('Authorization').split()[1]
+        if not access_token:
+            return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
+        
+        user_verified, user_info_dict = token_validation.verify_access_token(
+            access_token = access_token
+        )
+
+        print(f"Verified: {user_verified}")
+        print(f"User Info Dict: {user_info_dict}")
+
+        if user_info_dict is None:
+            return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+
+        data = json.loads(request.body)
+        directory_id = data['directory_object_id']
+
+        user_auth_obj = UserOAuth.objects.get(
+            auth_zero_id = user_info_dict['sub']
+        )
+        user_profile_obj = UserProfile.objects.get(
+            user_auth_obj = user_auth_obj
+        )
+        directory_objects = Directory.objects.filter(
+            id = directory_id,
+            user_profile_obj = user_profile_obj
+        )
+
+        if len(directory_objects) == 0:
+            return JsonResponse({'success': False, 'message': 'Directory object not found...'}, status=403)
+        
+        else:
+            dir_object = directory_objects[0]
+
+            final_entity_type_and_file_count_rv = []
+
+            if user_profile_obj.user_view_preference == 'entity':
+                final_entity_type_and_file_count = File.objects.filter(
+                    directory_object = dir_object,
+                    processed = True
+                ).annotate(
+                    primary_text=F('entity_type')
+                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+                
+                for itm in final_entity_type_and_file_count:
+                    final_entity_type_and_file_count_rv.append({
+                        'primary_text': itm['primary_text'],
+                        'file_count': itm['file_count']
+                    })
+            
+            elif user_profile_obj.user_view_preference == 'category':
+                final_entity_type_and_file_count = File.objects.filter(
+                    directory_object = dir_object,
+                    processed = True
+                ).annotate(
+                    primary_text=F('primary_category')
+                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+
+                for itm in final_entity_type_and_file_count:
+                    final_entity_type_and_file_count_rv.append({
+                        'primary_text': itm['primary_text'],
+                        'file_count': itm['file_count']
+                    })
+    
+            elif user_profile_obj.user_view_preference == 'sub_category':        
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                SELECT 
+                    sub_category as primary_text, COUNT(*) as file_count
+                FROM (
+                    SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                    FROM public.backend_file 
+                    WHERE processed = true
+                    AND directory_object_id IN (
+                        SELECT id FROM public.backend_directory
+                        WHERE user_profile_obj_id = %s
+                    )
+                ) AS subcategory_unnested
+                GROUP BY sub_category
+                ORDER BY file_count DESC
+            """, [user_profile_obj.id])
+            
+                    results = cursor.fetchall()
+                    # # filtered_file_count = []
+                    # final_entity_type_and_file_count = []
+                    for li in results:
+                        # filtered_file_count.append({
+                        # final_entity_type_and_file_count.append({
+                        final_entity_type_and_file_count_rv.append({
+                            'primary_text': li[0],
+                            'file_count': li[1]
+                        })
+
+            return JsonResponse({
+                'success': True,
+                'user_profile_preference': user_profile_obj.user_view_preference,
+                'entity_type_and_file_count': final_entity_type_and_file_count_rv,
+                # 'directory_objects': directory_objects,
+                # 'user_profile_object': user_profile_obj,
+            })
+
+
+
+@csrf_exempt
+def update_view_preference(request):
+    if request.method == 'POST':
+       
+        print('headers:', request.headers)
+        
+        access_token = request.headers.get('Authorization').split()[1]
+        if not access_token:
+            return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
+        
+        user_verified, user_info_dict = token_validation.verify_access_token(
+            access_token = access_token
+        )
+
+        print(f"Verified: {user_verified}")
+        print(f"User Info Dict: {user_info_dict}")
+
+        if user_info_dict is None:
+            return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+        data = json.loads(request.body)
+        user_preference = data['preference']
+
+        user_auth_obj = UserOAuth.objects.get(
+            auth_zero_id = user_info_dict['sub']
+        )
+        user_profile_obj = UserProfile.objects.get(
+            user_auth_obj = user_auth_obj
+        )
+        user_profile_obj.user_view_preference = user_preference
+        user_profile_obj.save()
+        
+        return JsonResponse({'success': True, 'message': 'Preference updated successfully.'})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})
