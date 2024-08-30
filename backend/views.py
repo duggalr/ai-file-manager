@@ -397,3 +397,28 @@ def update_view_preference(request):
         return JsonResponse({'success': True, 'message': 'Preference updated successfully.'})
 
     return JsonResponse({'success': False, 'message': 'Invalid request.'})
+
+
+
+# TODO: finalize this function and go from there
+@csrf_exempt
+def switch_filtered_file_data(request):
+    if request.method == 'POST':
+        print('post-data:', request.POST)
+
+        access_token = request.headers.get('Authorization').split()[1]
+        if not access_token:
+            return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
+        
+        user_verified, user_info_dict = token_validation.verify_access_token(
+            access_token = access_token
+        )
+
+        print(f"Verified: {user_verified}")
+        print(f"User Info Dict: {user_info_dict}")
+
+        if user_info_dict is None:
+            return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+        # TODO: implement from github from here...
+
