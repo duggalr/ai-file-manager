@@ -21,5 +21,9 @@ urlpatterns = [
     path('api/view_directory_files', views.view_directory_files, name='view_directory_files'),
 
     path('api/update_view_preference', views.update_view_preference, name='update_view_preference'),
+    path('api/switch_filtered_file_data', views.switch_filtered_file_data, name='switch_filtered_file_data'),
+
+    path('api/handle_filtering_file_data', views.handle_filtering_file_data, name='handle_filtering_file_data'),
+    path('api/open_user_file', views.open_user_file, name='open_user_file'),
 
 ]
