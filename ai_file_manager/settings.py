@@ -81,31 +81,43 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ai_file_manager.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# # Database
+# # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-if 'PRODUCTION_ENV' not in os.environ:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ['DB_NAME'],
-            'USER': os.environ['DB_USER'],
-            'PASSWORD': os.environ['DB_PASSWORD'],
-            'HOST': os.environ['DB_HOST'],
-            'PORT': os.environ['DB_PORT'],
-        }
+# if 'PRODUCTION_ENV' not in os.environ:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.environ['DB_NAME'],
+#             'USER': os.environ['DB_USER'],
+#             'PASSWORD': os.environ['DB_PASSWORD'],
+#             'HOST': os.environ['DB_HOST'],
+#             'PORT': os.environ['DB_PORT'],
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.environ['PROD_RDS_DB_NAME'],
+#             'USER': os.environ['PROD_RDS_DB_USER'],
+#             'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
+#             'HOST': os.environ['PROD_RDS_DB_HOST'],
+#             'PORT': os.environ['PROD_RDS_DB_PORT'],
+#         }
+#     }
+
+# TODO: 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['PROD_RDS_DB_NAME'],
+        'USER': os.environ['PROD_RDS_DB_USER'],
+        'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
+        'HOST': os.environ['PROD_RDS_DB_HOST'],
+        'PORT': os.environ['PROD_RDS_DB_PORT'],
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ['PROD_RDS_DB_NAME'],
-            'USER': os.environ['PROD_RDS_DB_USER'],
-            'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
-            'HOST': os.environ['PROD_RDS_DB_HOST'],
-            'PORT': os.environ['PROD_RDS_DB_PORT'],
-        }
-    }
+}
 
 
 # Password validation
@@ -155,9 +167,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH0_CLIENT_ID = os.environ["AUTH0_CLIENT_ID"]
 # AUTH0_CLIENT_SECRET = os.environ["AUTH0_CLIENT_SECRET"]
 
-# Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+# # Celery settings
+# CELERY_BROKER_URL = "redis://localhost:6379"
+# CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+if 'PRODUCTION_ENV' not in os.environ:
+    CELERY_BROKER_URL = "redis://localhost:6379"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379"
+else:
+    CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+    CELERY_RESULT_BACKEND = os.environ['CELERY_BROKER_URL']
+
 
 if 'PRODUCTION_ENV' not in os.environ:
     CORS_ALLOWED_ORIGINS = [
