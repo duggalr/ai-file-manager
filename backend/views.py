@@ -1034,8 +1034,6 @@ def delete_user_file_path(request):
     if user_info_dict is None:
         return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
 
-    # TODO: implement from github from here...
-
     user_auth_obj = UserOAuth.objects.get(
         auth_zero_id = user_info_dict['sub']
     )
