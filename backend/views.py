@@ -279,9 +279,10 @@ def view_directory_files(request):
         if user_info_dict is None:
             return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
 
-
         data = json.loads(request.body)
         directory_id = data['directory_object_id']  # TODO: verify this dir id
+
+        # print('DIRECTORY OBJECT ID:', directory_id, directory_id == 'null')
 
         user_auth_obj = UserOAuth.objects.get(
             auth_zero_id = user_info_dict['sub']
@@ -289,76 +290,85 @@ def view_directory_files(request):
         user_profile_obj = UserProfile.objects.get(
             user_auth_obj = user_auth_obj
         )
-        print('user-profile-object:', user_profile_obj, directory_id)
-        directory_objects = Directory.objects.filter(
-            id = directory_id,
-            user_profile_obj = user_profile_obj
-        )
+        # print('user-profile-object:', user_profile_obj, directory_id)
+
+        if directory_id == 'null':
+            directory_objects = Directory.objects.filter(
+                user_profile_obj = user_profile_obj
+            )
+        else:
+            directory_objects = Directory.objects.filter(
+                id = directory_id,
+                user_profile_obj = user_profile_obj
+            )
 
         if len(directory_objects) == 0:
             return JsonResponse({'success': False, 'message': 'Directory object not found...'}, status=400)
         
         else:
-            dir_object = directory_objects[0]
-
             final_entity_type_and_file_count_rv = []
 
-            if user_profile_obj.user_view_preference == 'entity':
-                final_entity_type_and_file_count = File.objects.filter(
-                    directory_object = dir_object,
-                    processed = True
-                ).annotate(
-                    primary_text=F('entity_type')
-                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
-                
-                for itm in final_entity_type_and_file_count:
-                    final_entity_type_and_file_count_rv.append({
-                        'primary_text': itm['primary_text'],
-                        'file_count': itm['file_count']
-                    })
-            
-            elif user_profile_obj.user_view_preference == 'category':
-                final_entity_type_and_file_count = File.objects.filter(
-                    directory_object = dir_object,
-                    processed = True
-                ).annotate(
-                    primary_text=F('primary_category')
-                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+            # # TODO: go through the directory objects
+            # dir_object = directory_objects[0]
 
-                for itm in final_entity_type_and_file_count:
-                    final_entity_type_and_file_count_rv.append({
-                        'primary_text': itm['primary_text'],
-                        'file_count': itm['file_count']
-                    })
-    
-            elif user_profile_obj.user_view_preference == 'sub_category':        
-                with connection.cursor() as cursor:
-                    cursor.execute("""
-                SELECT 
-                    sub_category as primary_text, COUNT(*) as file_count
-                FROM (
-                    SELECT jsonb_array_elements_text(sub_categories) as sub_category
-                    FROM public.backend_file 
-                    WHERE processed = true
-                    AND directory_object_id IN (
-                        SELECT id FROM public.backend_directory
-                        WHERE user_profile_obj_id = %s
-                    )
-                ) AS subcategory_unnested
-                GROUP BY sub_category
-                ORDER BY file_count DESC
-            """, [user_profile_obj.id])
-            
-                    results = cursor.fetchall()
-                    # # filtered_file_count = []
-                    # final_entity_type_and_file_count = []
-                    for li in results:
-                        # filtered_file_count.append({
-                        # final_entity_type_and_file_count.append({
+            for dir_object in directory_objects:
+
+                if user_profile_obj.user_view_preference == 'entity':
+                    final_entity_type_and_file_count = File.objects.filter(
+                        directory_object = dir_object,
+                        processed = True
+                    ).annotate(
+                        primary_text=F('entity_type')
+                    ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+                    
+                    for itm in final_entity_type_and_file_count:
                         final_entity_type_and_file_count_rv.append({
-                            'primary_text': li[0],
-                            'file_count': li[1]
+                            'primary_text': itm['primary_text'],
+                            'file_count': itm['file_count']
                         })
+                
+                elif user_profile_obj.user_view_preference == 'category':
+                    final_entity_type_and_file_count = File.objects.filter(
+                        directory_object = dir_object,
+                        processed = True
+                    ).annotate(
+                        primary_text=F('primary_category')
+                    ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+
+                    for itm in final_entity_type_and_file_count:
+                        final_entity_type_and_file_count_rv.append({
+                            'primary_text': itm['primary_text'],
+                            'file_count': itm['file_count']
+                        })
+        
+                elif user_profile_obj.user_view_preference == 'sub_category':        
+                    with connection.cursor() as cursor:
+                        cursor.execute("""
+                    SELECT 
+                        sub_category as primary_text, COUNT(*) as file_count
+                    FROM (
+                        SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                        FROM public.backend_file 
+                        WHERE processed = true
+                        AND directory_object_id IN (
+                            SELECT id FROM public.backend_directory
+                            WHERE user_profile_obj_id = %s
+                        )
+                    ) AS subcategory_unnested
+                    GROUP BY sub_category
+                    ORDER BY file_count DESC
+                """, [user_profile_obj.id])
+                
+                        results = cursor.fetchall()
+                        # # filtered_file_count = []
+                        # final_entity_type_and_file_count = []
+                        for li in results:
+                            # filtered_file_count.append({
+                            # final_entity_type_and_file_count.append({
+                            final_entity_type_and_file_count_rv.append({
+                                'primary_text': li[0],
+                                'file_count': li[1]
+                            })
 
             return JsonResponse({
                 'success': True,
@@ -367,6 +377,7 @@ def view_directory_files(request):
                 # 'directory_objects': directory_objects,
                 # 'user_profile_object': user_profile_obj,
             })
+
 
 
 
@@ -441,60 +452,131 @@ def switch_filtered_file_data(request):
         current_filter_value = data['current_filter_value']        
         switch_view_to_value = data['switch_view_to']
 
+        directory_object_id = data['directory_object_id']
+
         if current_filter_value == 'Home':
 
-            filtered_file_objects = File.objects.filter(
-                processed = True,
-                directory_object__user_profile_obj = user_profile_obj
-            )                
-
-            if switch_view_to_value == 'entity':
-                filtered_file_count = File.objects.filter(
+            if directory_object_id == 'null':
+                filtered_file_objects = File.objects.filter(
                     processed = True,
                     directory_object__user_profile_obj = user_profile_obj
-                ).annotate(
-                    primary_text=F('entity_type')
-                ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
-                global_view_type = 'entity'
+                )
+            else:
+                directory_obj = Directory.objects.get(
+                    id = directory_object_id,
+                    user_profile_obj = user_profile_obj
+                )
+                filtered_file_objects = File.objects.filter(
+                    processed = True,
+                    directory_object = directory_obj,
+                    directory_object__user_profile_obj = user_profile_obj
+                )
+
+            if switch_view_to_value == 'entity':
+                
+                if directory_object_id == 'null':
+                    filtered_file_count = File.objects.filter(
+                        processed = True,
+                        directory_object__user_profile_obj = user_profile_obj
+                    ).annotate(
+                        primary_text=F('entity_type')
+                    ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+                    global_view_type = 'entity'
+                else:
+                    directory_obj = Directory.objects.get(
+                        id = directory_object_id,
+                        user_profile_obj = user_profile_obj
+                    )
+                    filtered_file_count = File.objects.filter(
+                        processed = True,
+                        directory_object = directory_obj,
+                        directory_object__user_profile_obj = user_profile_obj
+                    ).annotate(
+                        primary_text=F('entity_type')
+                    ).values('primary_text').annotate(file_count=Count('entity_type')).order_by('-file_count')
+                    global_view_type = 'entity'
+
 
             # TODO: add sub-categories
             elif switch_view_to_value == 'Sub-Categories':
 
-                with connection.cursor() as cursor:
-                    cursor.execute("""
-                SELECT 
-                    sub_category as primary_text, COUNT(*) as file_count
-                FROM (
-                    SELECT jsonb_array_elements_text(sub_categories) as sub_category
-                    FROM public.backend_file 
-                    WHERE processed = true
-                    AND directory_object_id IN (
-                        SELECT id FROM public.backend_directory
-                        WHERE user_profile_obj_id = %s
-                    )
-                ) AS subcategory_unnested
-                GROUP BY sub_category
-                ORDER BY file_count DESC
-            """, [user_profile_obj.id])
-            
-                    results = cursor.fetchall()
-                    global_view_type = 'subcategory'
-                            
-                    filtered_file_count = []
-                    for li in results:
-                        filtered_file_count.append({
-                            'primary_text': li[0],
-                            'file_count': li[1]
-                        })
+                if directory_object_id == 'null':
+                    with connection.cursor() as cursor:
+                        cursor.execute("""
+                    SELECT 
+                        sub_category as primary_text, COUNT(*) as file_count
+                    FROM (
+                        SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                        FROM public.backend_file 
+                        WHERE processed = true
+                        AND directory_object_id IN (
+                            SELECT id FROM public.backend_directory
+                            WHERE user_profile_obj_id = %s
+                        )
+                    ) AS subcategory_unnested
+                    GROUP BY sub_category
+                    ORDER BY file_count DESC
+                """, [user_profile_obj.id])
+                
+                        results = cursor.fetchall()
+                        global_view_type = 'subcategory'
+                                
+                        filtered_file_count = []
+                        for li in results:
+                            filtered_file_count.append({
+                                'primary_text': li[0],
+                                'file_count': li[1]
+                            })
+                else:
+                    with connection.cursor() as cursor:
+                        cursor.execute("""
+                    SELECT 
+                        sub_category as primary_text, COUNT(*) as file_count
+                    FROM (
+                        SELECT jsonb_array_elements_text(sub_categories) as sub_category
+                        FROM public.backend_file 
+                        WHERE processed = true
+                        AND directory_object_id = %s
+                    ) AS subcategory_unnested
+                    GROUP BY sub_category
+                    ORDER BY file_count DESC
+                """, [directory_object_id])
+                
+                        results = cursor.fetchall()
+                        global_view_type = 'subcategory'
+                                
+                        filtered_file_count = []
+                        for li in results:
+                            filtered_file_count.append({
+                                'primary_text': li[0],
+                                'file_count': li[1]
+                            })
                 
             else:
-                filtered_file_count = File.objects.filter(
-                    processed = True,
-                    directory_object__user_profile_obj = user_profile_obj
-                ).annotate(
-                    primary_text=F('primary_category')
-                ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
-                global_view_type = 'category'
+
+                if directory_object_id == 'null':
+                    filtered_file_count = File.objects.filter(
+                        processed = True,
+                        directory_object__user_profile_obj = user_profile_obj
+                    ).annotate(
+                        primary_text=F('primary_category')
+                    ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+                    global_view_type = 'category'
+
+                else:
+                    directory_obj = Directory.objects.get(
+                        id = directory_object_id,
+                        user_profile_obj = user_profile_obj
+                    )
+                    filtered_file_count = File.objects.filter(
+                        processed = True,
+                        directory_object = directory_obj,
+                        directory_object__user_profile_obj = user_profile_obj
+                    ).annotate(
+                        primary_text=F('primary_category')
+                    ).values('primary_text').annotate(file_count=Count('primary_category')).order_by('-file_count')
+                    global_view_type = 'category'
+
 
             serialized_file_objects = []
             for fn_obj in filtered_file_objects:
@@ -577,9 +659,16 @@ def switch_filtered_file_data(request):
 
             filters['processed'] = True
             filters['directory_object__user_profile_obj'] = user_profile_obj
-            
-            filtered_file_objects = File.objects.filter(**filters)
 
+            if directory_object_id != 'null':
+                directory_obj = Directory.objects.filter(
+                    id = directory_object_id,
+                    user_profile_obj = user_profile_obj
+                )
+                filters['directory_object'] = directory_obj
+
+
+            filtered_file_objects = File.objects.filter(**filters)
             print(f"GLOBAL ORIGINAL FILTER VALUE: {original_filter_value}")
 
             if switch_view_to_value == 'entity':
