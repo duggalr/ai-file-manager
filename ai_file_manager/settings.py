@@ -30,7 +30,7 @@ if 'PRODUCTION_ENV' not in os.environ:
     ALLOWED_HOSTS = []
 else:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    DEBUG = False
+    DEBUG = True  # TODO: update
     ALLOWED_HOSTS = ['api.filecompanion.app']
 
 
