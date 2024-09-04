@@ -1013,3 +1013,43 @@ def open_user_file(request):
         except File.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'File not found'})
 
+
+
+@csrf_exempt
+def delete_user_file_path(request):
+    
+    print('post-data:', request.POST)
+
+    access_token = request.headers.get('Authorization').split()[1]
+    if not access_token:
+        return JsonResponse({'success': False, 'message': 'Authorization token is missing'}, status=401)
+    
+    user_verified, user_info_dict = token_validation.verify_access_token(
+        access_token = access_token
+    )
+
+    print(f"Verified: {user_verified}")
+    print(f"User Info Dict: {user_info_dict}")
+
+    if user_info_dict is None:
+        return JsonResponse({'success': False, 'message': 'Authorization token is invalid'}, status=403)
+
+    # TODO: implement from github from here...
+
+    user_auth_obj = UserOAuth.objects.get(
+        auth_zero_id = user_info_dict['sub']
+    )
+    user_profile_obj = UserProfile.objects.get(
+        user_auth_obj = user_auth_obj
+    )
+    
+    data = json.loads(request.body)
+    directory_obj_uuid = data['directory_object_id']
+    print('directory-obj-id:', directory_obj_uuid)
+
+    # Directory.objects.filter(
+    #     id = directory_obj_uuid, 
+    #     user_profile_obj = user_profile_obj
+    # ).delete()
+
+    return JsonResponse({'success': True})

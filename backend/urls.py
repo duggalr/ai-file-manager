@@ -26,4 +26,6 @@ urlpatterns = [
     path('api/handle_filtering_file_data', views.handle_filtering_file_data, name='handle_filtering_file_data'),
     path('api/open_user_file', views.open_user_file, name='open_user_file'),
 
+    path('api/delete_user_file_path', views.delete_user_file_path, name='delete_user_file_path'),
+
 ]
