@@ -15,7 +15,7 @@ echo "Creating .env file..."
 read -p "Enter your OpenAI API Key: " openai_api_key
 
 cat <<EOT > .env
-OPENAI_API_KEY=$openai_api_key
+OPENAI_KEY=$openai_api_key
 AUTH0_DOMAIN='dev-2qo458j0ehopg3ae.us.auth0.com'
 API_IDENTIFIER='https://dev-2qo458j0ehopg3ae.us.auth0.com/api/v2/'
 ALGORITHMS=['RS256']
