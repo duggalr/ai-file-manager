@@ -71,6 +71,11 @@ echo "DB_PORT=$DB_PORT" >> .env
 read -p "Enter your OpenAI API Key: " openai_api_key
 echo "OPENAI_API_KEY=$openai_api_key" >> .env
 
+# Adding Auth0 environment variables
+echo "AUTH0_DOMAIN='dev-2qo458j0ehopg3ae.us.auth0.com'" >> .env
+echo "API_IDENTIFIER='https://dev-2qo458j0ehopg3ae.us.auth0.com/api/v2/'" >> .env
+echo "ALGORITHMS=['RS256']" >> .env
+
 # Step 5: Run Django migrations
 echo "Running Django migrations..."
 python manage.py migrate
