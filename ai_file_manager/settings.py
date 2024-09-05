@@ -84,40 +84,28 @@ WSGI_APPLICATION = 'ai_file_manager.wsgi.application'
 # # Database
 # # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# if 'PRODUCTION_ENV' not in os.environ:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.environ['DB_NAME'],
-#             'USER': os.environ['DB_USER'],
-#             'PASSWORD': os.environ['DB_PASSWORD'],
-#             'HOST': os.environ['DB_HOST'],
-#             'PORT': os.environ['DB_PORT'],
-#         }
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.environ['PROD_RDS_DB_NAME'],
-#             'USER': os.environ['PROD_RDS_DB_USER'],
-#             'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
-#             'HOST': os.environ['PROD_RDS_DB_HOST'],
-#             'PORT': os.environ['PROD_RDS_DB_PORT'],
-#         }
-#     }
-
-# TODO: 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['PROD_RDS_DB_NAME'],
-        'USER': os.environ['PROD_RDS_DB_USER'],
-        'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
-        'HOST': os.environ['PROD_RDS_DB_HOST'],
-        'PORT': os.environ['PROD_RDS_DB_PORT'],
+if 'PRODUCTION_ENV' not in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DB_NAME'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ['DB_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['PROD_RDS_DB_NAME'],
+            'USER': os.environ['PROD_RDS_DB_USER'],
+            'PASSWORD': os.environ['PROD_RDS_DB_PASSWORD'],
+            'HOST': os.environ['PROD_RDS_DB_HOST'],
+            'PORT': os.environ['PROD_RDS_DB_PORT'],
+        }
+    }
 
 
 # Password validation
