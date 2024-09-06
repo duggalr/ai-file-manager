@@ -73,7 +73,7 @@ This will setup the celery worker with a redis message queue.
 In a new terminal window, navigate to the Electron repository and run the provided shell script to set up the frontend environment.
 
 ```
-cd ../ai-file-organizer-electron
+cd ../ai-file-manager-electron
 chmod +x setup_electron.sh
 ./setup_electron.sh
 ```
