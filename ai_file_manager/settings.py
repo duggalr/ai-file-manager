@@ -30,7 +30,7 @@ if 'PRODUCTION_ENV' not in os.environ:
     ALLOWED_HOSTS = []
 else:
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-    DEBUG = True  # TODO: update
+    DEBUG = False
     ALLOWED_HOSTS = ['api.filecompanion.app']
 
 
@@ -158,15 +158,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# # Load Auth0 application settings into memory
-# AUTH0_DOMAIN = os.environ["AUTH0_DOMAIN"]
-# AUTH0_CLIENT_ID = os.environ["AUTH0_CLIENT_ID"]
-# AUTH0_CLIENT_SECRET = os.environ["AUTH0_CLIENT_SECRET"]
-
 # # Celery settings
-# CELERY_BROKER_URL = "redis://localhost:6379"
-# CELERY_RESULT_BACKEND = "redis://localhost:6379"
-
 if 'PRODUCTION_ENV' not in os.environ:
     CELERY_BROKER_URL = "redis://localhost:6379"
     CELERY_RESULT_BACKEND = "redis://localhost:6379"
