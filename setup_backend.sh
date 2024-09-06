@@ -13,11 +13,13 @@ pip install -r requirements.txt
 echo "Creating .env file..."
 
 read -p "Enter your OpenAI API Key: " openai_api_key
+read -p "Enter your auth0 domain: " auth0_domain
+read -p "Enter your API Identifier: " api_identifier
 
 cat <<EOT > .env
 OPENAI_KEY=$openai_api_key
-AUTH0_DOMAIN='dev-2qo458j0ehopg3ae.us.auth0.com'
-API_IDENTIFIER='https://dev-2qo458j0ehopg3ae.us.auth0.com/api/v2/'
+AUTH0_DOMAIN=$auth0_domain
+API_IDENTIFIER=$api_identifier
 ALGORITHMS=['RS256']
 EOT
 
