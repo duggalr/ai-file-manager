@@ -5,16 +5,6 @@ AI File Companion is an AI-powered file organizer that automatically organizes f
 This guide will help you self-host the AI File Companion on your local machine using Python and Electron.
 
 
-## Prerequisites
-
-Before starting, make sure you have the following installed on your machine:
-
-- Git
-- Python 3.8+ and pip
-- Node.js and npm
-- PostgreSQL
-
-
 ## Setup Instructions
 
 Follow these steps to get the AI File Companion up and running:
@@ -37,15 +27,13 @@ Navigate to the backend repository and run the provided shell script to set up t
 cd ai-file-manager
 chmod +x setup_backend.sh
 ./setup_backend.sh
-
 ```
 
 **This script will:**
 - Create a Python virtual environment.
 - Install the required Python packages from requirements.txt.
-- Set up a local PostgreSQL database.
-- Initialize environment variables in a .env file.
 - Ask for your OPENAI_API_KEY and save it to the .env file.
+- Initialize environment variables in a .env file.
 - Run Django migrations.
 - Start the Django server on localhost:8000.
 
